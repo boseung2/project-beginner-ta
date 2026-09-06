@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HTML — 초급프로젝트 보충 세미나 1</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1f2328; --muted: #6b7280; --line: #e5e7eb;
+    --code-bg: #f6f6f4; --accent: #2563eb; --pane: #fafafa;
+    --tag: #b91c1c; --attr: #7c3aed; --str: #15803d; --cmt: #9ca3af; --kw: #1d4ed8;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  nav.toc {
+    position: sticky; top: 0; height: 100vh; overflow: auto;
+    border-right: 1px solid var(--line); padding: 20px 16px; font-size: 13px;
+  }
+  nav.toc h1 { font-size: 22px; margin: 0 0 12px; }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 2px 0; }
+  nav.toc li ol { padding-left: 14px; }
+  nav.toc a { color: var(--fg); text-decoration: none; display: block; padding: 3px 6px; border-radius: 4px; }
+  nav.toc a:hover { background: var(--code-bg); }
+  nav.toc a.sub { color: var(--muted); }
+  main { padding: 32px 48px 120px; max-width: 1400px; }
+  h1.title { font-size: 40px; margin: 0 0 8px; }
+  .subtitle { color: var(--muted); margin: 0 0 40px; }
+  h2 { font-size: 24px; margin: 56px 0 16px; padding-top: 8px; }
+  h3 { font-size: 18px; margin: 32px 0 10px; }
+  h4 { font-size: 15px; margin: 22px 0 8px; color: #374151; }
+  p.note { color: var(--muted); font-size: 14px; margin: 8px 0 16px; }
+
+  /* 정리 표 */
+  table.ref { border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  table.ref td { border: 1px solid var(--line); padding: 5px 12px; vertical-align: top; }
+  table.ref td:first-child { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
+
+  /* 코드 + 실행 결과 */
+  .demo { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 16px 0 28px; background: var(--bg); }
+  .demo .bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--pane); font-size: 13px; }
+  .demo .bar .name { font-weight: 600; margin-right: auto; }
+  .demo .bar button { font: inherit; font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
+  .demo .bar button:hover { border-color: var(--accent); color: var(--accent); }
+  .demo .panes { display: grid; grid-template-columns: 1fr 1fr; }
+  .demo .panes > div { min-width: 0; }
+  .demo .code { background: var(--code-bg); border-right: 1px solid var(--line); }
+  .demo .code pre { margin: 0; padding: 14px 16px; overflow: auto; max-height: var(--h, 460px); font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
+  .demo .result { display: flex; flex-direction: column; }
+  .demo .result .label { font-size: 12px; color: var(--muted); padding: 6px 12px; border-bottom: 1px dashed var(--line); }
+  .demo iframe { border: 0; width: 100%; height: var(--h, 460px); background: #fff; flex: 1; }
+  .demo.tall { --h: 640px; }
+  .demo.short { --h: 260px; }
+  .demo.stack .panes { grid-template-columns: 1fr; }
+  .demo.stack iframe { height: max(760px, 85vh); }
+  .demo.stack .code { border-right: 0; border-top: 1px solid var(--line); }
+  .demo.stack .code pre { max-height: 520px; }
+  .demo.stack details > summary { cursor: pointer; padding: 10px 14px; font-size: 13px; color: var(--muted); background: var(--pane); user-select: none; }
+  .demo.stack details > summary:hover { color: var(--accent); }
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    main { padding: 24px 20px 80px; }
+    .demo .panes { grid-template-columns: 1fr; }
+    .demo .code { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+  /* 문법 색 */
+  .t { color: var(--tag); } .a { color: var(--attr); } .s { color: var(--str); } .c { color: var(--cmt); font-style: italic; } .k { color: var(--kw); }
+  textarea.src { display: none; }
+
+  /* 다이어그램 */
+  .diagram { margin: 12px 0 8px; max-width: 720px; }
+  .diagram svg { width: 100%; height: auto; }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc">
+  <h1>HTML</h1>
+  <ol>
+    <li><a href="#s1">1. client - server 구조</a></li>
+    <li><a href="#s2">2. client에서 html css js 역할</a></li>
+    <li><a href="#s3">3. react 역할 : html - react 간단한 비교</a></li>
+    <li><a href="#s4">4. html 기본 태그</a>
+      <ol>
+        <li><a class="sub" href="#s4-1">4-1 HTML 기본 태그 정리</a>
+          <ol>
+            <li><a class="sub" href="#s4-1-1">4-1-1 웹 문서 기본</a></li>
+            <li><a class="sub" href="#s4-1-2">4-1-2 문서 정보</a></li>
+            <li><a class="sub" href="#s4-1-3">4-1-3 문서 구조</a></li>
+            <li><a class="sub" href="#s4-1-4">4-1-4 텍스트</a></li>
+            <li><a class="sub" href="#s4-1-5">4-1-5 목록</a></li>
+            <li><a class="sub" href="#s4-1-6">4-1-6 표</a></li>
+            <li><a class="sub" href="#s4-1-7">4-1-7 멀티미디어</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#s5">5. form 태그</a>
+      <ol>
+        <li><a class="sub" href="#s5-1">HTML form 태그 정리</a>
+          <ol>
+            <li><a class="sub" href="#s5-1-1">5-1-1 form 핵심 태그</a></li>
+            <li><a class="sub" href="#s5-1-2">5-1-2 선택/목록 입력</a></li>
+            <li><a class="sub" href="#s5-1-3">5-1-3 상태/결과 표시</a></li>
+            <li><a class="sub" href="#s5-1-4">5-1-4 input 타입</a></li>
+            <li><a class="sub" href="#s5-1-5">5-1-5 주요 속성</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#s6">6. div 태그 심화 (복사 후 실행)</a></li>
+  </ol>
+</nav>
+
+<main>
+<h1 class="title">HTML</h1>
+<p class="subtitle">초급프로젝트 보충 세미나 1회차 · 왼쪽은 코드, 오른쪽은 그 코드를 브라우저가 그린 결과입니다. 코드는 <b>복사</b> 버튼으로 가져가서 직접 실행해 보세요.</p>
+
+<!-- ============ 1 ============ -->
+<h2 id="s1">1. client - server 구조</h2>
+<div class="diagram">
+<svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif">
+  <defs><marker id="arr" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#6b7280"/></marker></defs>
+  <g font-size="12" fill="#6b7280" text-anchor="middle">
+    <text x="110" y="22">Presentation Tier</text>
+    <text x="360" y="22">Logic Tier</text>
+    <text x="610" y="22">Data Tier</text>
+  </g>
+  <g stroke="#cbd5e1" fill="#f8fafc">
+    <rect x="30" y="34" width="160" height="130" rx="10"/>
+    <rect x="280" y="34" width="160" height="130" rx="10"/>
+    <rect x="530" y="34" width="160" height="130" rx="10"/>
+  </g>
+  <!-- client icons -->
+  <g stroke="#334155" fill="#fff" stroke-width="2">
+    <rect x="62" y="62" width="34" height="56" rx="6"/>
+    <rect x="104" y="70" width="60" height="40" rx="4"/>
+    <line x1="96" y1="118" x2="172" y2="118"/>
+  </g>
+  <!-- server -->
+  <g stroke="#334155" fill="#fff" stroke-width="2">
+    <rect x="330" y="58" width="60" height="16" rx="3"/>
+    <rect x="330" y="80" width="60" height="16" rx="3"/>
+    <rect x="330" y="102" width="60" height="16" rx="3"/>
+    <circle cx="340" cy="66" r="2" fill="#334155"/><circle cx="340" cy="88" r="2" fill="#334155"/><circle cx="340" cy="110" r="2" fill="#334155"/>
+  </g>
+  <!-- database -->
+  <g stroke="#334155" fill="#fff" stroke-width="2">
+    <ellipse cx="610" cy="66" rx="30" ry="9"/>
+    <path d="M580,66 v46 a30,9 0 0 0 60,0 v-46"/>
+    <path d="M580,82 a30,9 0 0 0 60,0 M580,98 a30,9 0 0 0 60,0" fill="none"/>
+  </g>
+  <g font-size="14" fill="#1f2328" text-anchor="middle" font-weight="600">
+    <text x="110" y="150">Client</text>
+    <text x="360" y="150">Server</text>
+    <text x="610" y="150">Database</text>
+  </g>
+  <g stroke="#6b7280" stroke-width="2" marker-end="url(#arr)">
+    <line x1="192" y1="92" x2="276" y2="92"/>
+    <line x1="442" y1="92" x2="526" y2="92"/>
+  </g>
+  <g stroke="#6b7280" stroke-width="2" marker-end="url(#arr)">
+    <line x1="278" y1="108" x2="194" y2="108"/>
+    <line x1="528" y1="108" x2="444" y2="108"/>
+  </g>
+  <g font-size="11" fill="#6b7280" text-anchor="middle">
+    <text x="234" y="84">요청</text><text x="234" y="124">응답(HTML/JSON)</text>
+    <text x="484" y="84">쿼리</text><text x="484" y="124">데이터</text>
+  </g>
+</svg>
+</div>
+<p class="note">브라우저(Client)가 서버에 요청을 보내고, 서버는 필요하면 DB에서 데이터를 꺼내 HTML이나 JSON으로 응답합니다. 이 문서에서 다루는 HTML/CSS/JS는 전부 <b>Client</b>, 즉 브라우저 안에서 동작합니다.</p>
+
+<!-- ============ 2 ============ -->
+<h2 id="s2">2. client에서 html css js 역할</h2>
+<p class="note">HTML은 <b>구조</b>(제목, 버튼이 있다), CSS는 <b>모양</b>(제목이 빨갛다), JS는 <b>동작</b>(버튼을 누르면 숫자가 오른다)을 맡습니다. 오른쪽 결과에서 +1 버튼을 눌러 보세요.</p>
+<div class="demo short" data-name="Counter (HTML)">
+<textarea class="src"><!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Counter (HTML)</title>
+</head>
+<style>
+    h1 {
+      color: red;
+    }
+</style>
+<body>
+  <h1 id="count">0</h1>
+  <button id="btn">+1</button>
+
+  <script>
+    let count = 0;
+    document.getElementById("btn").addEventListener("click", () => {
+      count++;
+      document.getElementById("count").textContent = count;
+    });
+  </script>
+</body>
+</html></textarea>
+</div>
+
+<!-- ============ 3 ============ -->
+<h2 id="s3">3. react 역할 : html - react 간단한 비교</h2>
+<p class="note">같은 카운터를 React로 쓰면 이렇게 됩니다. HTML 버전은 "화면에서 요소를 찾아서 직접 고치는" 방식이고, React는 "상태(count)가 바뀌면 화면은 알아서 다시 그려지는" 방식입니다. 실행 결과는 React 라이브러리를 인터넷에서 불러와 동작하므로 온라인 상태여야 보입니다.</p>
+<div class="demo short" data-name="Counter (React)" data-lang="jsx" data-run="react">
+<textarea class="src">import { useState } from "react";
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <h1>카운트: {count}</h1>
+      <button onClick={() => setCount(count + 1)}>+1</button>
+    </div>
+  );
+}
+
+export default App;</textarea>
+</div>
+
+<!-- ============ 4 ============ -->
+<h2 id="s4">4. html 기본 태그</h2>
+<div class="demo tall" data-name="HTML 기본 태그 예시">
+<textarea class="src"><!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>HTML 기본 태그 예시</title>
+</head>
+<body>
+  <!-- 제목 태그 -->
+  <h1>HTML 기본 태그 예시</h1>
+  <h2>이건 H2 제목</h2>
+  <h3>이건 H3 제목</h3>
+
+  <!-- 문단 -->
+  <p>이 문장은 문단(paragraph)입니다. <b>이 부분은 굵게(b) 표시</b>됩니다.</p>
+
+  <hr> <!-- 구분선 -->
+
+  <!-- 순서 없는 목록 -->
+  <h3>순서 없는 목록 (ul, li)</h3>
+  <ul>
+    <li>사과</li>
+    <li>바나나</li>
+    <li>포도</li>
+  </ul>
+
+  <!-- 순서 있는 목록 -->
+  <h3>순서 있는 목록 (ol, li)</h3>
+  <ol>
+    <li>첫 번째</li>
+    <li>두 번째</li>
+    <li>세 번째</li>
+  </ol>
+
+  <hr> <!-- 구분선 -->
+
+  <!-- 표 -->
+  <h3>표 (table, tr, th, td)</h3>
+  <table border="1">
+    <tr>
+      <th>이름</th>
+      <th>나이</th>
+    </tr>
+    <tr>
+      <td>홍길동</td>
+      <td>25</td>
+    </tr>
+    <tr>
+      <td>김철수</td>
+      <td>30</td>
+    </tr>
+  </table>
+
+  <hr> <!-- 구분선 -->
+
+  <!-- 이미지 -->
+  <h3>이미지 (img)</h3>
+  <img src="https://picsum.photos/150" alt="샘플 이미지">
+
+  <br> <!-- 줄바꿈 -->
+
+  <!-- 링크 -->
+  <h3>링크 (a)</h3>
+  <a href="https://www.google.com" target="_blank">구글로 이동</a>
+
+  <hr> <!-- 구분선 -->
+
+  <!-- 폼 -->
+  <h3>폼 (form, label, input, checkbox, textarea, button)</h3>
+  <form>
+    <label for="name">이름:</label>
+    <input type="text" id="name" name="name"><br><br>
+
+    <label>
+      <input type="checkbox" name="subscribe"> 뉴스레터 구독
+    </label><br><br>
+
+    <label for="message">메시지:</label><br>
+    <textarea id="message" name="message" rows="4" cols="30">&lt;/textarea&gt;<br><br>
+
+    <button type="submit">제출</button>
+  </form>
+
+  <hr> <!-- 구분선 -->
+
+  <!-- 구역 나누기 -->
+  <h3>구역 나누기 (div)</h3>
+  <div style="border: 1px solid black; padding: 10px;">
+    이 부분은 div로 감싼 영역입니다.
+  </div>
+</body>
+</html></textarea>
+</div>
+
+<h3 id="s4-1">4-1 HTML 기본 태그 정리</h3>
+
+<h4 id="s4-1-1">4-1-1 웹 문서 기본</h4>
+<table class="ref">
+<tr><td>&lt;!DOCTYPE html&gt;</td><td>문서가 HTML5임을 선언</td></tr>
+<tr><td>&lt;html&gt;</td><td>HTML 문서의 루트 요소</td></tr>
+<tr><td>&lt;head&gt;</td><td>문서의 메타데이터를 포함하는 영역</td></tr>
+<tr><td>&lt;body&gt;</td><td>실제 화면에 표시되는 콘텐츠 영역</td></tr>
+</table>
+
+<h4 id="s4-1-2">4-1-2 문서 정보</h4>
+<table class="ref">
+<tr><td>&lt;title&gt;</td><td>문서 제목, 브라우저 탭에 표시</td></tr>
+<tr><td>&lt;meta&gt;</td><td>문자 인코딩, 설명, 키워드 등 메타데이터 설정</td></tr>
+<tr><td>&lt;link&gt;</td><td>외부 CSS, 아이콘 등 리소스 연결</td></tr>
+<tr><td>&lt;script&gt;</td><td>자바스크립트 코드 삽입 또는 외부 스크립트 연결</td></tr>
+</table>
+
+<h4 id="s4-1-3">4-1-3 문서 구조</h4>
+<table class="ref">
+<tr><td>&lt;header&gt;</td><td>페이지 또는 섹션의 머리글</td></tr>
+<tr><td>&lt;nav&gt;</td><td>내비게이션 링크 모음</td></tr>
+<tr><td>&lt;main&gt;</td><td>문서의 주요 콘텐츠 영역</td></tr>
+<tr><td>&lt;section&gt;</td><td>주제별 콘텐츠 구역</td></tr>
+<tr><td>&lt;article&gt;</td><td>독립적으로 구분되는 콘텐츠 블록</td></tr>
+<tr><td>&lt;aside&gt;</td><td>부가 정보나 보조 콘텐츠</td></tr>
+<tr><td>&lt;footer&gt;</td><td>페이지 또는 섹션의 바닥글</td></tr>
+<tr><td>&lt;div&gt;</td><td>비시맨틱 블록 컨테이너</td></tr>
+<tr><td>&lt;span&gt;</td><td>인라인 컨테이너</td></tr>
+</table>
+
+<h4 id="s4-1-4">4-1-4 텍스트</h4>
+<table class="ref">
+<tr><td>&lt;h1&gt; ~ &lt;h6&gt;</td><td>제목 계층 구조 표시</td></tr>
+<tr><td>&lt;p&gt;</td><td>문단</td></tr>
+<tr><td>&lt;strong&gt;</td><td>중요한 강조 텍스트</td></tr>
+<tr><td>&lt;em&gt;</td><td>기울임 강조 텍스트</td></tr>
+<tr><td>&lt;mark&gt;</td><td>하이라이트 표시</td></tr>
+<tr><td>&lt;small&gt;</td><td>부가 설명, 작은 텍스트</td></tr>
+<tr><td>&lt;abbr&gt;</td><td>약어와 전체 의미 제공</td></tr>
+<tr><td>&lt;code&gt;</td><td>코드 조각 표시</td></tr>
+<tr><td>&lt;pre&gt;</td><td>공백과 줄바꿈을 유지하는 코드/텍스트</td></tr>
+<tr><td>&lt;blockquote&gt;</td><td>인용문 표시</td></tr>
+<tr><td>&lt;a&gt;</td><td>하이퍼링크 생성</td></tr>
+</table>
+
+<h4 id="s4-1-5">4-1-5 목록</h4>
+<table class="ref">
+<tr><td>&lt;ul&gt;</td><td>순서 없는 목록</td></tr>
+<tr><td>&lt;ol&gt;</td><td>순서 있는 목록</td></tr>
+<tr><td>&lt;li&gt;</td><td>목록 항목</td></tr>
+<tr><td>&lt;dl&gt;</td><td>설명 목록</td></tr>
+<tr><td>&lt;dt&gt;</td><td>설명 목록의 용어</td></tr>
+<tr><td>&lt;dd&gt;</td><td>설명 목록의 설명</td></tr>
+</table>
+
+<h4 id="s4-1-6">4-1-6 표</h4>
+<table class="ref">
+<tr><td>&lt;table&gt;</td><td>표 전체를 감싸는 요소</td></tr>
+<tr><td>&lt;caption&gt;</td><td>표의 제목</td></tr>
+<tr><td>&lt;thead&gt;</td><td>표의 헤더 영역</td></tr>
+<tr><td>&lt;tbody&gt;</td><td>표의 본문 영역</td></tr>
+<tr><td>&lt;tfoot&gt;</td><td>표의 바닥글 영역</td></tr>
+<tr><td>&lt;tr&gt;</td><td>표의 행</td></tr>
+<tr><td>&lt;th&gt;</td><td>표의 헤더 셀</td></tr>
+<tr><td>&lt;td&gt;</td><td>표의 데이터 셀</td></tr>
+</table>
+
+<h4 id="s4-1-7">4-1-7 멀티미디어</h4>
+<table class="ref">
+<tr><td>&lt;img&gt;</td><td>이미지 삽입</td></tr>
+<tr><td>&lt;audio&gt;</td><td>오디오 삽입</td></tr>
+<tr><td>&lt;video&gt;</td><td>비디오 삽입</td></tr>
+<tr><td>&lt;track&gt;</td><td>비디오/오디오의 자막·메타데이터 트랙</td></tr>
+<tr><td>&lt;picture&gt;</td><td>반응형 이미지 제공</td></tr>
+<tr><td>&lt;source&gt;</td><td>미디어 소스 파일 지정</td></tr>
+</table>
+
+<!-- ============ 5 ============ -->
+<h2 id="s5">5. form 태그</h2>
+<div class="demo tall" data-name="Form 태그 예시">
+<textarea class="src"><!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Form 태그 예시</title>
+</head>
+<body>
+  <h1>Form 태그 예시</h1>
+
+  <form action="/submit" method="post">
+    <!-- 텍스트 입력 -->
+    <label for="username">아이디:</label>
+    <input type="text" id="username" name="username" placeholder="아이디 입력" required>
+    <br><br>
+
+    <!-- 비밀번호 -->
+    <label for="password">비밀번호:</label>
+    <input type="password" id="password" name="password" required>
+    <br><br>
+
+    <!-- 이메일 -->
+    <label for="email">이메일:</label>
+    <input type="email" id="email" name="email" placeholder="example@mail.com">
+    <br><br>
+
+    <!-- 숫자 입력 -->
+    <label for="age">나이:</label>
+    <input type="number" id="age" name="age" min="0" max="120">
+    <br><br>
+
+    <!-- 날짜 선택 -->
+    <label for="birth">생년월일:</label>
+    <input type="date" id="birth" name="birth">
+    <br><br>
+
+    <!-- 라디오 버튼 -->
+    <p>성별:</p>
+    <label><input type="radio" name="gender" value="male"> 남성</label>
+    <label><input type="radio" name="gender" value="female"> 여성</label>
+    <br><br>
+
+    <!-- 체크박스 -->
+    <p>관심사:</p>
+    <label><input type="checkbox" name="interest" value="sports"> 스포츠</label>
+    <label><input type="checkbox" name="interest" value="music"> 음악</label>
+    <label><input type="checkbox" name="interest" value="coding"> 코딩</label>
+    <br><br>
+
+    <!-- 드롭다운 -->
+    <label for="country">국가:</label>
+    <select id="country" name="country">
+      <option value="">선택하세요</option>
+      <option value="kr">대한민국</option>
+      <option value="us">미국</option>
+      <option value="jp">일본</option>
+    </select>
+    <br><br>
+
+    <!-- 여러 줄 입력 -->
+    <label for="message">메시지:</label><br>
+    <textarea id="message" name="message" rows="4" cols="30" placeholder="하고 싶은 말을 입력하세요">&lt;/textarea&gt;
+    <br><br>
+
+    <!-- 파일 업로드 -->
+    <label for="file">파일 업로드:</label>
+    <input type="file" id="file" name="file">
+    <br><br>
+
+    <!-- 제출 / 초기화 -->
+    <button type="submit">제출</button>
+    <button type="reset">초기화</button>
+  </form>
+</body>
+</html></textarea>
+</div>
+
+<h3 id="s5-1">HTML form 태그 정리</h3>
+
+<h4 id="s5-1-1">5-1-1 form 핵심 태그</h4>
+<table class="ref">
+<tr><td>&lt;form&gt;</td><td>입력 데이터를 감싸고 제출 동작을 정의하는 컨테이너</td></tr>
+<tr><td>&lt;label&gt;</td><td>입력 요소와 연결되는 레이블(접근성·클릭 영역 확대)</td></tr>
+<tr><td>&lt;input&gt;</td><td>단일 행 입력 필드(다양한 type 지원)</td></tr>
+<tr><td>&lt;textarea&gt;</td><td>여러 줄 텍스트 입력</td></tr>
+<tr><td>&lt;button&gt;</td><td>버튼(제출·초기화·일반)</td></tr>
+<tr><td>&lt;fieldset&gt;</td><td>관련 입력들을 그룹화</td></tr>
+<tr><td>&lt;legend&gt;</td><td>fieldset 그룹의 제목</td></tr>
+</table>
+
+<h4 id="s5-1-2">5-1-2 선택/목록 입력</h4>
+<table class="ref">
+<tr><td>&lt;select&gt;</td><td>드롭다운 선택 상자</td></tr>
+<tr><td>&lt;option&gt;</td><td>select 안의 선택 항목</td></tr>
+<tr><td>&lt;optgroup&gt;</td><td>option들을 논리적으로 묶는 그룹</td></tr>
+<tr><td>&lt;datalist&gt;</td><td>input과 함께 자동완성 후보 목록 제공</td></tr>
+</table>
+
+<h4 id="s5-1-3">5-1-3 상태/결과 표시</h4>
+<table class="ref">
+<tr><td>&lt;output&gt;</td><td>계산 결과 등 동적 출력 값 표시</td></tr>
+<tr><td>&lt;progress&gt;</td><td>작업 진행률(0~1 또는 값/최대값) 표시</td></tr>
+<tr><td>&lt;meter&gt;</td><td>측정값(예: 점수·용량)의 상대 범위 표시</td></tr>
+</table>
+
+<h4 id="s5-1-4">5-1-4 input 타입</h4>
+<table class="ref">
+<tr><td>type="text"</td><td>일반 텍스트 입력</td></tr>
+<tr><td>type="password"</td><td>비밀번호 입력(가려짐)</td></tr>
+<tr><td>type="email"</td><td>이메일 형식 검증/가상 키보드 최적화</td></tr>
+<tr><td>type="url"</td><td>URL 형식 검증</td></tr>
+<tr><td>type="number"</td><td>숫자 입력(min/max/step 지원)</td></tr>
+<tr><td>type="tel"</td><td>전화번호 입력(모바일 키패드 최적화)</td></tr>
+<tr><td>type="search"</td><td>검색 입력</td></tr>
+<tr><td>type="date"</td><td>날짜 선택기</td></tr>
+<tr><td>type="time"</td><td>시간 선택기</td></tr>
+<tr><td>type="datetime-local"</td><td>로컬 날짜·시간 선택</td></tr>
+<tr><td>type="month"</td><td>월 선택</td></tr>
+<tr><td>type="week"</td><td>주 선택</td></tr>
+<tr><td>type="color"</td><td>색상 선택</td></tr>
+<tr><td>type="checkbox"</td><td>다중 선택 체크박스</td></tr>
+<tr><td>type="radio"</td><td>단일 선택 라디오 버튼(그룹은 name으로)</td></tr>
+<tr><td>type="range"</td><td>슬라이더(범위 값)</td></tr>
+<tr><td>type="file"</td><td>파일 업로드</td></tr>
+<tr><td>type="hidden"</td><td>화면에 보이지 않는 값</td></tr>
+<tr><td>type="submit"</td><td>폼 제출</td></tr>
+<tr><td>type="reset"</td><td>폼 초기화</td></tr>
+<tr><td>type="button"</td><td>일반 버튼(스크립트와 함께 사용)</td></tr>
+</table>
+
+<h4 id="s5-1-5">5-1-5 주요 속성</h4>
+<table class="ref">
+<tr><td>action</td><td>폼 제출 URL</td></tr>
+<tr><td>method</td><td>HTTP 메서드(get/post 등)</td></tr>
+<tr><td>enctype</td><td>폼 데이터 인코딩 타입(파일 업로드 시 multipart/form-data)</td></tr>
+<tr><td>name</td><td>폼/입력 요소의 이름(서버 전송 키)</td></tr>
+<tr><td>id/for</td><td>label과 입력 요소 연결</td></tr>
+<tr><td>value</td><td>입력 요소의 현재 값/기본값</td></tr>
+<tr><td>placeholder</td><td>힌트 텍스트</td></tr>
+<tr><td>required</td><td>필수 입력</td></tr>
+<tr><td>readonly</td><td>읽기 전용</td></tr>
+<tr><td>disabled</td><td>비활성화</td></tr>
+<tr><td>min/max/step</td><td>수치·날짜 범위/간격</td></tr>
+<tr><td>pattern</td><td>정규식 패턴 검증</td></tr>
+<tr><td>multiple</td><td>다중 선택/다중 파일 업로드 허용</td></tr>
+<tr><td>accept</td><td>파일 업로드 허용 형식</td></tr>
+<tr><td>autocomplete</td><td>자동완성 동작 설정(on/off 또는 힌트)</td></tr>
+</table>
+
+<!-- ============ 6 ============ -->
+<h2 id="s6">6. div 태그 심화 (복사 후 실행)</h2>
+<p class="note">오른쪽 패널의 옵션을 바꾸면 파란 박스에 바로 적용됩니다. 코드가 길어서 실행 결과를 먼저 크게 두고, 코드는 아래 <b>코드 보기</b>를 눌러 펼칠 수 있게 했습니다. 더 크게 보려면 <b>새 창에서 열기</b>를 누르세요.</p>
+<div class="demo stack tall" data-name="DIV 옵션 실습 랩">
+<textarea class="src"><!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DIV 옵션 실습 랩</title>
+    <style>
+      :root {
+        --gap: 12px;
+        --panel: 320px;
+      }
+      * {
+        box-sizing: border-box;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial,
+          "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      }
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      header {
+        padding: 16px;
+        border-bottom: 1px solid #e5e7eb;
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 2;
+      }
+      header h1 {
+        margin: 0 0 4px 0;
+        font-size: 18px;
+      }
+      header p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+      }
+      main {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) var(--panel);
+        gap: var(--gap);
+        padding: var(--gap);
+      }
+      #stageWrap {
+        padding: var(--gap);
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        min-height: 60vh;
+        position: relative;
+        overflow-x: auto;
+      }
+      #stageNote {
+        color: #6b7280;
+        font-size: 13px;
+        margin-bottom: 8px;
+      }
+      #box {
+        width: 260px;
+        height: 140px;
+        background: #bfdbfe;
+        border: 1px solid #60a5fa;
+        border-radius: 8px;
+        padding: 12px;
+        margin: 8px;
+        box-shadow: none;
+        display: block;
+        position: static;
+        overflow: hidden;
+        max-width: 100%;
+      }
+      #boxInner {
+        background: rgba(255, 255, 255, 0.6);
+        border: 1px dashed #2563eb;
+        padding: 8px 10px;
+        border-radius: 6px;
+        width: max-content;
+      }
+      aside {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 12px;
+        position: sticky;
+        top: 64px;
+        height: calc(100vh - 96px);
+        overflow: auto;
+      }
+      fieldset {
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: var(--gap);
+      }
+      legend {
+        padding: 0 6px;
+        color: #374151;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 130px 1fr;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 10px;
+      }
+      .row > label {
+        font-size: 13px;
+        color: #374151;
+      }
+      .muted {
+        color: #6b7280;
+        font-size: 12px;
+      }
+      input[type="range"] {
+        width: 100%;
+      }
+      code {
+        background: #eef2ff;
+        padding: 2px 6px;
+        border-radius: 4px;
+      }
+      .help {
+        font-size: 12px;
+        color: #6b7280;
+        padding: 0 10px 8px;
+      }
+      .two {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      #resetBtn {
+        width: 100%;
+        padding: 10px 12px;
+      }
+
+      @media (max-width: 900px) {
+        main {
+          grid-template-columns: 1fr;
+        }
+        aside {
+          position: static;
+          height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>div 태그 옵션 실습 랩</h1>
+      <p>
+        크기 · 여백 · 테두리 · 정렬(Flex) · 배치(Position) · 배경 · 반응형을
+        실시간으로 조정해 보세요.
+      </p>
+    </header>
+    <main>
+      <section id="stage">
+        <div id="stageWrap">
+          <div id="stageNote">
+            💡 오른쪽 패널의 옵션을 바꾸면 이 박스(<code>#box</code>)에 바로
+            적용됩니다.
+          </div>
+          <div id="box">
+            <div id="boxInner">
+              안쪽 박스 (#boxInner)<br /><span class="muted"
+                >absolute/flex 효과 확인용</span
+              >
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <form id="controls" onsubmit="return false;">
+          <fieldset>
+            <legend>크기 / 여백 / 테두리</legend>
+            <div class="row">
+              <label for="w">width</label>
+              <input id="w" type="range" min="100" max="800" value="260" />
+            </div>
+            <div class="row">
+              <label for="h">height</label>
+              <input id="h" type="range" min="80" max="400" value="140" />
+            </div>
+            <div class="row">
+              <label for="padding">padding</label>
+              <input id="padding" type="range" min="0" max="48" value="12" />
+            </div>
+            <div class="row">
+              <label for="margin">margin</label>
+              <input id="margin" type="range" min="0" max="48" value="8" />
+            </div>
+            <div class="row">
+              <label for="border">border(px)</label>
+              <input id="border" type="range" min="0" max="12" value="1" />
+            </div>
+            <div class="row">
+              <label for="radius">border-radius</label>
+              <input id="radius" type="range" min="0" max="32" value="8" />
+            </div>
+            <div class="row">
+              <label for="shadow">box-shadow</label>
+              <select id="shadow">
+                <option value="none">none</option>
+                <option value="0 1px 2px rgba(0,0,0,.1)">xs</option>
+                <option value="0 2px 8px rgba(0,0,0,.15)">sm</option>
+                <option value="0 8px 24px rgba(0,0,0,.2)">lg</option>
+              </select>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>정렬 (display / flex)</legend>
+            <div class="help">
+              display를 flex로 바꾸면 아래 정렬 옵션이 적용됩니다.
+            </div>
+            <div class="row">
+              <label for="display">display</label>
+              <select id="display">
+                <option value="block">block</option>
+                <option value="inline-block">inline-block</option>
+                <option value="flex">flex</option>
+              </select>
+            </div>
+            <div class="row">
+              <label for="justify">justify-content</label>
+              <select id="justify" disabled>
+                <option>flex-start</option>
+                <option>center</option>
+                <option>flex-end</option>
+                <option>space-between</option>
+                <option>space-around</option>
+                <option>space-evenly</option>
+              </select>
+            </div>
+            <div class="row">
+              <label for="align">align-items</label>
+              <select id="align" disabled>
+                <option>stretch</option>
+                <option>flex-start</option>
+                <option selected>center</option>
+                <option>flex-end</option>
+                <option>baseline</option>
+              </select>
+            </div>
+            <div class="row">
+              <label for="gap">gap</label>
+              <input
+                id="gap"
+                type="range"
+                min="0"
+                max="32"
+                value="0"
+                disabled
+              />
+            </div>
+            <div class="help">안쪽 박스는 flex 정렬 확인용입니다.</div>
+          </fieldset>
+
+          <fieldset>
+            <legend>배치 (position)</legend>
+            <div class="row">
+              <label for="position">position</label>
+              <select id="position">
+                <option>static</option>
+                <option>relative</option>
+                <option>absolute</option>
+                <option>fixed</option>
+                <option>sticky</option>
+              </select>
+            </div>
+            <div class="row">
+              <label for="top">top (px)</label>
+              <input
+                id="top"
+                type="range"
+                min="-40"
+                max="120"
+                value="0"
+                disabled
+              />
+            </div>
+            <div class="row">
+              <label for="left">left (px)</label>
+              <input
+                id="left"
+                type="range"
+                min="-40"
+                max="120"
+                value="0"
+                disabled
+              />
+            </div>
+            <div class="help">
+              absolute/fixed일 때 <code>#box</code>가 이동합니다. sticky는
+              스크롤해보세요.
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>배경</legend>
+            <div class="row">
+              <label for="bgColor">배경색</label>
+              <input id="bgColor" type="color" value="#bfdbfe" />
+            </div>
+            <div class="row">
+              <label for="bgImgOn">배경이미지</label>
+              <select id="bgImgOn">
+                <option value="off">off</option>
+                <option value="on">on</option>
+              </select>
+            </div>
+            <div class="row">
+              <label for="bgUrl">이미지 URL</label>
+              <input
+                id="bgUrl"
+                type="text"
+                value="https://images.unsplash.com/photo-1520975922284-7c0e2bfc7b44?w=800"
+              />
+            </div>
+            <div class="two">
+              <div class="row">
+                <label for="bgSize">size</label>
+                <select id="bgSize">
+                  <option>cover</option>
+                  <option>contain</option>
+                  <option>auto</option>
+                </select>
+              </div>
+              <div class="row">
+                <label for="bgPos">position</label>
+                <select id="bgPos">
+                  <option>center</option>
+                  <option>top</option>
+                  <option>bottom</option>
+                  <option>left</option>
+                  <option>right</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <label for="bgRepeat">repeat</label>
+              <select id="bgRepeat">
+                <option>no-repeat</option>
+                <option>repeat</option>
+                <option>repeat-x</option>
+                <option>repeat-y</option>
+              </select>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>반응형 / 단위</legend>
+            <div class="row">
+              <label for="responsive">폭 단위</label>
+              <select id="responsive">
+                <option value="px">px 고정</option>
+                <option value="%">부모의 %</option>
+                <option value="vw">화면 vw</option>
+              </select>
+            </div>
+            <div class="help">
+              px은 고정, %는 부모 기준, vw는 화면 너비 기준(100vw = 화면 가로 꽉
+              채움)
+            </div>
+          </fieldset>
+
+          <button id="resetBtn" type="button">초기값으로 리셋</button>
+        </form>
+      </aside>
+    </main>
+
+    <script>
+      const el = {
+        box: document.getElementById("box"),
+        inner: document.getElementById("boxInner"),
+        w: document.getElementById("w"),
+        h: document.getElementById("h"),
+        padding: document.getElementById("padding"),
+        margin: document.getElementById("margin"),
+        border: document.getElementById("border"),
+        radius: document.getElementById("radius"),
+        shadow: document.getElementById("shadow"),
+        display: document.getElementById("display"),
+        justify: document.getElementById("justify"),
+        align: document.getElementById("align"),
+        gap: document.getElementById("gap"),
+        position: document.getElementById("position"),
+        top: document.getElementById("top"),
+        left: document.getElementById("left"),
+        bgColor: document.getElementById("bgColor"),
+        bgImgOn: document.getElementById("bgImgOn"),
+        bgUrl: document.getElementById("bgUrl"),
+        bgSize: document.getElementById("bgSize"),
+        bgPos: document.getElementById("bgPos"),
+        bgRepeat: document.getElementById("bgRepeat"),
+        responsive: document.getElementById("responsive"),
+        resetBtn: document.getElementById("resetBtn"),
+      };
+
+      function apply() {
+        // Size / Spacing / Border
+        const unit = el.responsive.value;
+        const widthVal =
+          unit === "px" ? el.w.value + "px" : unit === "%" ? "50%" : "60vw";
+        el.box.style.width = widthVal;
+        el.box.style.height = el.h.value + "px";
+        el.box.style.padding = el.padding.value + "px";
+        el.box.style.margin = el.margin.value + "px";
+        el.box.style.borderWidth = el.border.value + "px";
+        el.box.style.borderStyle = el.border.value === "0" ? "none" : "solid";
+        el.box.style.borderColor = "#60a5fa";
+        el.box.style.borderRadius = el.radius.value + "px";
+        el.box.style.boxShadow = el.shadow.value;
+
+        // Display / Flex
+        el.box.style.display = el.display.value;
+        const isFlex = el.display.value === "flex";
+        el.justify.disabled = el.align.disabled = el.gap.disabled = !isFlex;
+        el.box.style.justifyContent = isFlex ? el.justify.value : "";
+        el.box.style.alignItems = isFlex ? el.align.value : "";
+        el.box.style.gap = isFlex ? el.gap.value + "px" : "";
+
+        // Position
+        const pos = el.position.value;
+        el.box.style.position = pos;
+        const needsOffset =
+          pos === "absolute" || pos === "fixed" || pos === "relative";
+        el.top.disabled = el.left.disabled = !needsOffset;
+        el.box.style.top = needsOffset ? el.top.value + "px" : "";
+        el.box.style.left = needsOffset ? el.left.value + "px" : "";
+        if (pos === "sticky") {
+          el.box.style.top = "8px";
+        }
+
+        // Background
+        el.box.style.backgroundColor = el.bgColor.value;
+        if (el.bgImgOn.value === "on") {
+          el.box.style.backgroundImage = `url('${el.bgUrl.value}')`;
+          el.box.style.backgroundSize = el.bgSize.value;
+          el.box.style.backgroundPosition = el.bgPos.value;
+          el.box.style.backgroundRepeat = el.bgRepeat.value;
+        } else {
+          el.box.style.backgroundImage = "none";
+        }
+      }
+
+      // Bind events
+      Object.values(el).forEach((e) => {
+        if (!e || !("addEventListener" in e)) return;
+        e.addEventListener("input", apply);
+        e.addEventListener("change", apply);
+      });
+
+      // Reset
+      el.resetBtn.addEventListener("click", () => {
+        document.getElementById("controls").reset();
+        // set defaults
+        el.w.value = 260;
+        el.h.value = 140;
+        el.padding.value = 12;
+        el.margin.value = 8;
+        el.border.value = 1;
+        el.radius.value = 8;
+        el.shadow.value = "none";
+        el.display.value = "block";
+        el.justify.value = "flex-start";
+        el.align.value = "center";
+        el.gap.value = 0;
+        el.position.value = "static";
+        el.top.value = 0;
+        el.left.value = 0;
+        el.bgColor.value = "#bfdbfe";
+        el.bgImgOn.value = "off";
+        el.bgUrl.value =
+          "https://images.unsplash.com/photo-1520975922284-7c0e2bfc7b44?w=800";
+        el.bgSize.value = "cover";
+        el.bgPos.value = "center";
+        el.bgRepeat.value = "no-repeat";
+        el.responsive.value = "px";
+        apply();
+      });
+
+      // Initial apply
+      apply();
+    </script>
+  </body>
+</html></textarea>
+</div>
+
+</main>
+</div>
+
+<script>
+(function () {
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // ---- 간단한 문법 강조 ----
+  function hlHtml(src) {
+    let out = "", i = 0;
+    const re = /<!-{2}[\s\S]*?-{2}>|<\/?[a-zA-Z][^>]*>|<!DOCTYPE[^>]*>/g;
+    let m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const tok = m[0];
+      if (tok.startsWith("<!-")) out += `<span class="c">${esc(tok)}</span>`;
+      else out += hlTag(tok);
+      i = m.index + tok.length;
+      // <style>, <script> 내부는 별도 처리
+      const low = tok.toLowerCase();
+      if (/^<(style|script)\b/.test(low)) {
+        const close = low.startsWith("<style") ? "</style>" : "<\/script>";
+        const end = src.toLowerCase().indexOf(close, i);
+        if (end !== -1) {
+          out += hlCode(src.slice(i, end));
+          i = end; re.lastIndex = end;
+        }
+      }
+    }
+    out += esc(src.slice(i));
+    return out;
+  }
+  function hlTag(tok) {
+    // <name attr="v" attr2 /> 를 한 번에 토큰화
+    const m = /^(<\/?)([A-Za-z!][\w-]*)([\s\S]*?)(\/?>)$/.exec(tok);
+    if (!m) return esc(tok);
+    const attrs = m[3].replace(/([\w:-]+)(\s*=\s*)("[^"]*"|'[^']*'|[^\s>]+)|([\w:-]+)/g, (a, n, eq, v, bare) =>
+      bare ? `<span class="a">${esc(bare)}</span>` : `<span class="a">${esc(n)}</span>${eq}<span class="s">${esc(v)}</span>`);
+    return `${esc(m[1])}<span class="t">${esc(m[2])}</span>${attrs}${esc(m[4])}`;
+  }
+  function hlCode(src) {
+    // JS / CSS / JSX 공용: 주석, 문자열, 키워드
+    const re = /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b(const|let|var|function|return|if|else|import|export|from|default|new|typeof|true|false|null|undefined)\b/g;
+    let out = "", i = 0, m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const t = m[0];
+      if (t.startsWith("//") || t.startsWith("/*")) out += `<span class="c">${esc(t)}</span>`;
+      else if (/^["'`]/.test(t)) out += `<span class="s">${esc(t)}</span>`;
+      else out += `<span class="k">${esc(t)}</span>`;
+      i = m.index + t.length;
+    }
+    return out + esc(src.slice(i));
+  }
+  function hlJsx(src) {
+    // JSX: 태그는 hlTag, 나머지는 hlCode
+    let out = "", i = 0, m;
+    const re = /<\/?[A-Za-z][^>]*>/g;
+    while ((m = re.exec(src))) {
+      out += hlCode(src.slice(i, m.index));
+      out += hlTag(m[0]);
+      i = m.index + m[0].length;
+    }
+    return out + hlCode(src.slice(i));
+  }
+
+  // ---- React 데모용 실행 문서 (JSX를 createElement로 옮긴 동일 동작 버전) ----
+  const reactRunner = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+<style>body{font-family:system-ui,sans-serif;margin:16px}</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"><\/script>
+</head><body><div id="root"></div>
+<script>
+if (!window.React) {
+  document.getElementById("root").innerHTML = '<p style="color:#6b7280">React 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인하세요.</p>';
+} else {
+  const { useState, createElement: h } = React;
+  function App() {
+    const [count, setCount] = useState(0);
+    return h("div", null,
+      h("h1", null, "카운트: " + count),
+      h("button", { onClick: () => setCount(count + 1) }, "+1")
+    );
+  }
+  ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+}
+<\/script></body></html>`;
+
+  // ---- 각 데모 조립 ----
+  document.querySelectorAll(".demo").forEach((demo) => {
+    const src = demo.querySelector("textarea.src").value;
+    const name = demo.dataset.name || "";
+    const lang = demo.dataset.lang || "html";
+    const runDoc = demo.dataset.run === "react" ? reactRunner : src;
+
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.innerHTML = `<span class="name">${esc(name)}</span>
+      <button data-act="copy">복사</button>
+      <button data-act="reload">다시 실행</button>
+      <button data-act="open">새 창에서 열기</button>`;
+
+    const panes = document.createElement("div");
+    panes.className = "panes";
+    const code = document.createElement("div");
+    code.className = "code";
+    code.innerHTML = `<pre>${lang === "jsx" ? hlJsx(src) : hlHtml(src)}</pre>`;
+    const result = document.createElement("div");
+    result.className = "result";
+    const label = document.createElement("div");
+    label.className = "label";
+    label.textContent = demo.dataset.run === "react" ? "실행 결과 (React 18, CDN)" : "실행 결과";
+    const iframe = document.createElement("iframe");
+    iframe.setAttribute("sandbox", "allow-scripts allow-forms allow-popups allow-same-origin");
+    iframe.srcdoc = runDoc;
+    result.append(label, iframe);
+    if (demo.classList.contains("stack")) {
+      // 긴 예제: 실행 결과를 먼저 크게 보여주고 코드는 접어 둔다
+      const det = document.createElement("details");
+      det.innerHTML = "<summary>코드 보기 / 접기</summary>";
+      det.append(code);
+      panes.append(result, det);
+    } else {
+      panes.append(code, result);
+    }
+    demo.append(bar, panes);
+
+    bar.addEventListener("click", (e) => {
+      const act = e.target.dataset.act;
+      if (act === "copy") {
+        navigator.clipboard.writeText(src).then(() => {
+          e.target.textContent = "복사됨 ✓";
+          setTimeout(() => (e.target.textContent = "복사"), 1200);
+        });
+      } else if (act === "reload") {
+        iframe.srcdoc = runDoc;
+      } else if (act === "open") {
+        const url = URL.createObjectURL(new Blob([runDoc], { type: "text/html" }));
+        window.open(url, "_blank");
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
