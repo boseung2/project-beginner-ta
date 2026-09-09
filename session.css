@@ -1,0 +1,11 @@
+:root { --session-line: #dddddd; }
+.session-brand { display: block; margin: 0 0 12px; color: #666666; font-size: 13px; line-height: 1.6; text-decoration: none; }
+.session-nav { margin: 0 0 20px; }
+.session-nav a { display: block; padding: 3px 6px; color: #222222; font-size: 13px; line-height: 1.6; text-decoration: none; }
+.session-nav a:hover { background: #f6f6f6; }
+.session-nav a[aria-current="page"] { font-weight: 700; }
+.session-footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--session-line); font-size: 14px; }
+.session-footer a { color: #222222; text-decoration: none; }
+.session-footer a:hover { text-decoration: underline; }
+a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid #333333; outline-offset: 3px; }
+@media print { .session-brand, .session-nav, .session-footer { display: none; } }

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="초급프로젝트 TA SESSION — 클라이언트와 서버, HTML·CSS·JS, React·Vue, API와 웹서비스 구조를 익숙한 화면으로 살펴봅니다.">
+<title>0. 웹 개발 흐름 — 초급프로젝트 TA SESSION</title>
+<link rel="stylesheet" href="session.css">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #222222; --muted: #666666; --line: #dddddd;
+    --code-bg: #f6f6f6; --accent: #222222; --pane: #fafafa;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  a { color: var(--accent); }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  nav.toc {
+    position: sticky; top: 0; height: 100vh; overflow: auto;
+    border-right: 1px solid var(--line); padding: 20px 16px; font-size: 13px;
+  }
+  nav.toc h1 { font-size: 22px; margin: 0 0 12px; }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 2px 0; }
+  nav.toc a { color: var(--fg); text-decoration: none; display: block; padding: 3px 6px; border-radius: 4px; }
+  nav.toc a:hover { background: var(--code-bg); }
+  main { min-width: 0; padding: 32px 48px 120px; max-width: 1400px; }
+  h1.title { font-size: 40px; margin: 0 0 8px; }
+  .subtitle { color: var(--muted); margin: 0 0 40px; }
+  h2 { font-size: 24px; margin: 56px 0 16px; padding-top: 8px; }
+  .diagram { margin: 12px 0 8px; max-width: 720px; }
+  .diagram svg { display: block; width: 100%; height: auto; }
+  .diagram text { font-family: inherit; }
+  .diagram .node { fill: #fafafa; stroke: #cccccc; stroke-width: 1.5; }
+  .diagram .label { fill: #222222; font-size: 23px; font-weight: 600; }
+  .diagram .sub { fill: #666666; font-size: 16px; }
+  .diagram .arrow-label { fill: #666666; font-size: 18px; }
+  .diagram .arrow { fill: none; stroke: #666666; stroke-width: 2.5; }
+  .diagram .phase { fill: #666666; font-size: 16px; font-weight: 600; }
+  .chatbot-diagram { max-width: 1000px; overflow-x: auto; }
+  .diagram.chatbot-diagram svg { min-width: 780px; }
+  .chatbot-diagram .arrow-label { font-size: 16px; }
+  .chatbot-diagram .technology { fill: #222222; font-size: 16px; }
+  figure { margin: 16px 0 28px; }
+  .example > a { display: block; }
+  .example img { display: block; width: 100%; height: auto; max-height: 580px; object-fit: contain; object-position: left; }
+  .example figcaption { margin: 8px 0 0; font-size: 14px; color: var(--muted); }
+
+  .question { margin: 24px 0; font-size: 16px; font-weight: 600; }
+  .code-demo { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 16px 0 28px; background: var(--bg); }
+  .demo-title { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 8px 12px; background: var(--pane); border-bottom: 1px solid var(--line); font-size: 13px; }
+  .demo-grid { display: grid; grid-template-columns: 1fr 1fr; }
+  .demo-grid > div { min-width: 0; }
+  .demo-grid > div + div { border-left: 1px solid var(--line); }
+  .pane-label { margin: 0; padding: 6px 12px; border-bottom: 1px dashed var(--line); font-size: 12px; color: var(--muted); }
+  pre { margin: 0; padding: 14px 16px; overflow-x: auto; background: var(--code-bg); font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
+  .code-demo pre { height: 280px; }
+  iframe { display: block; width: 100%; height: 280px; border: 0; background: #fff; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .definition { margin: 16px 0; }
+  .table-wrap { overflow-x: auto; }
+  table { border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  th, td { text-align: left; border: 1px solid var(--line); padding: 5px 12px; vertical-align: top; }
+  th { background: var(--code-bg); font-weight: 600; }
+  .roles td:first-child { white-space: nowrap; background: var(--code-bg); }
+  .architecture-scroll { max-width: 1000px; overflow-x: auto; margin: 16px 0; }
+  .architecture { display: grid; grid-template-columns: minmax(0, 1fr) 110px minmax(0, 1fr) 110px minmax(0, 1fr); gap: 12px; min-width: 780px; }
+  .architecture-column { min-width: 0; }
+  .architecture-node { height: 136px; border: 1px solid #cccccc; border-radius: 8px; background: #fafafa; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; }
+  .architecture-node strong { font-size: 20px; font-weight: 600; }
+  .architecture-node span { color: var(--muted); font-size: 14px; }
+  .architecture-column h3 { font-size: 16px; margin: 20px 0 10px; }
+  .technology-list { list-style: none; padding: 0; margin: 0; font-size: 14px; line-height: 1.9; }
+  .technology-gap { margin-top: 12px; }
+  .architecture-arrows { width: 110px; height: 136px; }
+  .architecture-arrows text { fill: #666666; font: 14px system-ui, sans-serif; }
+  .architecture-arrows > path { fill: none; stroke: #666666; stroke-width: 2; }
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    main { padding: 24px 20px 80px; }
+    .demo-grid { grid-template-columns: 1fr; }
+    .demo-grid > div + div { border-left: 0; border-top: 1px solid var(--line); }
+  }
+  @media (max-width: 620px) {
+    .diagram { overflow-x: auto; }
+    .diagram svg { min-width: 540px; }
+    .demo-title { align-items: flex-start; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  @media print {
+    @page { margin: 16mm; }
+    .layout { display: block; }
+    nav.toc { display: none; }
+    main { max-width: none; padding: 0; }
+    h1.title { font-size: 28px; }
+    h2 { font-size: 22px; }
+    section { break-before: page; }
+    section:first-of-type { break-before: auto; }
+    .diagram, .example, .question, tr { break-inside: avoid; }
+    .example img { max-height: 95mm; }
+    a { color: inherit; }
+    .example figcaption a::after { content: " · " attr(href); font-size: 10px; word-break: break-all; }
+    .diagram svg { min-width: 0 !important; }
+    .architecture-scroll { overflow: visible; }
+    .architecture { min-width: 0; grid-template-columns: minmax(0, 1fr) 70px minmax(0, 1fr) 70px minmax(0, 1fr); gap: 8px; }
+    .architecture-arrows { width: 70px; }
+    .technology-list { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="자료 목차">
+  <a class="session-brand" href="index.html">초급프로젝트<br>TA SESSION</a>
+  <div class="session-nav">
+    <a href="0-web-flow.html" aria-current="page">0. 웹 개발 흐름</a>
+    <a href="1-HTML.html">1. HTML</a>
+  </div>
+  <h1>0. 웹 개발 흐름</h1>
+  <ol>
+    <li><a href="#s0">0. 실습 환경 설정</a></li>
+    <li><a href="#s1">1. 클라이언트와 서버</a></li>
+    <li><a href="#s2">2. URL과 HTML</a></li>
+    <li><a href="#s3">3. HTML · CSS · JS</a></li>
+    <li><a href="#s4">4. 필요한 데이터만 주고받기</a></li>
+    <li><a href="#s5">5. React · Vue의 역할</a></li>
+    <li><a href="#s6">6. 기본적인 웹서비스 전체 구조</a></li>
+    <li><a href="#advanced">Advanced) 챗봇 서비스를 만드려면?</a></li>
+  </ol>
+</nav>
+<main>
+  <header>
+    <h1 class="title">0. 웹 개발 흐름</h1>
+    <p class="subtitle">초급프로젝트 TA SESSION · 2026학년도 2학기</p>
+  </header>
+
+  <section id="s0" aria-labelledby="h-s0">
+    <h2 id="h-s0">0. 실습 환경 설정</h2>
+    <p>수업 시작 전, 아래 순서대로 실습 환경을 준비해 주세요.</p>
+    <ol>
+      <li><b>VS Code 설치:</b> <a href="https://code.visualstudio.com/download?_exp_download=d53503e735" target="_blank" rel="noopener noreferrer">다운로드</a>에서 운영체제에 맞는 버전을 설치합니다.</li>
+      <li><b>Live Server 설치:</b> VS Code의 확장 메뉴에서 <code>Live Server</code>(Ritwick Dey)를 검색해 설치합니다. <a href="https://gaagaagaa.tistory.com/entry/VSCode-Live-Server-%ED%94%8C%EB%9F%AC%EA%B7%B8%EC%9D%B8" target="_blank" rel="noopener noreferrer">설치·실행 안내</a></li>
+      <li><b>폴더와 파일 만들기:</b> VS Code 상단 메뉴에서 <b>파일 → 폴더 열기</b>를 누릅니다.<br>
+        열린 창에서 원하는 위치(예: <b>바탕화면</b>)로 이동해 <b>새 폴더</b>(예: <code>html-practice</code>)를 만듭니다. 만든 폴더를 선택하고 <b>폴더 선택</b> 또는 <b>열기</b>를 누릅니다.<br>
+        VS Code 왼쪽 탐색기에 폴더가 나타나면 <b>새 파일</b> 버튼을 눌러 <code>test.html</code>을 입력하고 Enter를 누릅니다.</li>
+      <li><b>HTML 기본 구조 만들기:</b> <code>test.html</code>에서 <code>!</code> 입력 → Emmet 자동완성 항목 선택 후 Enter. <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, <code>&lt;body&gt;</code>가 자동 생성됩니다.</li>
+      <li><b>실행 확인:</b> <code>&lt;body&gt;</code> 안에 <code>안녕하세요</code> 입력 → 저장(Windows: <code>Ctrl+S</code> / Mac: <code>Cmd+S</code>) → <code>test.html</code> 우클릭 → <b>Open with Live Server</b>.</li>
+    </ol>
+    <p><b>설정 완료:</b> 브라우저에 ‘안녕하세요’가 보이고, 문구를 바꿔 저장하면 자동으로 새로고침됩니다.</p>
+  </section>
+
+  <section id="s1" aria-labelledby="h-s1">
+    <h2 id="h-s1">1. 클라이언트와 서버</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 900 205" role="img" aria-labelledby="diagram1-title">
+        <title id="diagram1-title">브라우저 클라이언트와 서버 사이에 요청과 응답이 오갑니다.</title>
+        <defs><marker id="arr1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#666666"/></marker></defs>
+        <rect class="node" x="30" y="25" width="270" height="150" rx="8"/>
+        <rect class="node" x="600" y="25" width="270" height="150" rx="8"/>
+        <text class="label" x="165" y="108" text-anchor="middle">Client</text>
+        <text class="label" x="735" y="108" text-anchor="middle">Server</text>
+        <path class="arrow" d="M325 77H575" marker-end="url(#arr1)"/>
+        <path class="arrow" d="M575 128H325" marker-end="url(#arr1)"/>
+      </svg>
+    </div>
+    <figure class="example">
+      <a href="assets/jbnu-notice.jpg" target="_blank" rel="noopener noreferrer" aria-label="전북대 공지사항 캡처 크게 보기"><img src="assets/jbnu-notice.jpg" width="1265" height="712" alt="전북대학교 교내공지 페이지의 공지 목록" fetchpriority="high"></a>
+      <figcaption><a href="https://www.jbnu.ac.kr/web/news/notice/sub01.do" target="_blank" rel="noopener noreferrer">전북대학교 공지사항 ↗</a></figcaption>
+    </figure>
+    <p class="question">질문) 클라이언트와 서버는 무엇을 주고받을까?</p>
+  </section>
+
+  <section id="s2" aria-labelledby="h-s2">
+    <h2 id="h-s2">2. URL로 요청하고, HTML을 받는다</h2>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" role="img" aria-labelledby="diagram2-title">
+        <title id="diagram2-title">브라우저는 URL로 지정한 페이지를 요청하고 서버는 HTML 문서를 응답합니다.</title>
+        <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#666666"/></marker></defs>
+        <rect class="node" x="30" y="25" width="270" height="150" rx="8"/>
+        <rect class="node" x="600" y="25" width="270" height="150" rx="8"/>
+        <text class="label" x="165" y="108" text-anchor="middle">Client</text>
+        <text class="label" x="735" y="108" text-anchor="middle">Server</text>
+        <text class="arrow-label" x="450" y="54" text-anchor="middle">요청 · URL</text>
+        <path class="arrow" d="M325 77H575" marker-end="url(#arr2)"/>
+        <path class="arrow" d="M575 128H325" marker-end="url(#arr2)"/>
+        <text class="arrow-label" x="450" y="158" text-anchor="middle">응답 · HTML</text>
+      </svg>
+    </div>
+    <p>개발자 도구: Network → Response</p>
+    <p class="definition"><strong>HTML</strong> (HyperText Markup Language): 내용과 구조를 표시한 텍스트 문서</p>
+    <div class="code-demo">
+      <div class="demo-title"><strong>HTML 예시</strong><a href="examples/notice.html" target="_blank" rel="noopener noreferrer">새 창에서 보기 ↗</a></div>
+      <div class="demo-grid">
+        <div><p class="pane-label">HTML</p><pre><code>&lt;h1&gt;교내공지&lt;/h1&gt;
+&lt;p&gt;학생 여러분에게 안내드립니다.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;수강신청 안내&lt;/li&gt;
+  &lt;li&gt;장학금 신청 안내&lt;/li&gt;
+&lt;/ul&gt;
+&lt;a href="https://www.jbnu.ac.kr/web/news/notice/sub01.do"&gt;
+  전북대학교 공지사항 보기
+&lt;/a&gt;</code></pre></div>
+        <div><p class="pane-label">미리보기</p><iframe src="examples/notice.html" title="HTML만으로 표시한 공지사항 예시" sandbox="allow-popups allow-popups-to-escape-sandbox" loading="lazy"></iframe></div>
+      </div>
+    </div>
+    <p class="question">질문) 내용만 보여주면 될까?</p>
+  </section>
+
+  <section id="s3" aria-labelledby="h-s3">
+    <h2 id="h-s3">3. HTML · CSS · JavaScript</h2>
+    <figure class="example">
+      <a href="assets/wikipedia-example.png" target="_blank" rel="noopener noreferrer" aria-label="위키백과 예시 이미지 크게 보기"><img src="assets/wikipedia-example.png" width="1513" height="1261" alt="제목, 문단, 사진, 링크, 검색창과 외관 설정이 있는 한국어 위키백과 대문" loading="lazy"></a>
+      <figcaption><a href="https://ko.wikipedia.org/wiki/%EC%9C%84%ED%82%A4%EB%B0%B1%EA%B3%BC:%EB%8C%80%EB%AC%B8" target="_blank" rel="noopener noreferrer">한국어 위키백과 ↗</a></figcaption>
+    </figure>
+    <div class="table-wrap"><table class="roles">
+      <tbody>
+        <tr><td>HTML</td><td>내용 · 구조</td></tr>
+        <tr><td>CSS</td><td>표현 · 배치</td></tr>
+        <tr><td>JavaScript</td><td>입력 · 데이터 처리 · 화면 갱신</td></tr>
+      </tbody>
+    </table></div>
+    <p class="question">질문) 필요한 데이터만 주고받는다면?</p>
+  </section>
+
+  <section id="s4" aria-labelledby="h-s4">
+    <h2 id="h-s4">4. 필요한 데이터만 주고받기</h2>
+    <p>최초 접속: HTML · CSS · JS</p>
+    <div class="diagram">
+      <svg viewBox="0 0 900 200" role="img" aria-labelledby="diagram4-title">
+        <title id="diagram4-title">브라우저가 필요한 데이터를 요청하고 응답을 받아 JavaScript로 화면을 갱신합니다.</title>
+        <defs><marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#666666"/></marker></defs>
+        <rect class="node" x="30" y="25" width="270" height="150" rx="8"/>
+        <rect class="node" x="600" y="25" width="270" height="150" rx="8"/>
+        <text class="label" x="165" y="108" text-anchor="middle">Client</text>
+        <text class="label" x="735" y="108" text-anchor="middle">Server</text>
+        <text class="arrow-label" x="450" y="54" text-anchor="middle">API 요청 · URL</text>
+        <path class="arrow" d="M325 77H575" marker-end="url(#arr4)"/>
+        <path class="arrow" d="M575 128H325" marker-end="url(#arr4)"/>
+        <text class="arrow-label" x="450" y="158" text-anchor="middle">응답 · 데이터</text>
+      </svg>
+    </div>
+    <p>받은 데이터 → JS로 화면 갱신</p>
+    <pre><code>{
+  "id": 123,
+  "likes": 42
+}</code></pre>
+  </section>
+
+  <section id="s5" aria-labelledby="h-s5">
+    <h2 id="h-s5">5. React · Vue</h2>
+    <figure class="example">
+      <a href="assets/instagram-example.png" target="_blank" rel="noopener noreferrer" aria-label="인스타그램 예시 이미지 크게 보기"><img src="assets/instagram-example.png" width="890" height="775" alt="프로필과 스토리, 게시물, 좋아요, 댓글, 메시지 기능이 보이는 인스타그램 화면 예시" loading="lazy"></a>
+      <figcaption>Instagram</figcaption>
+    </figure>
+    <p><strong>React · Vue</strong>: 컴포넌트 재사용 · 데이터에 따른 화면 갱신</p>
+    <p class="question">질문) 좋아요 하나 누를 때마다 페이지 전체를 다시 받아야 할까?</p>
+  </section>
+
+  <section id="s6" aria-labelledby="h-s6">
+    <h2 id="h-s6">6. 기본적인 웹서비스 전체 구조</h2>
+    <div class="architecture-scroll">
+      <div class="architecture" role="group" aria-label="클라이언트, 서버, 데이터베이스의 관계와 각 영역의 기술 예시">
+        <div class="architecture-column">
+          <div class="architecture-node"><strong>Client</strong><span>브라우저</span></div>
+          <h3>Frontend</h3>
+          <ul class="technology-list">
+            <li>HTML</li>
+            <li>CSS</li>
+            <li>JavaScript</li>
+            <li class="technology-gap">React</li>
+            <li>Vue</li>
+            <li>Angular</li>
+          </ul>
+        </div>
+        <svg class="architecture-arrows" viewBox="0 0 110 136" role="img" aria-labelledby="client-server-title">
+          <title id="client-server-title">클라이언트가 서버에 요청을 보내고 서버가 응답합니다.</title>
+          <defs><marker id="arch-cs-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#666666"/></marker></defs>
+          <text x="55" y="33" text-anchor="middle">요청</text>
+          <path d="M5 49H105" marker-end="url(#arch-cs-arrow)"/>
+          <path d="M105 87H5" marker-end="url(#arch-cs-arrow)"/>
+          <text x="55" y="114" text-anchor="middle">응답</text>
+        </svg>
+        <div class="architecture-column">
+          <div class="architecture-node"><strong>Server</strong><span>요청 처리</span></div>
+          <h3>Backend</h3>
+          <ul class="technology-list">
+            <li>Spring (Java)</li>
+            <li>Django (Python)</li>
+            <li>FastAPI (Python)</li>
+            <li>NestJS (Node.js)</li>
+            <li>Express (Node.js)</li>
+          </ul>
+        </div>
+        <svg class="architecture-arrows" viewBox="0 0 110 136" role="img" aria-labelledby="server-db-title">
+          <title id="server-db-title">서버가 데이터베이스에 조회와 저장을 요청하고 결과를 받습니다.</title>
+          <defs><marker id="arch-db-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#666666"/></marker></defs>
+          <text x="55" y="33" text-anchor="middle">조회 · 저장</text>
+          <path d="M5 49H105" marker-end="url(#arch-db-arrow)"/>
+          <path d="M105 87H5" marker-end="url(#arch-db-arrow)"/>
+          <text x="55" y="114" text-anchor="middle">결과</text>
+        </svg>
+        <div class="architecture-column">
+          <div class="architecture-node"><strong>DB</strong><span>데이터 저장</span></div>
+          <h3>Database</h3>
+          <ul class="technology-list">
+            <li>MySQL</li>
+            <li>Oracle Database</li>
+            <li>MongoDB</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="advanced" aria-labelledby="h-advanced">
+    <h2 id="h-advanced">Advanced) 챗봇 서비스를 만드려면?</h2>
+    <div class="diagram chatbot-diagram">
+      <svg viewBox="0 0 1000 530" role="img" aria-labelledby="chatbot-title chatbot-desc">
+        <title id="chatbot-title">Client, Backend, DB, 오케스트레이션, 모델을 연결한 챗봇 서비스 구조 예시</title>
+        <desc id="chatbot-desc">클라이언트가 질문을 보내면 백엔드는 DB에서 이전 대화를 조회하고, 질문과 이전 대화를 오케스트레이션에 전달합니다. 오케스트레이션은 프롬프트를 구성해 선택한 모델을 호출합니다. 백엔드는 생성 결과를 DB에 저장하고 클라이언트에 답변을 반환합니다. 오케스트레이션은 역할을 구분한 박스로, 백엔드 내부에서 실행할 수도 있습니다.</desc>
+        <defs><marker id="chatbot-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10Z" fill="#666666"/></marker></defs>
+
+        <rect class="node" x="30" y="20" width="220" height="120" rx="8"/>
+        <text class="label" x="140" y="76" text-anchor="middle">Client</text>
+        <text class="sub" x="140" y="106" text-anchor="middle">채팅 화면</text>
+
+        <rect class="node" x="390" y="20" width="220" height="120" rx="8"/>
+        <text class="label" x="500" y="76" text-anchor="middle">Backend</text>
+        <text class="sub" x="500" y="106" text-anchor="middle">요청 처리</text>
+
+        <rect class="node" x="750" y="20" width="220" height="120" rx="8"/>
+        <text class="label" x="860" y="76" text-anchor="middle">DB</text>
+        <text class="sub" x="860" y="106" text-anchor="middle">사용자 · 대화 기록</text>
+
+        <text class="arrow-label" x="320" y="44" text-anchor="middle">질문</text>
+        <path class="arrow" d="M270 62H370" marker-end="url(#chatbot-arrow)"/>
+        <path class="arrow" d="M370 108H270" marker-end="url(#chatbot-arrow)"/>
+        <text class="arrow-label" x="320" y="132" text-anchor="middle">답변</text>
+
+        <text class="arrow-label" x="680" y="44" text-anchor="middle">조회 · 저장</text>
+        <path class="arrow" d="M630 62H730" marker-end="url(#chatbot-arrow)"/>
+        <path class="arrow" d="M730 108H630" marker-end="url(#chatbot-arrow)"/>
+        <text class="arrow-label" x="680" y="132" text-anchor="middle">기록 · 결과</text>
+
+        <path class="arrow" d="M467 160V280" marker-end="url(#chatbot-arrow)"/>
+        <text class="arrow-label" x="448" y="215" text-anchor="end">질문 ·</text>
+        <text class="arrow-label" x="448" y="239" text-anchor="end">이전 대화</text>
+        <path class="arrow" d="M533 280V160" marker-end="url(#chatbot-arrow)"/>
+        <text class="arrow-label" x="552" y="227">생성 결과</text>
+
+        <rect class="node" x="390" y="300" width="220" height="120" rx="8"/>
+        <text class="label" x="500" y="351" text-anchor="middle">오케스트레이션</text>
+        <text class="sub" x="500" y="381" text-anchor="middle">프롬프트 구성 · 모델 호출</text>
+        <text class="technology" x="390" y="453">LangChain</text>
+
+        <text class="arrow-label" x="680" y="323" text-anchor="middle">프롬프트</text>
+        <path class="arrow" d="M630 342H730" marker-end="url(#chatbot-arrow)"/>
+        <path class="arrow" d="M730 388H630" marker-end="url(#chatbot-arrow)"/>
+        <text class="arrow-label" x="680" y="413" text-anchor="middle">모델 답변</text>
+
+        <rect class="node" x="750" y="300" width="220" height="120" rx="8"/>
+        <text class="label" x="860" y="351" text-anchor="middle">모델 (선택)</text>
+        <text class="sub" x="860" y="381" text-anchor="middle">답변 생성</text>
+        <text class="technology" x="750" y="453">OpenAI API (GPT)</text>
+        <text class="technology" x="750" y="481">Claude API</text>
+        <text class="technology" x="750" y="509">Local LLM</text>
+      </svg>
+    </div>
+  </section>
+
+  <footer class="session-footer"><a href="index.html">← 전체 목차</a><a href="1-HTML.html">다음 · 1. HTML →</a></footer>
+</main>
+</div>
+</body>
+</html>
