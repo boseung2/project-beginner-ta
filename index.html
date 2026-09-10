@@ -11,13 +11,10 @@
   main { max-width: 720px; margin: 0 auto; padding: 56px 24px 80px; }
   h1 { font-size: 30px; margin: 0 0 6px; }
   p.sub { color: #6b7280; margin: 0 0 32px; }
-  .entry { display: grid; grid-template-columns: minmax(0, 1fr) 300px; align-items: center; gap: 32px; margin: 0 0 36px; }
+  .entry { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin: 0 0 36px; text-align: center; }
   .entry h2 { font-size: 18px; margin: 0 0 12px; }
   .entry a { color: inherit; }
-  .site-address { font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
-  .attendance-link { display: inline-block; margin-top: 28px; padding: 12px 18px; border: 1px solid #dddddd; border-radius: 8px; font-size: 16px; font-weight: 600; line-height: 1.5; text-decoration: none; }
-  .attendance-link:hover { background: #f6f6f4; }
-  .qr { margin: 0; }
+  .qr { width: min(100%, 300px); margin: 0 auto; }
   .qr > a { display: block; }
   .qr img { display: block; width: 100%; height: auto; }
   .qr figcaption { margin-top: 4px; font-size: 14px; text-align: center; }
@@ -32,8 +29,6 @@
   @media (max-width: 640px) {
     main { padding: 32px 20px 60px; }
     .entry { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-    .qr { width: min(100%, 300px); justify-self: center; }
-    .attendance-link { margin-top: 20px; }
   }
 </style>
 </head>
@@ -41,17 +36,21 @@
 <main>
   <h1>초급프로젝트 TA SESSION</h1>
   <p class="sub">2026학년도 2학기 · 웹서비스의 전체 흐름을 이해하고, HTML · CSS · JS의 기본기를 익힙니다.</p>
-  <section class="entry" aria-labelledby="entry-title">
+  <section class="entry" aria-label="자료 페이지와 출석 및 설문 접속">
     <div>
-      <h2 id="entry-title">자료 페이지 접속</h2>
-      <a class="site-address" href="https://boseung2.github.io/project-beginner-ta/index.html">boseung2.github.io/project-beginner-ta/</a>
-      <br>
-      <a class="attendance-link" href="https://forms.gle/ukku8SovZ96ajGXK8" target="_blank" rel="noopener noreferrer">9월 10일 출석 및 설문 ↗</a>
+      <h2>자료 페이지</h2>
+      <figure class="qr">
+        <a href="assets/site-qr.png" target="_blank" rel="noopener noreferrer" aria-label="자료 페이지 접속 QR 크게 보기"><img src="assets/site-qr.png" width="984" height="984" alt="초급프로젝트 TA SESSION 자료 페이지 접속 QR 코드"></a>
+        <figcaption><a href="https://boseung2.github.io/project-beginner-ta/index.html">자료 페이지 바로가기 ↗</a></figcaption>
+      </figure>
     </div>
-    <figure class="qr">
-      <a href="assets/site-qr.png" target="_blank" rel="noopener noreferrer" aria-label="자료 페이지 접속 QR 크게 보기"><img src="assets/site-qr.png" width="984" height="984" alt="초급프로젝트 TA SESSION 자료 페이지 접속 QR 코드"></a>
-      <figcaption><a href="assets/site-qr.png" target="_blank" rel="noopener noreferrer">QR 크게 보기</a></figcaption>
-    </figure>
+    <div>
+      <h2>출석 및 설문</h2>
+      <figure class="qr">
+        <a href="assets/attendance-2026-09-10-qr.png" target="_blank" rel="noopener noreferrer" aria-label="9월 10일 출석 및 설문 QR 크게 보기"><img src="assets/attendance-2026-09-10-qr.png" width="888" height="888" alt="9월 10일 TA SESSION 출석 및 설문 구글폼 접속 QR 코드"></a>
+        <figcaption><a href="https://forms.gle/ukku8SovZ96ajGXK8" target="_blank" rel="noopener noreferrer">9월 10일 출석 및 설문 ↗</a></figcaption>
+      </figure>
+    </div>
   </section>
   <ol>
     <li><a href="0-web-flow.html"><b>0. 웹 개발 흐름</b><span>실습 환경 설정, 클라이언트와 서버, HTML · CSS · JS, React · Vue, API와 웹서비스 구조</span></a></li>
