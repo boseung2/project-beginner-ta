@@ -339,13 +339,19 @@
 
   <section id="s4" aria-labelledby="h-s4">
     <h2 id="h-s4">4. React · Vue</h2>
+    <p>위키백과처럼 문서를 읽는 화면 → 내용 전달이 중심</p>
     <figure class="example">
       <a href="assets/facebook-example.png" target="_blank" rel="noopener noreferrer" aria-label="페이스북 예시 이미지 크게 보기"><img src="assets/facebook-example.png" width="670" height="550" alt="스마트폰 두 대에 피드와 과거 게시물이 보이는 페이스북 화면 예시" loading="lazy"></a>
       <figcaption>Facebook</figcaption>
     </figure>
-    <p>좋아요 · 댓글 · 메시지 → 계속 바뀌는 화면</p>
-    <p><strong>React · Vue</strong>: 컴포넌트 재사용 · 데이터에 따른 화면 갱신</p>
+    <p>Facebook 같은 서비스 → 좋아요 · 댓글 · 메시지 등 상호작용 증가 → JavaScript의 역할 확대</p>
     <p class="question">질문) 좋아요 하나 누를 때마다 페이지 전체를 다시 받아야 할까?</p>
+    <ul>
+      <li><strong>Ajax</strong>: 새로고침 없이 데이터를 주고받고, 화면 일부를 갱신하는 방식</li>
+      <li><strong>화면이 복잡해질수록</strong>: 반복되는 코드와 직접 수정할 화면 요소 증가 → 유지보수의 어려움</li>
+      <li><strong>React · Vue</strong>: 화면과 동작을 컴포넌트로 묶어 재사용하고, 상태에 따라 화면을 갱신</li>
+    </ul>
+    <p>예) 좋아요 수(상태)가 바뀌면 → 화면의 숫자도 갱신</p>
   </section>
 
   <section id="s5" aria-labelledby="h-s5">
