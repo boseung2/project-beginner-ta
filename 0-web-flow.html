@@ -59,9 +59,9 @@
   .demo-grid > div + div { border-left: 1px solid var(--line); }
   .pane-label { margin: 0; padding: 6px 12px; border-bottom: 1px dashed var(--line); font-size: 12px; color: var(--muted); }
   pre { margin: 0; padding: 14px 16px; overflow-x: auto; background: var(--code-bg); font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
-  .code-demo pre { height: 280px; }
-  iframe { display: block; width: 100%; height: 280px; border: 0; background: #fff; }
-  .notice-demo pre, .notice-demo iframe { height: 320px; }
+  .code-demo pre { height: 460px; }
+  iframe { display: block; width: 100%; height: 460px; border: 0; background: #fff; }
+  .notice-demo pre, .notice-demo iframe { height: 560px; }
   code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
   .definition { margin: 16px 0; }
   .table-wrap { overflow-x: auto; }
@@ -201,15 +201,26 @@
     <div class="code-demo">
       <div class="demo-title"><strong>HTML 예시</strong><a href="examples/notice.html" target="_blank" rel="noopener noreferrer">새 창에서 보기 ↗</a></div>
       <div class="demo-grid">
-        <div><p class="pane-label">HTML</p><pre><code>&lt;h1&gt;교내공지&lt;/h1&gt;
-&lt;p&gt;학생 여러분에게 안내드립니다.&lt;/p&gt;
-&lt;ul&gt;
-  &lt;li&gt;수강신청 안내&lt;/li&gt;
-  &lt;li&gt;장학금 신청 안내&lt;/li&gt;
-&lt;/ul&gt;
-&lt;a href="https://www.jbnu.ac.kr/web/news/notice/sub01.do"&gt;
-  전북대학교 공지사항 보기
-&lt;/a&gt;</code></pre></div>
+        <div><p class="pane-label">HTML 전체 문서</p><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;교내공지 — HTML 예시&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;교내공지&lt;/h1&gt;
+  &lt;p&gt;학생 여러분에게 안내드립니다.&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;수강신청 안내&lt;/li&gt;
+    &lt;li&gt;장학금 신청 안내&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;a href="https://www.jbnu.ac.kr/web/news/notice/sub01.do"
+     target="_blank" rel="noopener noreferrer"&gt;
+    전북대학교 공지사항 보기
+  &lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
         <div><p class="pane-label">미리보기</p><iframe src="examples/notice.html" title="HTML만으로 표시한 공지사항 예시" sandbox="allow-popups allow-popups-to-escape-sandbox" loading="lazy"></iframe></div>
       </div>
     </div>
@@ -232,37 +243,94 @@
     <div class="code-demo notice-demo">
       <div class="demo-title"><strong>CSS 추가</strong><a href="examples/notice-styled.html" target="_blank" rel="noopener noreferrer">새 창에서 보기 ↗</a></div>
       <div class="demo-grid">
-        <div><p class="pane-label">추가한 CSS</p><pre><code>body {
-  font-family: sans-serif;
-  margin: 16px;
-}
-h1 {
-  font-size: 24px;
-  border-bottom: 2px solid #333;
-}
-li {
-  margin: 8px 0;
-  padding: 8px;
-  background: #f2f2f2;
-}
-a { color: #333; }</code></pre></div>
+        <div><p class="pane-label">HTML + CSS 전체 문서</p><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;교내공지 — HTML + CSS 예시&lt;/title&gt;
+  &lt;style&gt;
+    body {
+      font-family: sans-serif;
+      margin: 16px;
+    }
+    h1 {
+      font-size: 24px;
+      border-bottom: 2px solid #333;
+    }
+    li {
+      margin: 8px 0;
+      padding: 8px;
+      background: #f2f2f2;
+    }
+    a { color: #333; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;교내공지&lt;/h1&gt;
+  &lt;p&gt;학생 여러분에게 안내드립니다.&lt;/p&gt;
+  &lt;ul&gt;
+    &lt;li&gt;수강신청 안내&lt;/li&gt;
+    &lt;li&gt;장학금 신청 안내&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;a href="https://www.jbnu.ac.kr/web/news/notice/sub01.do"
+     target="_blank" rel="noopener noreferrer"&gt;
+    전북대학교 공지사항 보기
+  &lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
         <div><p class="pane-label">HTML + CSS</p><iframe src="examples/notice-styled.html" title="CSS로 모양을 바꾼 교내공지 예시" sandbox="allow-popups allow-popups-to-escape-sandbox" loading="lazy"></iframe></div>
       </div>
     </div>
     <div class="code-demo notice-demo">
       <div class="demo-title"><strong>JavaScript 추가</strong><a href="examples/notice-interactive.html" target="_blank" rel="noopener noreferrer">새 창에서 보기 ↗</a></div>
       <div class="demo-grid">
-        <div><p class="pane-label">추가한 HTML · JavaScript</p><pre><code>&lt;button id="toggle" type="button"&gt;공지 접기&lt;/button&gt;
+        <div><p class="pane-label">HTML + CSS + JavaScript 전체 문서</p><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;교내공지 — HTML + CSS + JavaScript 예시&lt;/title&gt;
+  &lt;style&gt;
+    body {
+      font-family: sans-serif;
+      margin: 16px;
+    }
+    h1 {
+      font-size: 24px;
+      border-bottom: 2px solid #333;
+    }
+    li {
+      margin: 8px 0;
+      padding: 8px;
+      background: #f2f2f2;
+    }
+    a { color: #333; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;교내공지&lt;/h1&gt;
+  &lt;p&gt;학생 여러분에게 안내드립니다.&lt;/p&gt;
+  &lt;button id="toggle" type="button"&gt;공지 접기&lt;/button&gt;
+  &lt;ul&gt;
+    &lt;li&gt;수강신청 안내&lt;/li&gt;
+    &lt;li&gt;장학금 신청 안내&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;a href="https://www.jbnu.ac.kr/web/news/notice/sub01.do"
+     target="_blank" rel="noopener noreferrer"&gt;
+    전북대학교 공지사항 보기
+  &lt;/a&gt;
+  &lt;script&gt;
+    const button = document.querySelector("#toggle");
+    const list = document.querySelector("ul");
 
-&lt;script&gt;
-const button = document.querySelector("#toggle");
-const list = document.querySelector("ul");
-
-button.addEventListener("click", () =&gt; {
-  list.hidden = !list.hidden;
-  button.textContent = list.hidden ? "공지 펼치기" : "공지 접기";
-});
-&lt;/script&gt;</code></pre></div>
+    button.addEventListener("click", () =&gt; {
+      list.hidden = !list.hidden;
+      button.textContent = list.hidden ? "공지 펼치기" : "공지 접기";
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div>
         <div><p class="pane-label">HTML + CSS + JavaScript</p><iframe src="examples/notice-interactive.html" title="버튼을 눌러 공지 목록을 접고 펼치는 JavaScript 예시" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" loading="lazy"></iframe></div>
       </div>
     </div>

@@ -4,7 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>교내공지 — HTML + CSS 예시</title>
-  <link rel="stylesheet" href="notice.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 16px;
+    }
+    h1 {
+      font-size: 24px;
+      border-bottom: 2px solid #333;
+    }
+    li {
+      margin: 8px 0;
+      padding: 8px;
+      background: #f2f2f2;
+    }
+    a { color: #333; }
+  </style>
 </head>
 <body>
   <h1>교내공지</h1>
@@ -13,6 +28,9 @@
     <li>수강신청 안내</li>
     <li>장학금 신청 안내</li>
   </ul>
-  <a href="https://www.jbnu.ac.kr/web/news/notice/sub01.do" target="_blank" rel="noopener noreferrer">전북대학교 공지사항 보기</a>
+  <a href="https://www.jbnu.ac.kr/web/news/notice/sub01.do"
+     target="_blank" rel="noopener noreferrer">
+    전북대학교 공지사항 보기
+  </a>
 </body>
 </html>
