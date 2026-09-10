@@ -128,8 +128,8 @@
     <li><a href="#s1">1. 클라이언트와 서버</a></li>
     <li><a href="#s2">2. URL과 HTML</a></li>
     <li><a href="#s3">3. HTML · CSS · JS</a></li>
-    <li><a href="#s4">4. 필요한 데이터만 주고받기</a></li>
-    <li><a href="#s5">5. React · Vue의 역할</a></li>
+    <li><a href="#s4">4. React · Vue의 역할</a></li>
+    <li><a href="#s5">5. 필요한 데이터만 주고받기</a></li>
     <li><a href="#s6">6. 기본적인 웹서비스 전체 구조</a></li>
     <li><a href="#advanced">Advanced) 챗봇 서비스를 만드려면?</a></li>
   </ol>
@@ -228,23 +228,34 @@
         <tr><td>JavaScript</td><td>입력 · 데이터 처리 · 화면 갱신</td></tr>
       </tbody>
     </table></div>
-    <p class="question">질문) 필요한 데이터만 주고받는다면?</p>
+    <p class="question">질문) 이 정도면 웹 개발 준비 완료?</p>
   </section>
 
   <section id="s4" aria-labelledby="h-s4">
-    <h2 id="h-s4">4. 필요한 데이터만 주고받기</h2>
+    <h2 id="h-s4">4. React · Vue</h2>
+    <figure class="example">
+      <a href="assets/instagram-example.png" target="_blank" rel="noopener noreferrer" aria-label="인스타그램 예시 이미지 크게 보기"><img src="assets/instagram-example.png" width="890" height="775" alt="프로필과 스토리, 게시물, 좋아요, 댓글, 메시지 기능이 보이는 인스타그램 화면 예시" loading="lazy"></a>
+      <figcaption>Instagram</figcaption>
+    </figure>
+    <p>좋아요 · 댓글 · 메시지 → 계속 바뀌는 화면</p>
+    <p><strong>React · Vue</strong>: 컴포넌트 재사용 · 데이터에 따른 화면 갱신</p>
+    <p class="question">질문) 좋아요 하나 누를 때마다 페이지 전체를 다시 받아야 할까?</p>
+  </section>
+
+  <section id="s5" aria-labelledby="h-s5">
+    <h2 id="h-s5">5. 필요한 데이터만 주고받기</h2>
     <p>최초 접속: HTML · CSS · JS</p>
     <div class="diagram">
-      <svg viewBox="0 0 900 200" role="img" aria-labelledby="diagram4-title">
-        <title id="diagram4-title">브라우저가 필요한 데이터를 요청하고 응답을 받아 JavaScript로 화면을 갱신합니다.</title>
-        <defs><marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#666666"/></marker></defs>
+      <svg viewBox="0 0 900 200" role="img" aria-labelledby="diagram5-title">
+        <title id="diagram5-title">브라우저가 필요한 데이터를 요청하고 응답을 받아 JavaScript로 화면을 갱신합니다.</title>
+        <defs><marker id="arr5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#666666"/></marker></defs>
         <rect class="node" x="30" y="25" width="270" height="150" rx="8"/>
         <rect class="node" x="600" y="25" width="270" height="150" rx="8"/>
         <text class="label" x="165" y="108" text-anchor="middle">Client</text>
         <text class="label" x="735" y="108" text-anchor="middle">Server</text>
         <text class="arrow-label" x="450" y="54" text-anchor="middle">API 요청 · URL</text>
-        <path class="arrow" d="M325 77H575" marker-end="url(#arr4)"/>
-        <path class="arrow" d="M575 128H325" marker-end="url(#arr4)"/>
+        <path class="arrow" d="M325 77H575" marker-end="url(#arr5)"/>
+        <path class="arrow" d="M575 128H325" marker-end="url(#arr5)"/>
         <text class="arrow-label" x="450" y="158" text-anchor="middle">응답 · 데이터</text>
       </svg>
     </div>
@@ -253,16 +264,6 @@
   "id": 123,
   "likes": 42
 }</code></pre>
-  </section>
-
-  <section id="s5" aria-labelledby="h-s5">
-    <h2 id="h-s5">5. React · Vue</h2>
-    <figure class="example">
-      <a href="assets/instagram-example.png" target="_blank" rel="noopener noreferrer" aria-label="인스타그램 예시 이미지 크게 보기"><img src="assets/instagram-example.png" width="890" height="775" alt="프로필과 스토리, 게시물, 좋아요, 댓글, 메시지 기능이 보이는 인스타그램 화면 예시" loading="lazy"></a>
-      <figcaption>Instagram</figcaption>
-    </figure>
-    <p><strong>React · Vue</strong>: 컴포넌트 재사용 · 데이터에 따른 화면 갱신</p>
-    <p class="question">질문) 좋아요 하나 누를 때마다 페이지 전체를 다시 받아야 할까?</p>
   </section>
 
   <section id="s6" aria-labelledby="h-s6">
