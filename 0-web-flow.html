@@ -61,6 +61,7 @@
   pre { margin: 0; padding: 14px 16px; overflow-x: auto; background: var(--code-bg); font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
   .code-demo pre { height: 280px; }
   iframe { display: block; width: 100%; height: 280px; border: 0; background: #fff; }
+  .notice-demo pre, .notice-demo iframe { height: 320px; }
   code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
   .definition { margin: 16px 0; }
   .table-wrap { overflow-x: auto; }
@@ -228,6 +229,43 @@
         <tr><td>JavaScript</td><td>입력 · 데이터 처리 · 화면 갱신</td></tr>
       </tbody>
     </table></div>
+    <div class="code-demo notice-demo">
+      <div class="demo-title"><strong>CSS 추가</strong><a href="examples/notice-styled.html" target="_blank" rel="noopener noreferrer">새 창에서 보기 ↗</a></div>
+      <div class="demo-grid">
+        <div><p class="pane-label">추가한 CSS</p><pre><code>body {
+  font-family: sans-serif;
+  margin: 16px;
+}
+h1 {
+  font-size: 24px;
+  border-bottom: 2px solid #333;
+}
+li {
+  margin: 8px 0;
+  padding: 8px;
+  background: #f2f2f2;
+}
+a { color: #333; }</code></pre></div>
+        <div><p class="pane-label">HTML + CSS</p><iframe src="examples/notice-styled.html" title="CSS로 모양을 바꾼 교내공지 예시" sandbox="allow-popups allow-popups-to-escape-sandbox" loading="lazy"></iframe></div>
+      </div>
+    </div>
+    <div class="code-demo notice-demo">
+      <div class="demo-title"><strong>JavaScript 추가</strong><a href="examples/notice-interactive.html" target="_blank" rel="noopener noreferrer">새 창에서 보기 ↗</a></div>
+      <div class="demo-grid">
+        <div><p class="pane-label">추가한 HTML · JavaScript</p><pre><code>&lt;button id="toggle" type="button"&gt;공지 접기&lt;/button&gt;
+
+&lt;script&gt;
+const button = document.querySelector("#toggle");
+const list = document.querySelector("ul");
+
+button.addEventListener("click", () =&gt; {
+  list.hidden = !list.hidden;
+  button.textContent = list.hidden ? "공지 펼치기" : "공지 접기";
+});
+&lt;/script&gt;</code></pre></div>
+        <div><p class="pane-label">HTML + CSS + JavaScript</p><iframe src="examples/notice-interactive.html" title="버튼을 눌러 공지 목록을 접고 펼치는 JavaScript 예시" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" loading="lazy"></iframe></div>
+      </div>
+    </div>
     <p class="question">질문) 이 정도면 웹 개발 준비 완료?</p>
   </section>
 
@@ -247,7 +285,7 @@
     <p>최초 접속: HTML · CSS · JS</p>
     <div class="diagram">
       <svg viewBox="0 0 900 200" role="img" aria-labelledby="diagram5-title">
-        <title id="diagram5-title">브라우저가 필요한 데이터를 요청하고 응답을 받아 JavaScript로 화면을 갱신합니다.</title>
+        <title id="diagram5-title">브라우저가 필요한 데이터를 요청하고 JSON 응답을 받아 JavaScript로 화면을 갱신합니다.</title>
         <defs><marker id="arr5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#666666"/></marker></defs>
         <rect class="node" x="30" y="25" width="270" height="150" rx="8"/>
         <rect class="node" x="600" y="25" width="270" height="150" rx="8"/>
@@ -256,7 +294,7 @@
         <text class="arrow-label" x="450" y="54" text-anchor="middle">API 요청 · URL</text>
         <path class="arrow" d="M325 77H575" marker-end="url(#arr5)"/>
         <path class="arrow" d="M575 128H325" marker-end="url(#arr5)"/>
-        <text class="arrow-label" x="450" y="158" text-anchor="middle">응답 · 데이터</text>
+        <text class="arrow-label" x="450" y="158" text-anchor="middle">응답 · 데이터(JSON)</text>
       </svg>
     </div>
     <p>받은 데이터 → JS로 화면 갱신</p>

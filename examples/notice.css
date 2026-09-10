@@ -1,0 +1,14 @@
+body {
+  font-family: sans-serif;
+  margin: 16px;
+}
+h1 {
+  font-size: 24px;
+  border-bottom: 2px solid #333;
+}
+li {
+  margin: 8px 0;
+  padding: 8px;
+  background: #f2f2f2;
+}
+a { color: #333; }
