@@ -836,9 +836,9 @@
 </ol>
 <p><b>추가 도전:</b> 카드 모서리에 배지 붙이기 · keyframes로 등장 애니메이션 만들기</p>
 <p class="note">예시의 ‘사진’ 영역은 자신의 사진으로 바꾸세요. 기존 <code>&lt;img&gt;</code>에 class를 붙여 크기와 모양을 조절하면 됩니다.</p>
-<h3>완성 예시</h3>
+<h3>화면 예시</h3>
 
-<div class="demo stack resizable" data-name="나를 소개하는 카드" style="--h: 500px;" data-width-controls>
+<div class="demo stack resizable" data-name="나를 소개하는 카드" style="--h: 500px;" data-width-controls data-preview-only>
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
@@ -1000,38 +1000,45 @@
   document.querySelectorAll(".demo").forEach((demo) => {
     const src = demo.querySelector("textarea.src").value;
     const name = demo.dataset.name;
+    const previewOnly = demo.hasAttribute("data-preview-only");
     const bar = document.createElement("div");
     bar.className = "bar";
-    bar.innerHTML = `<span class="name">${esc(name)}</span>
-      <button type="button" data-act="copy" aria-live="polite">복사</button>
-      <button type="button" data-act="reload">다시 실행</button>
-      <button type="button" data-act="open">새 창에서 열기</button>`;
+    bar.innerHTML = `<span class="name">${esc(name)}</span>`;
+    if (!previewOnly) {
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="copy" aria-live="polite">복사</button>
+        <button type="button" data-act="reload">다시 실행</button>
+        <button type="button" data-act="open">새 창에서 열기</button>`);
+    }
     if (demo.hasAttribute("data-width-controls")) {
       bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="narrow" aria-pressed="false">좁게 보기</button>
         <button type="button" data-act="wide" aria-pressed="true">넓게 보기</button>`);
     }
     const panes = document.createElement("div");
     panes.className = "panes";
-    const code = document.createElement("div");
-    code.className = "code";
-    code.innerHTML = `<pre>${hlHtml(src)}</pre>`;
     const result = document.createElement("div");
     result.className = "result";
     const label = document.createElement("div");
     label.className = "label";
-    label.textContent = "실행 결과";
+    label.textContent = previewOnly ? "화면 예시" : "실행 결과";
     const iframe = document.createElement("iframe");
     iframe.title = name + " 실행 결과";
     iframe.setAttribute("sandbox", "allow-popups allow-popups-to-escape-sandbox");
     iframe.srcdoc = src;
     result.append(label, iframe);
-    if (demo.classList.contains("stack")) {
-      const details = document.createElement("details");
-      details.innerHTML = "<summary>코드 보기 / 접기</summary>";
-      details.append(code);
-      panes.append(result, details);
+    if (previewOnly) {
+      panes.append(result);
     } else {
-      panes.append(code, result);
+      const code = document.createElement("div");
+      code.className = "code";
+      code.innerHTML = `<pre>${hlHtml(src)}</pre>`;
+      if (demo.classList.contains("stack")) {
+        const details = document.createElement("details");
+        details.innerHTML = "<summary>코드 보기 / 접기</summary>";
+        details.append(code);
+        panes.append(result, details);
+      } else {
+        panes.append(code, result);
+      }
     }
     demo.append(bar, panes);
 
