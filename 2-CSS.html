@@ -55,7 +55,8 @@
   .demo .code pre { margin: 0; padding: 14px 16px; overflow: auto; max-height: var(--h, 460px); font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
   .demo .result { display: flex; flex-direction: column; }
   .demo .result .label { font-size: 12px; color: var(--muted); padding: 6px 12px; border-bottom: 1px dashed var(--line); }
-  .demo iframe { border: 0; width: 100%; height: var(--h, 460px); background: #fff; flex: 1; }
+  .demo iframe { border: 0; width: 100%; height: var(--h, 460px); background: #fff; flex: 0 0 auto; }
+  .demo .panes:has(> .result:only-child) { grid-template-columns: 1fr; }
   .demo.tall { --h: 640px; }
   .demo.short { --h: 260px; }
   .demo.stack .panes { grid-template-columns: 1fr; }
@@ -137,13 +138,19 @@
       <li><a class="sub" href="#s4-5">vmin · vmax</a></li>
       <li><a class="sub" href="#s4-6">단위 정리표</a></li>
     </ol></li>
-    <li><a href="#s5">5. 미디어 쿼리</a></li>
+    <li><a href="#s5">5. 미디어 쿼리</a><ol>
+      <li><a class="sub" href="#s5-1">먼저 보기</a></li>
+      <li><a class="sub" href="#s5-2">쓰는 법</a></li>
+      <li><a class="sub" href="#s5-3">예제</a></li>
+    </ol></li>
     <li><a href="#s6">6. 플렉스 박스</a><ol>
-      <li><a class="sub" href="#s6-1">방향과 간격</a></li>
-      <li><a class="sub" href="#s6-2">정렬</a></li>
-      <li><a class="sub" href="#s6-3">줄바꿈</a></li>
+      <li><a class="sub" href="#s6-1">먼저 보기</a></li>
+      <li><a class="sub" href="#s6-2">방향과 간격</a></li>
+      <li><a class="sub" href="#s6-3">정렬</a></li>
+      <li><a class="sub" href="#s6-4">줄바꿈</a></li>
     </ol></li>
     <li><a href="#s7">7. 트랜스폼 · 트랜지션 · 애니메이션</a><ol>
+      <li><a class="sub" href="#s7-0">먼저 보기</a></li>
       <li><a class="sub" href="#s7-1">transform</a></li>
       <li><a class="sub" href="#s7-2">transition</a></li>
       <li><a class="sub" href="#s7-3">animation</a></li>
@@ -768,8 +775,87 @@
 <p class="note">모바일에서 100vh는 주소창 때문에 화면보다 클 수 있습니다. 화면을 꽉 채우려면 100dvh를 쓰세요.</p>
 
 <h2 id="s5">5. 미디어 쿼리</h2>
-<p>화면 너비가 600px 이하일 때 카드의 여백과 글자 크기를 바꿉니다.</p>
+<p>같은 페이지를 폰·태블릿·데스크톱에서 다르게 보여주는 것이 <b>반응형</b>이고, 그 도구가 <b>미디어 쿼리</b>입니다. 보통 화면 폭을 몇 구간으로 나누고, 구간마다 열 개수나 여백을 바꿉니다. 구간의 경계를 <b>브레이크포인트</b>라고 합니다.</p>
+<div class="diagram">
+<svg viewBox="0 0 720 150" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="12">
+  <line x1="20" y1="90" x2="700" y2="90" stroke="#9ca3af" stroke-width="2"/>
+  <g stroke="#9ca3af" stroke-width="2">
+    <line x1="20" y1="82" x2="20" y2="98"/><line x1="190" y1="82" x2="190" y2="98"/>
+    <line x1="360" y1="82" x2="360" y2="98"/><line x1="530" y1="82" x2="530" y2="98"/>
+  </g>
+  <g fill="#374151" text-anchor="middle" font-weight="600">
+    <text x="20" y="116">0</text><text x="190" y="116">480px</text><text x="360" y="116">768px</text><text x="530" y="116">1280px</text>
+  </g>
+  <g font-size="12" fill="#6b7280" text-anchor="middle">
+    <text x="105" y="136">모바일 · 1열</text><text x="275" y="136">태블릿 · 2열</text><text x="445" y="136">노트북 · 3열</text><text x="615" y="136">데스크톱 · 4열</text>
+  </g>
+  <!-- mini layouts -->
+  <g fill="#bfdbfe" stroke="#2563eb">
+    <rect x="80" y="22" width="50" height="14"/><rect x="80" y="40" width="50" height="14"/><rect x="80" y="58" width="50" height="14"/>
+    <rect x="245" y="22" width="26" height="14"/><rect x="275" y="22" width="26" height="14"/><rect x="245" y="40" width="26" height="14"/><rect x="275" y="40" width="26" height="14"/>
+    <rect x="405" y="22" width="24" height="14"/><rect x="433" y="22" width="24" height="14"/><rect x="461" y="22" width="24" height="14"/><rect x="405" y="40" width="24" height="14"/>
+    <rect x="565" y="22" width="22" height="14"/><rect x="591" y="22" width="22" height="14"/><rect x="617" y="22" width="22" height="14"/><rect x="643" y="22" width="22" height="14"/>
+  </g>
+</svg>
+</div>
+<h3 id="s5-1">5-1. 먼저 보기 — 폭에 따라 열이 바뀌는 목록</h3>
+<p>위 버튼으로 실행 결과의 폭을 바꿔 보세요. 노란 안내 줄에 지금 어느 구간인지 표시됩니다. 더 넓게 보려면 새 창에서 열어 브라우저 크기를 조절하면 됩니다.</p>
+<div class="demo stack resizable" data-name="화면 폭에 따라 열 개수가 바뀌는 카드 목록" style="--h: 420px;" data-width-controls>
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;반응형 카드 목록&lt;/title&gt;
+  &lt;style&gt;
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; margin: 16px; }
+    .info { padding: 8px 12px; background: #fef3c7; border-radius: 6px; margin-bottom: 12px; }
+    .grid { display: flex; flex-wrap: wrap; gap: 12px; }
+    .card { padding: 24px 12px; background: #bfdbfe; border: 1px solid #2563eb;
+            border-radius: 8px; text-align: center; }
 
+    /* 기본(가장 넓을 때): 4열 */
+    .card { width: calc(25% - 9px); }
+    .info::before { content: "1280px 이상 — 데스크톱: 4열"; }
+
+    /* 1280px 미만: 3열 */
+    @media (max-width: 1279px) {
+      .card { width: calc(33.333% - 8px); }
+      .info::before { content: "768 ~ 1279px — 노트북: 3열"; }
+    }
+    /* 768px 미만: 2열 */
+    @media (max-width: 767px) {
+      .card { width: calc(50% - 6px); }
+      .info::before { content: "480 ~ 767px — 태블릿: 2열"; }
+    }
+    /* 480px 미만: 1열 */
+    @media (max-width: 479px) {
+      .card { width: 100%; }
+      .info::before { content: "480px 미만 — 모바일: 1열"; }
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="info"&gt;&lt;/div&gt;
+  &lt;div class="grid"&gt;
+    &lt;div class="card"&gt;1&lt;/div&gt;&lt;div class="card"&gt;2&lt;/div&gt;&lt;div class="card"&gt;3&lt;/div&gt;&lt;div class="card"&gt;4&lt;/div&gt;
+    &lt;div class="card"&gt;5&lt;/div&gt;&lt;div class="card"&gt;6&lt;/div&gt;&lt;div class="card"&gt;7&lt;/div&gt;&lt;div class="card"&gt;8&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+<h3 id="s5-2">5-2. 쓰는 법 — 기본 스타일 + 구간별 덮어쓰기</h3>
+<p>패턴은 늘 같습니다. 기본 스타일을 먼저 쓰고, 그 아래에 <code>@media</code> 블록으로 구간별 차이만 덮어씁니다. 뒤에 쓴 규칙이 이기므로 <b>넓은 화면 → 좁은 화면 순서</b>로 적습니다.</p>
+<pre class="rule"><code>/* 기본: 데스크톱 */
+.card { width: 25%; }
+
+@media (max-width: 1279px) { .card { width: 33.333%; } }   /* 노트북 */
+@media (max-width: 767px)  { .card { width: 50%; } }       /* 태블릿 */
+@media (max-width: 479px)  { .card { width: 100%; } }      /* 모바일 */</code></pre>
+<p class="note">반대로 모바일 기본 + <code>min-width</code>로 넓혀 가는 "모바일 퍼스트" 방식도 많이 씁니다. 어느 쪽이든 한 방향으로만 일관되게 쓰면 됩니다.</p>
+
+<h3 id="s5-3">5-3. 예제 — 좁은 화면에서 여백과 글자 크기 줄이기</h3>
 <div class="demo stack resizable" data-name="넓은 화면과 좁은 화면" style="--h: 280px;" data-width-controls>
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
@@ -808,9 +894,13 @@
 
 <div class="ref-wrap"><table class="ref"><tbody>
 
-<tr><td>@media (max-width: 600px)</td><td>뷰포트 너비가 600px 이하일 때 적용</td></tr>
+<tr><td>@media (max-width: 600px)</td><td>뷰포트 너비가 600px 이하일 때 적용 (데스크톱 퍼스트)</td></tr>
 
-<tr><td>@media (min-width: 600px)</td><td>뷰포트 너비가 600px 이상일 때 적용</td></tr>
+<tr><td>@media (min-width: 600px)</td><td>뷰포트 너비가 600px 이상일 때 적용 (모바일 퍼스트)</td></tr>
+
+<tr><td>@media (min-width: 480px) and (max-width: 767px)</td><td>두 값 사이 구간에만 적용</td></tr>
+
+<tr><td>자주 쓰는 브레이크포인트</td><td>480 / 768 / 1024 / 1280px. 정해진 값은 없고 디자인에 맞춰 정함</td></tr>
 
 <tr><td>max-width: 640px</td><td>요소 너비의 상한. 미디어 쿼리 조건과는 다른 역할</td></tr>
 
@@ -819,9 +909,69 @@
 </tbody></table></div>
 
 <h2 id="s6">6. 플렉스 박스</h2>
-<p>부모에 <code>display: flex</code>를 주면, 바로 아래 자식들을 함께 배치할 수 있습니다.</p>
-<h3 id="s6-1">6-1. 방향과 간격</h3>
+<p>블록 요소는 위에서 아래로만 쌓입니다. 부모에 <code>display: flex</code>를 주면 자식들이 <b>한 줄에 나란히</b> 놓이고, 두 줄의 속성으로 <b>가로·세로 어디에 둘지</b>를 정할 수 있습니다. 메뉴 바, 카드 목록, 가운데 정렬은 거의 전부 이걸로 합니다.</p>
 
+<h3 id="s6-1">6-1. 먼저 보기 — 같은 상자, 다른 정렬</h3>
+<p>점선 상자가 flex 컨테이너, 파란 칸이 자식들입니다. 상자와 자식은 그대로 두고 속성 한두 줄만 바꾼 결과입니다.</p>
+<div class="demo" data-name="상자 하나, 정렬 여섯 가지" style="--h: 660px;" data-preview-only>
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;flex 먼저 보기&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 16px; }
+    .label { font-size: 12px; color: #6b7280; margin: 12px 0 4px; }
+    .label b { color: #b91c1c; font-family: monospace; }
+    .box { display: flex; gap: 8px; height: 64px; border: 2px dashed #9ca3af; padding: 6px; }
+    .box div { background: #bfdbfe; border: 1px solid #2563eb; padding: 0 14px;
+               display: flex; align-items: center; }
+    .tall { padding: 14px 14px !important; }
+
+    .a { justify-content: flex-start; }
+    .b { justify-content: center; }
+    .c { justify-content: flex-end; }
+    .d { justify-content: space-between; }
+    .e { justify-content: center; align-items: center; }
+    .f { justify-content: center; align-items: flex-end; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="label"&gt;기본 — 왼쪽부터 가로로 나란히 &lt;b&gt;justify-content: flex-start&lt;/b&gt;&lt;/div&gt;
+  &lt;div class="box a"&gt;&lt;div&gt;A&lt;/div&gt;&lt;div&gt;B&lt;/div&gt;&lt;div&gt;C&lt;/div&gt;&lt;/div&gt;
+  &lt;div class="label"&gt;가로 가운데 &lt;b&gt;justify-content: center&lt;/b&gt;&lt;/div&gt;
+  &lt;div class="box b"&gt;&lt;div&gt;A&lt;/div&gt;&lt;div&gt;B&lt;/div&gt;&lt;div&gt;C&lt;/div&gt;&lt;/div&gt;
+  &lt;div class="label"&gt;오른쪽 끝 &lt;b&gt;justify-content: flex-end&lt;/b&gt;&lt;/div&gt;
+  &lt;div class="box c"&gt;&lt;div&gt;A&lt;/div&gt;&lt;div&gt;B&lt;/div&gt;&lt;div&gt;C&lt;/div&gt;&lt;/div&gt;
+  &lt;div class="label"&gt;양 끝에 붙이고 사이를 균등하게 &lt;b&gt;justify-content: space-between&lt;/b&gt;&lt;/div&gt;
+  &lt;div class="box d"&gt;&lt;div&gt;A&lt;/div&gt;&lt;div&gt;B&lt;/div&gt;&lt;div&gt;C&lt;/div&gt;&lt;/div&gt;
+  &lt;div class="label"&gt;가로도 세로도 가운데 &lt;b&gt;justify-content: center; align-items: center&lt;/b&gt;&lt;/div&gt;
+  &lt;div class="box e"&gt;&lt;div&gt;A&lt;/div&gt;&lt;div class="tall"&gt;B&lt;/div&gt;&lt;div&gt;C&lt;/div&gt;&lt;/div&gt;
+  &lt;div class="label"&gt;세로는 바닥에 &lt;b&gt;align-items: flex-end&lt;/b&gt;&lt;/div&gt;
+  &lt;div class="box f"&gt;&lt;div&gt;A&lt;/div&gt;&lt;div class="tall"&gt;B&lt;/div&gt;&lt;div&gt;C&lt;/div&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+<p>규칙은 두 개뿐입니다. 자식이 놓이는 방향을 <b>주축</b>이라 하고 <code>justify-content</code>로 정렬합니다. 그에 수직인 방향이 <b>교차축</b>이고 <code>align-items</code>로 정렬합니다.</p>
+<div class="diagram">
+<svg viewBox="0 0 720 190" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="13">
+  <defs><marker id="ar2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#374151"/></marker></defs>
+  <rect x="40" y="40" width="520" height="110" fill="#fafafa" stroke="#9ca3af" stroke-dasharray="6 4"/>
+  <text x="46" y="32" fill="#6b7280">display: flex 컨테이너 (flex-direction: row)</text>
+  <g fill="#bfdbfe" stroke="#2563eb"><rect x="60" y="70" width="70" height="50"/><rect x="140" y="70" width="70" height="50"/><rect x="220" y="70" width="70" height="50"/></g>
+  <g fill="#1e3a8a" text-anchor="middle" font-weight="600"><text x="95" y="100">A</text><text x="175" y="100">B</text><text x="255" y="100">C</text></g>
+  <line x1="60" y1="165" x2="540" y2="165" stroke="#374151" stroke-width="2" marker-end="url(#ar2)"/>
+  <text x="300" y="183" text-anchor="middle" fill="#374151" font-weight="600">주축 (main axis) → justify-content 로 정렬</text>
+  <line x1="600" y1="45" x2="600" y2="145" stroke="#374151" stroke-width="2" marker-end="url(#ar2)"/>
+  <text x="612" y="80" fill="#374151" font-weight="600">교차축</text>
+  <text x="612" y="98" fill="#374151" font-size="12">(cross axis)</text>
+  <text x="612" y="118" fill="#374151" font-size="12">align-items</text>
+</svg>
+</div>
+
+<h3 id="s6-2">6-2. 방향과 간격</h3>
+<p><code>flex-direction</code>으로 주축 방향을 정하고(row 가로 / column 세로), <code>gap</code>으로 자식 사이 간격을 줍니다.</p>
 <div class="demo" data-name="세로로 쌓인 목록을 가로로" style="--h: 280px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
@@ -858,7 +1008,7 @@
 
 <p class="note">row를 column으로 바꾸고, gap도 조절해 보세요.</p>
 
-<h3 id="s6-2">6-2. 정렬</h3>
+<h3 id="s6-3">6-3. 정렬</h3>
 
 <div class="demo" data-name="주축과 교차축 정렬" style="--h: 290px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
@@ -894,7 +1044,7 @@
 
 <p class="note">row에서는 주축이 가로, 교차축이 세로입니다. column으로 바꾸면 축도 바뀝니다.</p>
 
-<h3 id="s6-3">6-3. 줄바꿈</h3>
+<h3 id="s6-4">6-4. 줄바꿈</h3>
 
 <div class="demo stack resizable" data-name="공간이 부족하면 다음 줄로" style="--h: 300px;" data-width-controls>
 <textarea class="src">&lt;!DOCTYPE html&gt;
@@ -970,6 +1120,50 @@
 <p>연습: <a href="https://flexboxfroggy.com/#ko" target="_blank" rel="noopener noreferrer">Flexbox Froggy ↗</a></p>
 
 <h2 id="s7">7. 트랜스폼 · 트랜지션 · 애니메이션</h2>
+<p>셋은 역할이 다릅니다. <b>transform</b>은 요소를 옮기거나 돌리거나 키우는 "변형"이고, <b>transition</b>은 어떤 값이 바뀔 때 그 사이를 "부드럽게" 잇는 것이며, <b>animation</b>은 사용자 동작 없이 "스스로" 움직이는 것입니다.</p>
+
+<h3 id="s7-0">7-0. 먼저 보기</h3>
+<p>세 카드에 차례로 마우스를 올려 보세요. ①은 순간적으로 바뀌고, ②는 부드럽게 바뀌며, ③은 가만히 있어도 움직입니다.</p>
+<div class="demo" data-name="마우스를 올려 보세요 — 세 가지 움직임" style="--h: 300px;" data-preview-only>
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;움직임 먼저 보기&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 20px; }
+    .row { display: flex; gap: 20px; flex-wrap: wrap; }
+    .card { width: 170px; padding: 16px; border: 1px solid #9ca3af; border-radius: 12px; background: #fff; }
+    .card h3 { margin: 0 0 6px; font-size: 15px; }
+    .card p { margin: 0; font-size: 12px; color: #6b7280; }
+    .tag { display: inline-block; margin-top: 10px; padding: 2px 8px; font-size: 11px;
+           font-family: monospace; background: #fef3c7; border-radius: 4px; }
+
+    /* 1) transform: 모양·위치만 바꿈. 순간적으로 */
+    .t:hover { transform: rotate(-6deg) scale(1.08); }
+
+    /* 2) transition: 같은 변화를 0.4초에 걸쳐 */
+    .tr { transition: transform 0.4s ease, background-color 0.4s ease; }
+    .tr:hover { transform: translateY(-10px); background: #dbeafe; }
+
+    /* 3) animation: 마우스 없이 스스로 반복 */
+    .an .dot { width: 18px; height: 18px; border-radius: 50%; background: #16a34a;
+               margin-top: 10px; animation: pulse 1s ease-in-out infinite alternate; }
+    @keyframes pulse { from { transform: scale(1); opacity: 1; } to { transform: scale(1.8); opacity: .4; } }
+    @media (prefers-reduced-motion: reduce) { .an .dot { animation: none; } .tr { transition: none; } }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="row"&gt;
+    &lt;div class="card t"&gt;&lt;h3&gt;① transform&lt;/h3&gt;&lt;p&gt;올리면 바로 기울고 커짐. 되돌아갈 때도 순간적&lt;/p&gt;&lt;span class="tag"&gt;rotate · scale&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="card tr"&gt;&lt;h3&gt;② transition&lt;/h3&gt;&lt;p&gt;올리면 0.4초 동안 부드럽게 떠오름&lt;/p&gt;&lt;span class="tag"&gt;transition: 0.4s&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="card an"&gt;&lt;h3&gt;③ animation&lt;/h3&gt;&lt;p&gt;아무것도 안 해도 계속 뛰는 점&lt;/p&gt;&lt;div class="dot"&gt;&lt;/div&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
 <h3 id="s7-1">7-1. transform — 모양과 위치 바꾸기</h3>
 <p>버튼에 마우스를 올리거나, Tab 키로 포커스를 옮겨 보세요.</p>
 
@@ -1309,8 +1503,9 @@
         <button type="button" data-act="open">새 창에서 열기</button>`);
     }
     if (demo.hasAttribute("data-width-controls")) {
-      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="narrow" aria-pressed="false">좁게 보기</button>
-        <button type="button" data-act="wide" aria-pressed="true">넓게 보기</button>`);
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="narrow" aria-pressed="false">좁게 (360px)</button>
+        <button type="button" data-act="mid" aria-pressed="false">중간 (760px)</button>
+        <button type="button" data-act="wide" aria-pressed="true">넓게 (전체)</button>`);
     }
     const panes = document.createElement("div");
     panes.className = "panes";
@@ -1359,8 +1554,8 @@
         const url = URL.createObjectURL(new Blob([src], { type: "text/html;charset=utf-8" }));
         window.open(url, "_blank", "noopener,noreferrer");
         setTimeout(() => URL.revokeObjectURL(url), 60000);
-      } else if (act === "narrow" || act === "wide") {
-        iframe.style.width = act === "narrow" ? "360px" : "100%";
+      } else if (act === "narrow" || act === "mid" || act === "wide") {
+        iframe.style.width = act === "narrow" ? "360px" : act === "mid" ? "760px" : "100%";
         bar.querySelectorAll("[aria-pressed]").forEach((control) => {
           control.setAttribute("aria-pressed", String(control.dataset.act === act));
         });
