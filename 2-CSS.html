@@ -126,10 +126,17 @@
     </ol></li>
     <li><a href="#s2">2. 박스 모델</a></li>
     <li><a href="#s3">3. 박스 배치</a><ol>
-      <li><a class="sub" href="#s3-1">display</a></li>
+      <li><a class="sub" href="#s3-1">display — block과 inline</a></li>
       <li><a class="sub" href="#s3-2">position</a></li>
     </ol></li>
-    <li><a href="#s4">4. 크기 단위와 뷰포트</a></li>
+    <li><a href="#s4">4. 크기 단위와 뷰포트</a><ol>
+      <li><a class="sub" href="#s4-1">px</a></li>
+      <li><a class="sub" href="#s4-2">%</a></li>
+      <li><a class="sub" href="#s4-3">em · rem</a></li>
+      <li><a class="sub" href="#s4-4">vw · vh</a></li>
+      <li><a class="sub" href="#s4-5">vmin · vmax</a></li>
+      <li><a class="sub" href="#s4-6">단위 정리표</a></li>
+    </ol></li>
     <li><a href="#s5">5. 미디어 쿼리</a></li>
     <li><a href="#s6">6. 플렉스 박스</a><ol>
       <li><a class="sub" href="#s6-1">방향과 간격</a></li>
@@ -155,15 +162,15 @@
 
 <h3 id="s1-1">1-1. 선택자의 종류</h3>
 <p>자주 쓰는 선택자는 일곱 가지입니다. 이것만 알아도 대부분의 화면을 꾸밀 수 있어요.</p>
-<ul class="plain">
-  <li><b>전체</b> <code>*</code> — 모든 요소</li>
-  <li><b>태그</b> <code>p</code> — 그 태그 전부</li>
-  <li><b>클래스</b> <code>.highlight</code> — class 속성이 같은 요소들. 여러 곳에 재사용</li>
-  <li><b>ID</b> <code>#intro</code> — id 속성이 같은 요소 하나. 문서에 하나만</li>
-  <li><b>그룹</b> <code>h1, h2</code> — 여러 선택자에 같은 스타일</li>
-  <li><b>후손</b> <code>.hobbies li</code> — 안쪽 어디에 있든</li>
-  <li><b>자식</b> <code>.card &gt; p</code> — 바로 아래 한 단계만</li>
-</ul>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>전체</td><td>*</td><td>모든 요소</td></tr>
+<tr><td>태그</td><td>p</td><td>그 태그 전부</td></tr>
+<tr><td>클래스</td><td>.highlight</td><td>class 속성이 같은 요소들. 여러 곳에 재사용</td></tr>
+<tr><td>ID</td><td>#intro</td><td>id 속성이 같은 요소 하나. 문서에 하나만</td></tr>
+<tr><td>그룹</td><td>h1, h2</td><td>여러 선택자에 같은 스타일</td></tr>
+<tr><td>후손</td><td>.hobbies li</td><td>안쪽 어디에 있든</td></tr>
+<tr><td>자식</td><td>.card &gt; p</td><td>바로 아래 한 단계만</td></tr>
+</tbody></table></div>
 
 <div class="demo" data-name="선택자의 종류 — 전체 · 태그 · 클래스 · ID · 그룹 · 후손 · 자식" style="--h: 480px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
@@ -321,7 +328,33 @@
 </details>
 
 <h2 id="s2">2. 박스 모델 — margin · padding · border</h2>
-<p>내용 → 안쪽 여백(padding) → 테두리(border) → 바깥 여백(margin)</p>
+<p>브라우저는 모든 요소를 <b>네 겹의 상자</b>로 봅니다. 안쪽부터 내용(content) → 안쪽 여백(padding) → 테두리(border) → 바깥 여백(margin)입니다.</p>
+<div class="diagram">
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="14">
+  <rect x="20" y="20" width="520" height="260" fill="#fef3c7" stroke="#d97706" stroke-dasharray="6 4"/>
+  <text x="34" y="42" fill="#92400e" font-weight="600">margin — 바깥 여백 (투명, 이웃과의 거리)</text>
+  <rect x="70" y="60" width="420" height="180" fill="#fde68a" stroke="#b45309" stroke-width="6"/>
+  <text x="84" y="82" fill="#78350f" font-weight="600">border — 테두리 (두께·색·모양)</text>
+  <rect x="110" y="98" width="340" height="112" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="124" y="120" fill="#166534" font-weight="600">padding — 안쪽 여백 (배경색이 칠해짐)</text>
+  <rect x="150" y="136" width="260" height="48" fill="#bfdbfe" stroke="#2563eb"/>
+  <text x="280" y="165" fill="#1e3a8a" font-weight="700" text-anchor="middle">content — 내용 (width × height)</text>
+  <g stroke="#6b7280" stroke-width="1.5" fill="none">
+    <line x1="560" y1="30" x2="700" y2="30"/><line x1="560" y1="62" x2="700" y2="62"/>
+    <line x1="560" y1="100" x2="700" y2="100"/><line x1="560" y1="138" x2="700" y2="138"/>
+  </g>
+  <g fill="#374151" font-size="13">
+    <text x="566" y="50">margin: 20px</text>
+    <text x="566" y="88">border: 4px</text>
+    <text x="566" y="126">padding: 20px</text>
+    <text x="566" y="164">width: 200px</text>
+    <text x="566" y="210" font-size="12" fill="#6b7280">실제 차지 폭</text>
+    <text x="566" y="228" font-size="12" fill="#6b7280">= 20+4+20+200+20+4+20</text>
+    <text x="566" y="246" font-size="12" fill="#6b7280">= 288px</text>
+  </g>
+</svg>
+</div>
+<p>헷갈리는 지점은 두 가지입니다. <b>padding은 배경색이 칠해지고 margin은 투명</b>하다는 것, 그리고 <b>width는 기본적으로 내용 영역만</b>을 뜻해서 padding과 border를 더하면 실제 크기가 커진다는 것입니다. 아래 예제에서 같은 width: 200px이 왜 다른 크기로 보이는지 확인해 보세요.</p>
 
 <div class="demo" data-name="같은 width, 다른 실제 크기" style="--h: 400px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
@@ -381,8 +414,53 @@
 </tbody></table></div>
 
 <h2 id="s3">3. 박스 배치 — display와 position</h2>
-<h3 id="s3-1">3-1. display</h3>
-<p>기본 흐름에서 block은 새 줄을 만들고, inline은 글의 흐름 안에 놓입니다.</p>
+<h3 id="s3-1">3-1. display — block과 inline</h3>
+<p>요소는 기본적으로 두 부류로 나뉩니다. <b>block</b>은 한 줄을 통째로 차지하고 항상 새 줄에서 시작합니다. <b>inline</b>은 글자처럼 흐름 안에 놓이고 내용만큼만 차지합니다.</p>
+<div class="diagram">
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="13">
+  <!-- block -->
+  <text x="20" y="22" font-weight="700" font-size="14">block</text>
+  <rect x="20" y="32" width="210" height="200" fill="#fafafa" stroke="#d1d5db"/>
+  <rect x="28" y="40" width="194" height="40" fill="#bfdbfe" stroke="#2563eb"/>
+  <rect x="28" y="88" width="194" height="40" fill="#bfdbfe" stroke="#2563eb"/>
+  <rect x="28" y="136" width="194" height="40" fill="#bfdbfe" stroke="#2563eb"/>
+  <text x="125" y="65" text-anchor="middle" fill="#1e3a8a">div · p · h1</text>
+  <text x="125" y="113" text-anchor="middle" fill="#1e3a8a">한 줄을 통째로</text>
+  <text x="125" y="161" text-anchor="middle" fill="#1e3a8a">width/height 적용</text>
+  <text x="125" y="210" text-anchor="middle" fill="#6b7280" font-size="12">항상 새 줄에서 시작</text>
+  <!-- inline -->
+  <text x="255" y="22" font-weight="700" font-size="14">inline</text>
+  <rect x="255" y="32" width="210" height="200" fill="#fafafa" stroke="#d1d5db"/>
+  <text x="265" y="62" fill="#374151">글 속에 <tspan fill="#166534" font-weight="600">span</tspan> 이나</text>
+  <rect x="265" y="74" width="46" height="20" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="288" y="89" text-anchor="middle" fill="#166534" font-size="12">a 링크</text>
+  <text x="316" y="89" fill="#374151">가 흐름을 따라</text>
+  <text x="265" y="116" fill="#374151">놓입니다.</text>
+  <rect x="325" y="101" width="40" height="20" fill="#dcfce7" stroke="#16a34a"/>
+  <text x="345" y="116" text-anchor="middle" fill="#166534" font-size="12">b 굵게</text>
+  <text x="370" y="116" fill="#374151">줄이 차면</text>
+  <text x="265" y="143" fill="#374151">다음 줄로 이어집니다.</text>
+  <text x="360" y="210" text-anchor="middle" fill="#6b7280" font-size="12">내용만큼만 · width/height 무시</text>
+  <!-- inline-block -->
+  <text x="490" y="22" font-weight="700" font-size="14">inline-block</text>
+  <rect x="490" y="32" width="210" height="200" fill="#fafafa" stroke="#d1d5db"/>
+  <text x="500" y="62" fill="#374151">글 속에</text>
+  <rect x="552" y="44" width="60" height="44" fill="#fde68a" stroke="#d97706"/>
+  <text x="582" y="70" text-anchor="middle" fill="#92400e" font-size="12">button</text>
+  <rect x="620" y="44" width="60" height="44" fill="#fde68a" stroke="#d97706"/>
+  <text x="650" y="70" text-anchor="middle" fill="#92400e" font-size="12">img</text>
+  <text x="500" y="116" fill="#374151">놓이지만 크기를 가집니다.</text>
+  <text x="595" y="210" text-anchor="middle" fill="#6b7280" font-size="12">흐름은 inline · 크기는 block</text>
+</svg>
+</div>
+<p><b>inline-block</b>은 둘의 중간입니다. 흐름은 inline처럼 옆으로 이어지지만, 크기는 block처럼 width·height와 위아래 padding·margin이 적용됩니다. 버튼이나 이미지가 이런 식으로 동작합니다.</p>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>block</td><td>div, p, h1, ul, section</td><td>줄바꿈 O · width/height O · 상하 margin/padding O</td></tr>
+<tr><td>inline</td><td>span, a, b, em</td><td>줄바꿈 X · width/height X · 상하 margin/padding 반영 안 됨</td></tr>
+<tr><td>inline-block</td><td>button, img, input</td><td>줄바꿈 X · width/height O · 상하 margin/padding O</td></tr>
+<tr><td>none</td><td>—</td><td>화면에서 사라지고 공간도 차지하지 않음</td></tr>
+</tbody></table></div>
+<p class="note">아래 예제에서 세 종류 모두 같은 width: 110px을 주었습니다. inline만 width가 무시되는 것을 확인해 보세요.</p>
 
 <div class="demo" data-name="block · inline · inline-block" style="--h: 500px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
@@ -426,7 +504,49 @@
 <p class="note">위 span에서 inline은 width가 적용되지 않고, inline-block은 적용됩니다.</p>
 
 <h3 id="s3-2">3-2. position</h3>
-<p>카드 모서리의 배지처럼, 기준 위치를 정해 요소를 배치할 때 사용합니다.</p>
+<p>요소를 "흐름대로"가 아니라 <b>기준점에서 얼마만큼 떨어진 곳</b>에 두고 싶을 때 씁니다. 값에 따라 기준점이 달라집니다.</p>
+<div class="diagram">
+<svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="12">
+  <g id="flow-base">
+    <!-- static -->
+    <text x="20" y="18" font-weight="700" font-size="14">static (기본)</text>
+    <rect x="20" y="28" width="160" height="180" fill="#fafafa" stroke="#d1d5db"/>
+    <rect x="30" y="40" width="140" height="30" fill="#e5e7eb"/>
+    <rect x="30" y="80" width="140" height="30" fill="#bfdbfe" stroke="#2563eb"/>
+    <text x="100" y="100" text-anchor="middle" fill="#1e3a8a">원래 자리</text>
+    <rect x="30" y="120" width="140" height="30" fill="#e5e7eb"/>
+    <text x="100" y="196" text-anchor="middle" fill="#6b7280">top/left 무시</text>
+  </g>
+  <!-- relative -->
+  <text x="200" y="18" font-weight="700" font-size="14">relative</text>
+  <rect x="200" y="28" width="160" height="180" fill="#fafafa" stroke="#d1d5db"/>
+  <rect x="210" y="40" width="140" height="30" fill="#e5e7eb"/>
+  <rect x="210" y="80" width="140" height="30" fill="none" stroke="#2563eb" stroke-dasharray="4 3"/>
+  <rect x="230" y="92" width="140" height="30" fill="#bfdbfe" stroke="#2563eb"/>
+  <text x="300" y="112" text-anchor="middle" fill="#1e3a8a">top:12 left:20</text>
+  <rect x="210" y="120" width="140" height="30" fill="#e5e7eb"/>
+  <text x="280" y="196" text-anchor="middle" fill="#6b7280">원래 자리는 남김</text>
+  <!-- absolute -->
+  <text x="380" y="18" font-weight="700" font-size="14">absolute</text>
+  <rect x="380" y="28" width="160" height="180" fill="#fafafa" stroke="#d1d5db"/>
+  <rect x="390" y="40" width="140" height="110" fill="#fff" stroke="#f59e0b" stroke-width="2"/>
+  <text x="396" y="56" fill="#b45309" font-size="11">부모 relative</text>
+  <rect x="482" y="46" width="42" height="20" fill="#bfdbfe" stroke="#2563eb"/>
+  <text x="503" y="60" text-anchor="middle" fill="#1e3a8a" font-size="11">top right</text>
+  <rect x="390" y="160" width="140" height="30" fill="#e5e7eb"/>
+  <text x="460" y="204" text-anchor="middle" fill="#6b7280">흐름에서 빠짐 · 자리 안 남김</text>
+  <!-- fixed -->
+  <text x="560" y="18" font-weight="700" font-size="14">fixed</text>
+  <rect x="560" y="28" width="160" height="180" fill="#fafafa" stroke="#111827" stroke-width="2"/>
+  <text x="566" y="44" fill="#111827" font-size="11">브라우저 화면</text>
+  <rect x="570" y="56" width="140" height="30" fill="#e5e7eb"/>
+  <rect x="570" y="96" width="140" height="30" fill="#e5e7eb"/>
+  <rect x="650" y="166" width="62" height="32" rx="16" fill="#bfdbfe" stroke="#2563eb"/>
+  <text x="681" y="186" text-anchor="middle" fill="#1e3a8a" font-size="11">항상 여기</text>
+  <text x="640" y="150" text-anchor="middle" fill="#6b7280">스크롤해도 고정</text>
+</svg>
+</div>
+<p>가장 흔한 조합은 <b>부모 relative + 자식 absolute</b>입니다. 부모에 relative를 주면 자식 absolute의 기준점이 그 부모가 되어, 카드 모서리에 배지를 붙이는 식의 배치가 됩니다. 아래 예제의 NEW 배지가 그 경우입니다.</p>
 
 <div class="demo" data-name="relative 부모와 absolute 배지" style="--h: 340px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
@@ -452,6 +572,12 @@
       color: white;
       border-radius: 4px;
     }
+    .moved {
+      position: relative;
+      top: 8px;
+      left: 24px;
+      background: #fef3c7;
+    }
     .fixed {
       position: fixed;
       right: 16px;
@@ -466,8 +592,9 @@
     &lt;span class="badge"&gt;NEW&lt;/span&gt;
     &lt;h1&gt;홍길동&lt;/h1&gt;
     &lt;p&gt;테니스를 좋아합니다.&lt;/p&gt;
+    &lt;p class="moved"&gt;relative: 원래 자리에서 아래 8px, 오른쪽 24px&lt;/p&gt;
   &lt;/div&gt;
-  &lt;div class="fixed"&gt;뷰포트 오른쪽 아래&lt;/div&gt;
+  &lt;div class="fixed"&gt;fixed: 오른쪽 아래 고정&lt;/div&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
 </div>
@@ -491,56 +618,154 @@
 </tbody></table></div>
 
 <h2 id="s4">4. 크기 단위와 뷰포트</h2>
-<p>px는 CSS 픽셀, %는 속성에 따른 기준값의 비율, vw·vh는 뷰포트 크기의 비율입니다.</p>
+<p>크기 단위는 "무엇을 기준으로 재느냐"로 나뉩니다. 기준이 없는 <b>px</b>, 부모가 기준인 <b>%</b>, 글자 크기가 기준인 <b>em·rem</b>, 브라우저 화면(뷰포트)이 기준인 <b>vw·vh·vmin·vmax</b>입니다. 단위마다 예제를 하나씩 두었습니다.</p>
 
-<div class="demo stack resizable" data-name="%와 vw — 무엇을 기준으로 할까?" style="--h: 300px;" data-width-controls>
+<h3 id="s4-1">4-1. px</h3>
+<div class="demo" data-name="px — 무엇과도 상관없는 고정 크기" style="--h: 260px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;%와 vw — 무엇을 기준으로 할까?&lt;/title&gt;
+  &lt;title&gt;px&lt;/title&gt;
   &lt;style&gt;
-    html { font-size: 16px; }
-    body { font-family: sans-serif; margin: 24px; }
-    .parent {
-      width: 60%;
-      padding: 12px;
-      border: 2px solid #888;
-    }
-    .bar { background: #ddd; margin: 12px 0; }
-    .percent { width: 50%; }
-    .viewport { width: 50vw; background: #c7d9c9; }
-    .title { font-size: 1.5rem; }
+    body { font-family: sans-serif; margin: 20px; }
+    .bar { background: #bfdbfe; border: 1px solid #2563eb; padding: 6px 10px; margin: 6px 0; white-space: nowrap; }
+    .a { width: 100px; }
+    .b { width: 200px; }
+    .c { width: 300px; }
+    p { font-size: 14px; }
   &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
-  &lt;h1 class="title"&gt;크기의 기준&lt;/h1&gt;
-  &lt;div class="parent"&gt;
-    부모 너비: 60%
-    &lt;div class="bar percent"&gt;50%&lt;/div&gt;
-    &lt;div class="bar viewport"&gt;50vw&lt;/div&gt;
-  &lt;/div&gt;
-  &lt;p&gt;50%는 부모 내용 영역의 절반, 50vw는 뷰포트 너비의 절반입니다.&lt;/p&gt;
+  &lt;div class="bar a"&gt;100px&lt;/div&gt;
+  &lt;div class="bar b"&gt;200px&lt;/div&gt;
+  &lt;div class="bar c"&gt;300px&lt;/div&gt;
+  &lt;p&gt;화면을 늘리거나 줄여도, 부모가 커져도 px 크기는 그대로입니다.&lt;/p&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
 </div>
 
-<div class="ref-wrap"><table class="ref"><tbody>
+<h3 id="s4-2">4-2. %</h3>
+<div class="demo" data-name="% — 부모의 크기에 대한 비율" style="--h: 300px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;%&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 20px; }
+    .bar { background: #bfdbfe; border: 1px solid #2563eb; padding: 6px 10px; margin: 6px 0; white-space: nowrap; }
+    .parent { width: 300px; padding: 10px; border: 2px dashed #888; }
+    .half { width: 50%; }
+    .inner { width: 50%; background: #dcfce7; border-color: #16a34a; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="parent"&gt;
+    부모: 300px
+    &lt;div class="bar half"&gt;50% → 150px
+      &lt;div class="bar inner"&gt;그 안의 50% → 75px&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;p&gt;%는 항상 "부모의 내용 영역"이 기준입니다. 중첩되면 기준도 함께 줄어듭니다.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
 
-<tr><td>px</td><td>CSS 픽셀 단위</td></tr>
+<h3 id="s4-3">4-3. em · rem</h3>
+<p>둘 다 글자 크기가 기준이지만, <b>em은 부모</b>의 글자 크기라서 중첩될수록 커지고, <b>rem은 루트(html)</b>의 글자 크기라서 어디서든 같습니다. 실무에서는 rem을 기본으로 씁니다.</p>
+<div class="demo" data-name="em과 rem — 글자 크기를 기준으로" style="--h: 440px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;em / rem&lt;/title&gt;
+  &lt;style&gt;
+    html { font-size: 16px; }
+    body { font-family: sans-serif; margin: 20px; }
+    .em  { font-size: 1.5em; }   /* 부모 글자 크기 × 1.5 */
+    .rem { font-size: 1.5rem; }  /* html 글자 크기 × 1.5 = 24px, 어디서든 */
+    .box { border: 1px solid #888; padding: 8px; margin: 8px 0; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="box em"&gt;em 1단계: 24px
+    &lt;div class="box em"&gt;em 2단계: 36px (24 × 1.5)
+      &lt;div class="box em"&gt;em 3단계: 54px&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="box rem"&gt;rem 1단계: 24px
+    &lt;div class="box rem"&gt;rem 2단계: 24px
+      &lt;div class="box rem"&gt;rem 3단계: 24px&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
 
-<tr><td>%</td><td>속성별 기준값에 대한 비율. 위 width 예제에서는 부모 내용 영역의 너비</td></tr>
+<h3 id="s4-4">4-4. vw · vh</h3>
+<div class="demo stack resizable" data-name="vw · vh — 브라우저 화면 크기에 대한 비율" style="--h: 300px;" data-width-controls>
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;vw / vh&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 20px; }
+    .bar { background: #bfdbfe; border: 1px solid #2563eb; padding: 6px 10px; margin: 6px 0; white-space: nowrap; }
+    .w50 { width: 50vw; }
+    .w25 { width: 25vw; }
+    .h30 { height: 30vh; background: #dcfce7; border-color: #16a34a; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="bar w50"&gt;50vw — 화면 너비의 절반&lt;/div&gt;
+  &lt;div class="bar w25"&gt;25vw&lt;/div&gt;
+  &lt;div class="bar h30"&gt;30vh — 화면 높이의 30%&lt;/div&gt;
+  &lt;p&gt;아래 슬라이더로 화면 폭을 바꿔 보세요. 부모가 아니라 화면이 기준이라 즉시 따라옵니다.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
 
-<tr><td>rem</td><td>루트(html) 글자 크기 기준</td></tr>
+<h3 id="s4-5">4-5. vmin · vmax</h3>
+<div class="demo stack resizable" data-name="vmin · vmax — 짧은 쪽 · 긴 쪽 기준" style="--h: 300px;" data-width-controls>
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;vmin / vmax&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 20px; }
+    .bar { background: #bfdbfe; border: 1px solid #2563eb; padding: 6px 10px; margin: 6px 0; white-space: nowrap; }
+    .sq { width: 30vmin; height: 30vmin; background: #fde68a; border: 1px solid #d97706;
+          display: flex; align-items: center; justify-content: center; }
+    .wide { width: 40vmax; background: #fecaca; border-color: #dc2626; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="sq"&gt;30vmin&lt;br&gt;정사각형&lt;/div&gt;
+  &lt;div class="bar wide"&gt;40vmax — 긴 쪽의 40%&lt;/div&gt;
+  &lt;p&gt;vmin은 가로·세로 중 짧은 쪽, vmax는 긴 쪽을 기준으로 합니다. 화면 방향이 바뀌어도 모양을 유지할 때 씁니다.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
 
-<tr><td>em</td><td>글자 크기 기준. font-size에서 쓰면 부모의 글자 크기가 기준</td></tr>
-
-<tr><td>vw / vh</td><td>뷰포트 너비 / 높이의 1%. vh는 모바일 브라우저 UI 변화와 차이가 날 수 있음</td></tr>
-
-<tr><td>dvh</td><td>브라우저 UI 변화에 따라 달라지는 현재 뷰포트 높이의 1%</td></tr>
-
+<h3 id="s4-6">4-6. 단위 정리표</h3>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>px</td><td>width: 200px</td><td>CSS 픽셀. 기준 없음, 항상 고정</td></tr>
+<tr><td>%</td><td>width: 50%</td><td>부모 내용 영역에 대한 비율 (속성에 따라 기준이 다름)</td></tr>
+<tr><td>em</td><td>font-size: 1.5em</td><td>부모 글자 크기 기준. 중첩되면 누적</td></tr>
+<tr><td>rem</td><td>font-size: 1.5rem</td><td>루트(html) 글자 크기 기준. 기본 16px</td></tr>
+<tr><td>vw / vh</td><td>width: 50vw</td><td>뷰포트 너비 / 높이의 1%</td></tr>
+<tr><td>vmin / vmax</td><td>width: 30vmin</td><td>뷰포트의 짧은 쪽 / 긴 쪽의 1%</td></tr>
+<tr><td>dvh</td><td>height: 100dvh</td><td>모바일에서 주소창이 사라지고 나타남에 따라 변하는 실제 높이의 1%</td></tr>
 </tbody></table></div>
+<p class="note">모바일에서 100vh는 주소창 때문에 화면보다 클 수 있습니다. 화면을 꽉 채우려면 100dvh를 쓰세요.</p>
 
 <h2 id="s5">5. 미디어 쿼리</h2>
 <p>화면 너비가 600px 이하일 때 카드의 여백과 글자 크기를 바꿉니다.</p>
