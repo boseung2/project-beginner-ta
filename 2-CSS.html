@@ -93,6 +93,10 @@
   table.ref.cols3 td:first-child { font-family: inherit; font-size: 14px; color: var(--muted); background: transparent; white-space: nowrap; }
   table.ref.cols3 td:nth-child(2) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
   pre.rule { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 14px; margin: 8px 0 12px; }
+  figure.shot { margin: 12px 0 16px; }
+  figure.shot img { display: block; width: min(100%, 220px); height: auto; border-radius: 12px; border: 1px solid var(--line); }
+  figure.shot figcaption { margin-top: 6px; font-size: 13px; color: var(--muted); }
+  kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; background: var(--code-bg); }
   ul.plain { padding-left: 18px; margin: 6px 0 14px; }
   ul.plain li { margin: 3px 0; }
   ul.plain code, p code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
@@ -125,7 +129,9 @@
       <li><a class="sub" href="#s1-3">선택자 정리표</a></li>
       <li><a class="sub" href="#s1-4">텍스트 스타일 정리표</a></li>
     </ol></li>
-    <li><a href="#s2">2. 박스 모델</a></li>
+    <li><a href="#s2">2. 박스 모델</a><ol>
+      <li><a class="sub" href="#s2-1">box-sizing</a></li>
+    </ol></li>
     <li><a href="#s3">3. 박스 배치</a><ol>
       <li><a class="sub" href="#s3-1">display — block과 inline</a></li>
       <li><a class="sub" href="#s3-2">position</a></li>
@@ -148,6 +154,7 @@
       <li><a class="sub" href="#s6-2">방향과 간격</a></li>
       <li><a class="sub" href="#s6-3">정렬</a></li>
       <li><a class="sub" href="#s6-4">줄바꿈</a></li>
+      <li><a class="sub" href="#s6-5">미디어 쿼리와 나눠 맡기</a></li>
     </ol></li>
     <li><a href="#s7">7. 트랜스폼 · 트랜지션 · 애니메이션</a><ol>
       <li><a class="sub" href="#s7-0">먼저 보기</a></li>
@@ -155,7 +162,11 @@
       <li><a class="sub" href="#s7-2">transition</a></li>
       <li><a class="sub" href="#s7-3">animation</a></li>
     </ol></li>
-    <li><a href="#s8">8. 실습: 자기소개 페이지 꾸미기</a></li>
+    <li><a href="#s8">8. 실습: 자기소개 페이지 꾸미기</a><ol>
+      <li><a class="sub" href="#s8-1">목표 화면</a></li>
+      <li><a class="sub" href="#s8-2">단계별로 만들기</a></li>
+      <li><a class="sub" href="#s8-3">다 됐다면</a></li>
+    </ol></li>
   </ol>
 </nav>
 <main>
@@ -229,17 +240,16 @@
 
 <h3 id="s1-2">1-2. 상속과 우선순위</h3>
 <p><b>상속</b>: 글자색·글꼴·줄간격처럼 텍스트에 관한 속성은 부모에서 자식으로 내려갑니다. 여백·테두리·크기는 내려가지 않습니다.</p>
-<p><b>우선순위</b>: 한 요소에 여러 규칙이 겹치면 더 구체적인 선택자가 이깁니다. 점수는 (ID, 클래스, 태그) 세 자리로 셉니다.</p>
+<p><b>우선순위</b>: 한 요소에 여러 규칙이 겹치면 <b>더 좁게 콕 집은 선택자</b>가 이깁니다. 아래 순서만 기억하면 됩니다.</p>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>1순위</td><td>style="…"</td><td>인라인 스타일. 선택자보다 항상 강함</td></tr>
-<tr><td>2순위</td><td>#id</td><td>ID 선택자 → 1-0-0</td></tr>
-<tr><td>3순위</td><td>.class  [attr]  :hover</td><td>클래스 · 속성 · 의사클래스 → 0-1-0</td></tr>
-<tr><td>4순위</td><td>p  ::before</td><td>태그 · 의사요소 → 0-0-1</td></tr>
-<tr><td>같으면</td><td>나중에 쓴 규칙</td><td>점수가 같을 때는 아래쪽에 작성한 규칙이 적용</td></tr>
+<tr><td>1순위</td><td>style="…"</td><td>태그에 직접 쓴 스타일. 항상 가장 강함</td></tr>
+<tr><td>2순위</td><td>#id</td><td>ID로 딱 하나를 집음</td></tr>
+<tr><td>3순위</td><td>.class</td><td>클래스로 묶어서 집음</td></tr>
+<tr><td>4순위</td><td>p</td><td>태그 이름으로 집음</td></tr>
+<tr><td>같으면</td><td>나중에 쓴 규칙</td><td>우선순위가 같을 때는 아래쪽에 작성한 규칙이 적용</td></tr>
 <tr><td>예외</td><td>!important</td><td>모든 것을 덮어씀. 디버깅이 어려워지니 최후 수단</td></tr>
 </tbody></table></div>
-<p class="note">여러 개가 합쳐지면 자리별로 더합니다. <code>.box p</code>는 0-1-1, <code>#box.box p</code>는 1-1-1이라 뒤쪽이 이깁니다.</p>
 
 <div class="demo" data-name="어떤 글자색이 적용될까?" style="--h: 340px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
@@ -255,13 +265,10 @@
       color: #555;              /* 자식들에게 상속됨 */
     }
 
-    p { color: #166534; }       /* 태그       0-0-1 */
-    .note { color: #1d4ed8; }   /* 클래스     0-1-0 */
-    .note { color: #b91c1c; }   /* 같은 우선순위면 나중에 쓴 것 */
-    #special { color: #7c3aed; }/* ID         1-0-0 → 클래스보다 강함 */
-
-    .box p { color: gray; }     /* 클래스+태그  0-1-1 */
-    #box.box p { color: red; }  /* ID+클래스+태그 1-1-1 → 더 강함 */
+    p { color: #166534; }       /* 태그 선택자 */
+    .note { color: #1d4ed8; }   /* 클래스가 태그보다 강함 */
+    .note { color: #b91c1c; }   /* 클래스끼리 겹치면 나중에 쓴 것이 이김 */
+    #special { color: #7c3aed; }/* ID가 클래스보다 강함 */
   &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -270,9 +277,6 @@
   &lt;p class="note"&gt;클래스 선택자: 빨간색 (파란색은 뒤의 규칙에 밀림)&lt;/p&gt;
   &lt;p id="special" class="note"&gt;ID 선택자: 보라색&lt;/p&gt;
   &lt;p class="note" style="color: orange;"&gt;인라인 style: 주황색 (가장 강함)&lt;/p&gt;
-  &lt;div id="box" class="box"&gt;
-    &lt;p&gt;#box.box p 가 .box p 보다 강해서 빨간색&lt;/p&gt;
-  &lt;/div&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
 </div>
@@ -345,7 +349,7 @@
   <rect x="110" y="98" width="340" height="112" fill="#dcfce7" stroke="#16a34a"/>
   <text x="124" y="120" fill="#166534" font-weight="600">padding — 안쪽 여백 (배경색이 칠해짐)</text>
   <rect x="150" y="136" width="260" height="48" fill="#bfdbfe" stroke="#2563eb"/>
-  <text x="280" y="165" fill="#1e3a8a" font-weight="700" text-anchor="middle">content — 내용 (width × height)</text>
+  <text x="280" y="165" fill="#1e3a8a" font-weight="700" text-anchor="middle">content — 내용이 놓이는 자리</text>
   <g stroke="#6b7280" stroke-width="1.5" fill="none">
     <line x1="560" y1="30" x2="700" y2="30"/><line x1="560" y1="62" x2="700" y2="62"/>
     <line x1="560" y1="100" x2="700" y2="100"/><line x1="560" y1="138" x2="700" y2="138"/>
@@ -354,53 +358,47 @@
     <text x="566" y="50">margin: 20px</text>
     <text x="566" y="88">border: 4px</text>
     <text x="566" y="126">padding: 20px</text>
-    <text x="566" y="164">width: 200px</text>
-    <text x="566" y="210" font-size="12" fill="#6b7280">실제 차지 폭</text>
-    <text x="566" y="228" font-size="12" fill="#6b7280">= 20+4+20+200+20+4+20</text>
-    <text x="566" y="246" font-size="12" fill="#6b7280">= 288px</text>
+    <text x="566" y="164">content: 내용</text>
   </g>
 </svg>
 </div>
-<p>헷갈리는 지점은 두 가지입니다. <b>padding은 배경색이 칠해지고 margin은 투명</b>하다는 것, 그리고 <b>width는 기본적으로 내용 영역만</b>을 뜻해서 padding과 border를 더하면 실제 크기가 커진다는 것입니다. 아래 예제에서 같은 width: 200px이 왜 다른 크기로 보이는지 확인해 보세요.</p>
+<p>둘은 <b>구역이 다릅니다.</b> <code>padding</code>은 테두리 <b>안쪽</b>, <code>margin</code>은 테두리 <b>바깥쪽</b>입니다. 안쪽을 넓히면 상자의 배경색이 함께 넓어지고, 바깥쪽을 넓히면 이웃과 떨어지기만 합니다. 아래 예제에서 파란 배경이 어디까지 칠해지는지 보세요.</p>
 
-<div class="demo" data-name="같은 width, 다른 실제 크기" style="--h: 400px;">
+<div class="demo" data-name="padding과 margin — 배경색이 어디까지 칠해질까" style="--h: 380px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;같은 width, 다른 실제 크기&lt;/title&gt;
+  &lt;title&gt;padding과 margin&lt;/title&gt;
   &lt;style&gt;
     body { font-family: sans-serif; margin: 16px; }
-    .stage { background: #eee; padding: 1px; }
+
+    .stage { background: #e5e7eb; }   /* 회색 = 상자 바깥의 빈 공간 */
+
     .box {
-      width: 200px;
-      margin: 20px;
-      padding: 20px;
-      border: 4px solid #555;
-      background: white;
+      background: #bfdbfe;            /* 파란색 = 상자의 배경 */
+      border: 4px solid #2563eb;
     }
-    .content { box-sizing: content-box; }
-    .border { box-sizing: border-box; }
+
+    /* 안쪽 여백 → 테두리 안이 넓어지고, 파란 배경도 같이 넓어짐 */
+    .inner { padding: 30px; }
+
+    /* 바깥 여백 → 테두리 밖으로 밀려나고, 그 자리는 회색(빈 공간) */
+    .outer { margin: 30px; }
   &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
   &lt;div class="stage"&gt;
-    &lt;div class="box content"&gt;
-      content-box&lt;br&gt;
-      내용 너비: 200px&lt;br&gt;
-      테두리까지: 248px
-    &lt;/div&gt;
-    &lt;div class="box border"&gt;
-      border-box&lt;br&gt;
-      테두리까지: 200px
-    &lt;/div&gt;
+    &lt;div class="box"&gt;여백 없음&lt;/div&gt;
+    &lt;div class="box inner"&gt;padding: 30px — 파란 배경이 넓어집니다&lt;/div&gt;
+    &lt;div class="box outer"&gt;margin: 30px — 회색 빈 공간이 생깁니다&lt;/div&gt;
   &lt;/div&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
 </div>
 
-<p class="note">padding과 margin 값을 각각 바꿔 보세요. 개발자 도구의 박스 모델에서도 차이를 확인할 수 있습니다.</p>
+<p class="note">값을 바꿔 보세요. 개발자 도구(F12) → 요소 → 스타일 맨 아래의 박스 모델 그림에서도 네 겹을 확인할 수 있습니다.</p>
 
 <div class="ref-wrap"><table class="ref"><tbody>
 
@@ -419,6 +417,16 @@
 <tr><td>overflow: auto</td><td>내용이 넘칠 때 필요한 스크롤 제공</td></tr>
 
 </tbody></table></div>
+
+<h3 id="s2-1">2-1. box-sizing — width를 어디까지로 볼 것인가</h3>
+<p><code>width: 200px</code>을 주면 브라우저는 기본적으로 <b>내용 영역만</b> 200px로 잡습니다. 그래서 padding과 border를 주면 상자가 그만큼 더 커집니다. 이 기준을 바꾸는 속성이 <code>box-sizing</code>이고, 값은 두 가지입니다.</p>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>content-box</td><td>기본값</td><td>width는 내용까지만. padding·border는 바깥에 더해져 상자가 커짐</td></tr>
+<tr><td>border-box</td><td>주로 쓰는 값</td><td>width가 테두리까지 포함한 크기. 지정한 숫자가 곧 실제 폭</td></tr>
+</tbody></table></div>
+<pre class="rule"><code>/* CSS 맨 위에 이 한 줄을 깔아 두면 크기 계산이 훨씬 쉬워집니다 */
+* { box-sizing: border-box; }</code></pre>
+<p class="note">이 자료의 뒤쪽 예제들도 대부분 이 한 줄로 시작합니다. 지금은 <b>"지정한 width가 그대로 실제 폭이 된다"</b> 정도로만 알아 두면 충분합니다.</p>
 
 <h2 id="s3">3. 박스 배치 — display와 position</h2>
 <h3 id="s3-1">3-1. display — block과 inline</h3>
@@ -462,12 +470,12 @@
 </div>
 <p><b>inline-block</b>은 둘의 중간입니다. 흐름은 inline처럼 옆으로 이어지지만, 크기는 block처럼 width·height와 위아래 padding·margin이 적용됩니다. 버튼이나 이미지가 이런 식으로 동작합니다.</p>
 <div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>block</td><td>div, p, h1, ul, section</td><td>줄바꿈 O · width/height O · 상하 margin/padding O</td></tr>
-<tr><td>inline</td><td>span, a, b, em</td><td>줄바꿈 X · width/height X · 상하 margin/padding 반영 안 됨</td></tr>
-<tr><td>inline-block</td><td>button, img, input</td><td>줄바꿈 X · width/height O · 상하 margin/padding O</td></tr>
+<tr><td>block</td><td>div, p, h1, ul, section</td><td>한 줄을 통째로 차지하고, 항상 새 줄에서 시작</td></tr>
+<tr><td>inline</td><td>span, a, b, em</td><td>글자처럼 흐름 안에 놓이고, 내용만큼만 차지</td></tr>
+<tr><td>inline-block</td><td>button, img, input</td><td>옆으로 이어지면서 크기도 가짐 (둘의 중간)</td></tr>
 <tr><td>none</td><td>—</td><td>화면에서 사라지고 공간도 차지하지 않음</td></tr>
 </tbody></table></div>
-<p class="note">아래 예제에서 세 종류 모두 같은 width: 110px을 주었습니다. inline만 width가 무시되는 것을 확인해 보세요.</p>
+<p class="note">아래 예제에서 세 종류 모두 같은 <code>width: 110px</code>을 주었습니다. inline만 width가 먹지 않는 것을 확인해 보세요.</p>
 
 <div class="demo" data-name="block · inline · inline-block" style="--h: 500px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
@@ -537,7 +545,7 @@
   <text x="380" y="18" font-weight="700" font-size="14">absolute</text>
   <rect x="380" y="28" width="160" height="180" fill="#fafafa" stroke="#d1d5db"/>
   <rect x="390" y="40" width="140" height="110" fill="#fff" stroke="#f59e0b" stroke-width="2"/>
-  <text x="396" y="56" fill="#b45309" font-size="11">부모 relative</text>
+  <text x="396" y="56" fill="#b45309" font-size="11">기준이 되는 영역</text>
   <rect x="482" y="46" width="42" height="20" fill="#bfdbfe" stroke="#2563eb"/>
   <text x="503" y="60" text-anchor="middle" fill="#1e3a8a" font-size="11">top right</text>
   <rect x="390" y="160" width="140" height="30" fill="#e5e7eb"/>
@@ -553,74 +561,78 @@
   <text x="640" y="150" text-anchor="middle" fill="#6b7280">스크롤해도 고정</text>
 </svg>
 </div>
-<p>가장 흔한 조합은 <b>부모 relative + 자식 absolute</b>입니다. 부모에 relative를 주면 자식 absolute의 기준점이 그 부모가 되어, 카드 모서리에 배지를 붙이는 식의 배치가 됩니다. 아래 예제의 NEW 배지가 그 경우입니다.</p>
+<p>네 가지의 차이는 <b>"흐름에 남아 있는가"</b>와 <b>"무엇을 기준으로 재는가"</b> 두 가지뿐입니다.</p>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>static</td><td>기본값</td><td>흐름 그대로. top·left를 써도 무시됨</td></tr>
+<tr><td>relative</td><td>원래 자리 기준</td><td>자리는 그대로 차지한 채, 보이는 위치만 살짝 이동</td></tr>
+<tr><td>absolute</td><td>페이지 기준</td><td>흐름에서 빠져 자리를 비움. 지정한 좌표로 이동</td></tr>
+<tr><td>fixed</td><td>브라우저 화면 기준</td><td>흐름에서 빠지고, 스크롤해도 같은 자리에 고정</td></tr>
+</tbody></table></div>
+<p class="note">실무에서는 <code>relative</code>와 <code>absolute</code>를 부모·자식으로 짝지어 쓰는 방법을 많이 쓰지만, 지금은 위의 네 가지 성격만 알면 충분합니다.</p>
 
-<div class="demo" data-name="relative 부모와 absolute 배지" style="--h: 340px;">
+<div class="demo" data-name="static · relative · absolute · fixed" style="--h: 340px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;relative 부모와 absolute 배지&lt;/title&gt;
+  &lt;title&gt;position 네 가지&lt;/title&gt;
   &lt;style&gt;
-    body { font-family: sans-serif; margin: 24px; }
-    .card {
+    body { font-family: sans-serif; margin: 20px; }
+    div { padding: 10px; margin-bottom: 6px; background: #e5e7eb; }
+
+    /* 원래 자리는 그대로 두고, 보이는 위치만 옮깁니다 */
+    .relative {
       position: relative;
-      padding: 36px 24px 24px;
-      border: 1px solid #aaa;
-      border-radius: 12px;
+      top: 10px;
+      left: 40px;
+      background: #fde68a;
     }
-    .badge {
+
+    /* 흐름에서 빠져서 자리를 비웁니다 */
+    .absolute {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      padding: 2px 8px;
-      background: #333;
-      color: white;
-      border-radius: 4px;
+      top: 20px;
+      right: 20px;
+      background: #bfdbfe;
     }
-    .moved {
-      position: relative;
-      top: 8px;
-      left: 24px;
-      background: #fef3c7;
-    }
+
+    /* 흐름에서 빠지고, 스크롤해도 화면에 고정됩니다 */
     .fixed {
       position: fixed;
-      right: 16px;
-      bottom: 16px;
-      padding: 8px;
-      background: #eee;
+      right: 20px;
+      bottom: 20px;
+      background: #bbf7d0;
     }
   &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
-  &lt;div class="card"&gt;
-    &lt;span class="badge"&gt;NEW&lt;/span&gt;
-    &lt;h1&gt;홍길동&lt;/h1&gt;
-    &lt;p&gt;테니스를 좋아합니다.&lt;/p&gt;
-    &lt;p class="moved"&gt;relative: 원래 자리에서 아래 8px, 오른쪽 24px&lt;/p&gt;
-  &lt;/div&gt;
-  &lt;div class="fixed"&gt;fixed: 오른쪽 아래 고정&lt;/div&gt;
+  &lt;div&gt;static — 기본. 위에서 아래로 차례대로&lt;/div&gt;
+  &lt;div class="relative"&gt;relative — 아래 10px, 오른쪽 40px 이동&lt;/div&gt;
+  &lt;div&gt;static — 위 상자가 자리를 그대로 차지해서 밀리지 않습니다&lt;/div&gt;
+  &lt;div class="absolute"&gt;absolute — 오른쪽 위&lt;/div&gt;
+  &lt;div class="fixed"&gt;fixed — 오른쪽 아래 고정&lt;/div&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
 </div>
+
+<p class="note">relative 상자를 지우면 아래 상자가 위로 올라오지만, absolute 상자를 지워도 다른 상자는 움직이지 않습니다. "자리를 남기느냐"의 차이입니다.</p>
 
 <div class="ref-wrap"><table class="ref"><tbody>
 
 <tr><td>static</td><td>기본 문서 흐름에 배치</td></tr>
 
-<tr><td>relative</td><td>원래 자리를 유지하며 위치를 조절. 위 예제에서는 배지의 기준</td></tr>
+<tr><td>relative</td><td>원래 자리를 유지하며 위치만 조절</td></tr>
 
-<tr><td>absolute</td><td>일반 흐름에서 빠져 기준 블록에 배치. 위 예제에서는 relative 부모 기준</td></tr>
+<tr><td>absolute</td><td>일반 흐름에서 빠져 기준 영역에 배치</td></tr>
 
-<tr><td>fixed</td><td>일반적인 경우 뷰포트 기준으로 고정. 예제에서는 실행 결과 영역 기준</td></tr>
+<tr><td>fixed</td><td>브라우저 화면 기준으로 고정. 예제에서는 실행 결과 영역 기준</td></tr>
 
-<tr><td>sticky</td><td>스크롤 영역 안에서 지정한 경계에 도달하면 달라붙음. top 등의 기준 필요</td></tr>
+<tr><td>sticky</td><td>스크롤하다 지정한 경계에 닿으면 달라붙음</td></tr>
 
 <tr><td>top / right / bottom / left</td><td>기준으로부터의 위치</td></tr>
 
-<tr><td>z-index</td><td>겹치는 요소의 쌓임 순서. 부모의 쌓임 맥락에도 영향을 받음</td></tr>
+<tr><td>z-index</td><td>겹치는 요소의 쌓임 순서</td></tr>
 
 </tbody></table></div>
 
@@ -811,22 +823,26 @@
     * { box-sizing: border-box; }
     body { font-family: sans-serif; margin: 16px; }
     .info { padding: 8px 12px; background: #fef3c7; border-radius: 6px; margin-bottom: 12px; }
-    .grid { display: flex; flex-wrap: wrap; gap: 12px; }
-    .card { padding: 24px 12px; background: #bfdbfe; border: 1px solid #2563eb;
-            border-radius: 8px; text-align: center; }
+    .grid { display: flex; flex-wrap: wrap; }
 
-    /* 기본(가장 넓을 때): 4열 */
-    .card { width: calc(25% - 9px); }
+    /* .card는 "한 칸이 차지할 자리", 그 안의 .inner가 실제로 보이는 상자입니다.
+       칸에 padding을 주면 상자 사이 간격이 생겨서 폭을 계산할 필요가 없습니다. */
+    .card { padding: 6px; }
+    .inner { padding: 24px 12px; background: #bfdbfe; border: 1px solid #2563eb;
+             border-radius: 8px; text-align: center; }
+
+    /* 기본(가장 넓을 때): 4열 → 한 칸이 25% */
+    .card { width: 25%; }
     .info::before { content: "1280px 이상 — 데스크톱: 4열"; }
 
     /* 1280px 미만: 3열 */
     @media (max-width: 1279px) {
-      .card { width: calc(33.333% - 8px); }
+      .card { width: 33.333%; }
       .info::before { content: "768 ~ 1279px — 노트북: 3열"; }
     }
     /* 768px 미만: 2열 */
     @media (max-width: 767px) {
-      .card { width: calc(50% - 6px); }
+      .card { width: 50%; }
       .info::before { content: "480 ~ 767px — 태블릿: 2열"; }
     }
     /* 480px 미만: 1열 */
@@ -839,8 +855,14 @@
 &lt;body&gt;
   &lt;div class="info"&gt;&lt;/div&gt;
   &lt;div class="grid"&gt;
-    &lt;div class="card"&gt;1&lt;/div&gt;&lt;div class="card"&gt;2&lt;/div&gt;&lt;div class="card"&gt;3&lt;/div&gt;&lt;div class="card"&gt;4&lt;/div&gt;
-    &lt;div class="card"&gt;5&lt;/div&gt;&lt;div class="card"&gt;6&lt;/div&gt;&lt;div class="card"&gt;7&lt;/div&gt;&lt;div class="card"&gt;8&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;div class="inner"&gt;1&lt;/div&gt;&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;div class="inner"&gt;2&lt;/div&gt;&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;div class="inner"&gt;3&lt;/div&gt;&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;div class="inner"&gt;4&lt;/div&gt;&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;div class="inner"&gt;5&lt;/div&gt;&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;div class="inner"&gt;6&lt;/div&gt;&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;div class="inner"&gt;7&lt;/div&gt;&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;div class="inner"&gt;8&lt;/div&gt;&lt;/div&gt;
   &lt;/div&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
@@ -1045,6 +1067,8 @@
 <p class="note">row에서는 주축이 가로, 교차축이 세로입니다. column으로 바꾸면 축도 바뀝니다.</p>
 
 <h3 id="s6-4">6-4. 줄바꿈</h3>
+<p>flex의 기본값은 <code>flex-wrap: nowrap</code>, 즉 <b>줄을 바꾸지 않음</b>입니다. 공간이 부족해도 다음 줄로 넘어가지 않고 자식들이 <b>찌그러집니다</b>. <code>width</code>를 줬는데 지켜지지 않는다면 대부분 이 때문입니다.</p>
+<p><code>flex-wrap: wrap</code>을 주면 그때부터 공간이 모자랄 때 다음 줄로 넘어갑니다. 아래 예제에서 폭을 줄여 보고, <code>wrap</code>을 <code>nowrap</code>으로 바꿔서도 확인해 보세요.</p>
 
 <div class="demo stack resizable" data-name="공간이 부족하면 다음 줄로" style="--h: 300px;" data-width-controls>
 <textarea class="src">&lt;!DOCTYPE html&gt;
@@ -1094,7 +1118,7 @@
 
 <tr><td>align-items</td><td>교차축 방향 정렬: stretch / flex-start / center 등</td></tr>
 
-<tr><td>flex-wrap: wrap</td><td>공간이 부족하면 다음 줄로 배치</td></tr>
+<tr><td>flex-wrap</td><td>기본값은 nowrap(줄바꿈 없음). wrap을 주어야 다음 줄로 넘어감</td></tr>
 
 <tr><td>align-self</td><td>자식 하나의 교차축 정렬을 따로 지정</td></tr>
 
@@ -1117,6 +1141,56 @@
 </tbody></table></div>
 
 </details>
+<h3 id="s6-5">6-5. 미디어 쿼리와 나눠 맡기</h3>
+<p>반응형을 만들 때 "미디어 쿼리를 몇 개나 써야 하나" 고민하게 되는데, 역할을 나누면 간단합니다.</p>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>flex가 알아서</td><td>양이 변하는 것</td><td>한 줄에 몇 개가 들어갈지, 남는 공간을 어떻게 나눌지</td></tr>
+<tr><td>미디어 쿼리로</td><td>성격이 바뀌는 것</td><td>가로 → 세로 전환, 글자·여백 크기 조정, 요소 숨기기</td></tr>
+</tbody></table></div>
+<p><code>flex-wrap: wrap</code> + <code>flex: 1 1 200px</code>을 쓰면 "최소 200px은 확보하되 남는 공간은 나눠 갖고, 안 들어가면 다음 줄로"가 되어 <b>미디어 쿼리 없이도</b> 칸 수가 알아서 바뀝니다. 그래서 카드 목록 같은 건 미디어 쿼리가 아예 필요 없습니다.</p>
+<p>반대로 <b>가로로 놓던 것을 세로로 바꾸는 일</b>은 flex 혼자 못 합니다. 이건 미디어 쿼리로 <code>flex-direction</code>을 바꿔 줘야 합니다. 실습에서 쓸 조합이 딱 이 두 줄입니다.</p>
+
+<div class="demo stack resizable" data-name="flex가 맡는 부분 + 미디어 쿼리가 맡는 부분" style="--h: 380px;" data-width-controls>
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;flex와 미디어 쿼리 나눠 맡기&lt;/title&gt;
+  &lt;style&gt;
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; margin: 16px; }
+
+    /* ① 프로필: 사진과 글을 가로로 */
+    .profile { display: flex; gap: 16px; align-items: center; }
+    .profile img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; }
+
+    /* ② 취미 목록: 미디어 쿼리 없이 flex만으로 칸 수가 알아서 바뀜 */
+    .hobbies { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; margin-top: 16px; }
+    .hobbies li { flex: 1 1 120px; padding: 12px; background: #dbeafe; border-radius: 6px; text-align: center; }
+
+    /* ③ 좁아지면 프로필만 세로로 — 이건 flex 혼자 못 하는 일 */
+    @media (max-width: 500px) {
+      .profile { flex-direction: column; text-align: center; }
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="profile"&gt;
+    &lt;img src="assets/tennis-ball-square.jpg" alt="테니스공 사진"&gt;
+    &lt;div&gt;
+      &lt;h1&gt;홍길동&lt;/h1&gt;
+      &lt;p&gt;테니스와 머신러닝을 좋아합니다.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;ul class="hobbies"&gt;
+    &lt;li&gt;테니스&lt;/li&gt;&lt;li&gt;음악 감상&lt;/li&gt;&lt;li&gt;산책&lt;/li&gt;&lt;li&gt;사진&lt;/li&gt;&lt;li&gt;여행&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+<p class="note">폭을 줄여 보세요. 취미 칸은 미디어 쿼리 없이 저절로 줄 수가 바뀌고, 프로필은 500px에서 세로로 바뀝니다.</p>
+
 <p>연습: <a href="https://flexboxfroggy.com/#ko" target="_blank" rel="noopener noreferrer">Flexbox Froggy ↗</a></p>
 
 <h2 id="s7">7. 트랜스폼 · 트랜지션 · 애니메이션</h2>
@@ -1165,7 +1239,7 @@
 </div>
 
 <h3 id="s7-1">7-1. transform — 모양과 위치 바꾸기</h3>
-<p>버튼에 마우스를 올리거나, Tab 키로 포커스를 옮겨 보세요.</p>
+<p>버튼에 마우스를 올려 보세요. <code>:hover</code>는 "마우스가 올라간 동안"이라는 뜻입니다.</p>
 
 <div class="demo" data-name="이동 · 회전 · 크기 변경" style="--h: 250px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
@@ -1184,11 +1258,10 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    @media (prefers-reduced-motion: no-preference) {
-      .move:hover, .move:focus-visible { transform: translateY(-12px); }
-      .rotate:hover, .rotate:focus-visible { transform: rotate(15deg); }
-      .scale:hover, .scale:focus-visible { transform: scale(1.15); }
-    }
+    /* 마우스를 올린 동안에만 적용됩니다 */
+    .move:hover   { transform: translateY(-12px); }  /* 위로 12px 이동 */
+    .rotate:hover { transform: rotate(15deg); }      /* 15도 회전 */
+    .scale:hover  { transform: scale(1.15); }        /* 1.15배 확대 */
   &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -1221,17 +1294,15 @@
       border-radius: 8px;
       cursor: pointer;
     }
-    button:hover, button:focus-visible {
+    /* 두 버튼 모두 hover 시 같은 변화를 줍니다 */
+    button:hover {
       background: #c7d9c9;
       transform: translateY(-6px);
     }
+
+    /* 이 버튼에만 transition을 더해 0.3초에 걸쳐 변하게 합니다 */
     .smooth {
       transition: background-color 0.3s ease, transform 0.3s ease;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .smooth { transition: none; }
-      button:hover, button:focus-visible { transform: none; }
     }
   &lt;/style&gt;
 &lt;/head&gt;
@@ -1259,7 +1330,7 @@
 <h3 id="s7-3">7-3. animation — 동작 순서와 반복 정하기</h3>
 <p><code>@keyframes</code>로 시작과 끝을 정하고, <code>animation</code>으로 시간과 반복을 지정합니다.</p>
 
-<div class="demo" data-name="통통 튀는 공 — CSS만으로 재생과 정지" style="--h: 280px;">
+<div class="demo" data-name="통통 튀는 공" style="--h: 280px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
@@ -1274,23 +1345,19 @@
       height: 64px;
       border-radius: 50%;
       background: #86a86b;
+
+      /* 이름  시간   속도곡선      반복      왕복 */
       animation: bounce 0.8s ease-in-out infinite alternate;
     }
+
+    /* bounce라는 이름으로 "처음 → 끝" 모습을 정의합니다 */
     @keyframes bounce {
       from { transform: translateY(0); }
-      to { transform: translateY(-40px); }
-    }
-    #pause:checked ~ .stage .ball {
-      animation-play-state: paused;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .ball { animation: none; }
+      to   { transform: translateY(-40px); }
     }
   &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
-  &lt;input type="checkbox" id="pause"&gt;
-  &lt;label for="pause"&gt;일시정지&lt;/label&gt;
   &lt;div class="stage"&gt;
     &lt;div class="ball" role="img" aria-label="통통 튀는 공"&gt;&lt;/div&gt;
   &lt;/div&gt;
@@ -1316,108 +1383,149 @@
 
 </tbody></table></div>
 
-<p class="note">공의 이동 거리, 재생 시간, 반복 횟수를 바꿔 보세요. 예제는 기기의 ‘동작 줄이기’ 설정이 켜져 있으면 움직임을 줄입니다.</p>
+<p class="note">공의 이동 거리(<code>-40px</code>), 재생 시간(<code>0.8s</code>), 반복(<code>infinite</code>)을 바꿔 보세요.</p>
+
+<details class="extra"><summary>실무 팁 — 움직임에 민감한 사용자 배려하기</summary>
+<p>화면이 움직이면 어지러움을 느끼는 사용자가 있어서, 운영체제에 <b>"동작 줄이기"</b> 설정이 있습니다. 그 설정이 켜져 있는지 묻는 미디어 쿼리가 <code>prefers-reduced-motion</code>이고, 실제 서비스에서는 아래 한 블록을 넣어 줍니다. 지금 단계에서 외울 필요는 없고, "이런 게 있다" 정도로 충분합니다.</p>
+<pre class="rule"><code>/* 사용자가 "동작 줄이기"를 켜 두었으면 애니메이션을 끕니다 */
+@media (prefers-reduced-motion: reduce) {
+  .ball { animation: none; }
+}</code></pre>
+<p class="note">비슷하게 <code>:hover</code> 옆에 <code>:focus-visible</code>을 같이 적어 두면 마우스 없이 <kbd>Tab</kbd> 키로 이동하는 사용자에게도 같은 효과가 보입니다. 예: <code>button:hover, button:focus-visible { … }</code></p>
+</details>
 
 <h2 id="s8">8. 실습: 자기소개 페이지 꾸미기</h2>
-<p>1일차에 만든 <code>about-me.html</code>에 CSS를 추가해 보세요.</p>
-<ol>
-  <li><b>선택자:</b> class를 붙여 소개 영역과 취미 목록을 각각 꾸미기</li>
-  <li><b>박스 모델:</b> 카드에 배경·테두리·안쪽 여백을 주고, 주변 요소와 간격 만들기</li>
-  <li><b>Flexbox:</b> 사진과 소개를 나란히 놓거나, 취미 목록을 가로로 배치하기</li>
-  <li><b>반응형:</b> 화면이 좁아지면 배치나 크기가 바뀌도록 만들기</li>
-  <li><b>전환 효과:</b> 링크나 버튼에 hover와 transition 적용하기</li>
-</ol>
-<p><b>추가 도전:</b> 카드 모서리에 배지 붙이기 · keyframes로 등장 애니메이션 만들기</p>
-<p class="note">예시의 ‘사진’ 영역은 자신의 사진으로 바꾸세요. 기존 <code>&lt;img&gt;</code>에 class를 붙여 크기와 모양을 조절하면 됩니다.</p>
-<h3>화면 예시</h3>
+<p>1일차에 만든 <code>about-me.html</code>에 CSS를 입혀, 아래 <b>목표 화면</b>처럼 만들어 봅니다. 단계마다 하나씩만 추가하면 되고, 각 단계에서 쓸 속성은 이 자료의 몇 장을 보면 되는지 적어 두었습니다.</p>
 
-<div class="demo stack resizable" data-name="나를 소개하는 카드" style="--h: 500px;" data-width-controls data-preview-only>
+<h3 id="s8-1">목표 화면</h3>
+<p>넓은 화면에서는 사진과 소개가 가로로, 좁은 화면에서는 세로로 쌓입니다. 취미는 칸으로, 링크는 마우스를 올리면 색이 바뀝니다.</p>
+
+<div class="demo stack resizable" data-name="목표 화면 — 폭을 바꿔 보세요" style="--h: 560px;" data-width-controls data-preview-only>
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;나를 소개하는 카드&lt;/title&gt;
+  &lt;title&gt;홍길동을 소개합니다&lt;/title&gt;
   &lt;style&gt;
     * { box-sizing: border-box; }
-    body {
-      font-family: sans-serif;
-      line-height: 1.6;
-      margin: 0;
-      padding: 24px;
-      background: #f3f3f3;
-    }
+    body { font-family: sans-serif; margin: 0; padding: 20px; background: #f3f4f6; }
+
     .card {
-      max-width: 680px;
+      max-width: 640px;
       margin: 0 auto;
       padding: 24px;
-      border: 1px solid #ddd;
+      background: #fff;
+      border: 1px solid #d1d5db;
       border-radius: 16px;
-      background: white;
-      animation: appear 0.5s ease;
     }
-    .profile { display: flex; align-items: center; gap: 24px; }
-    .photo {
-      width: 120px;
-      height: 120px;
-      flex-shrink: 0;
-      border-radius: 50%;
-      object-fit: cover;
-      background: #e5e5e5;
-      text-align: center;
-      line-height: 120px;
+
+    .profile { display: flex; gap: 20px; align-items: center; }
+    .profile img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; }
+    .profile h1 { margin: 0 0 6px; font-size: 26px; }
+    .profile p { margin: 0; color: #6b7280; }
+
+    .hobbies { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 20px 0; list-style: none; }
+    .hobbies li { flex: 1 1 110px; padding: 12px; background: #dbeafe; color: #1e3a8a;
+                  border-radius: 8px; text-align: center; font-size: 14px; }
+
+    .links { display: flex; flex-wrap: wrap; gap: 10px; }
+    .links a {
+      display: inline-block; padding: 10px 16px; background: #1f2937; color: #fff;
+      border-radius: 8px; text-decoration: none; font-size: 14px;
+      transition: background-color 0.25s ease, transform 0.25s ease;
     }
-    h1 { margin: 0 0 8px; }
-    .hobbies { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; }
-    .hobbies li { padding: 4px 12px; background: #eee; border-radius: 16px; }
-    .link {
-      display: inline-block;
-      padding: 8px 16px;
-      color: white;
-      background: #333;
-      border-radius: 6px;
-      text-decoration: none;
-      transition: background-color 0.2s, transform 0.2s;
-    }
-    .link:hover, .link:focus-visible { background: #555; transform: translateY(-3px); }
-    @media (max-width: 600px) {
-      .profile { flex-direction: column; align-items: flex-start; }
-      .card { padding: 20px; }
-    }
-    @keyframes appear {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .card { animation: none; }
-      .link { transition: none; }
-      .link:hover, .link:focus-visible { transform: none; }
+    .links a:hover { background: #2563eb; transform: translateY(-3px); }
+
+    @media (max-width: 520px) {
+      .card { padding: 16px; }
+      .profile { flex-direction: column; text-align: center; }
+      .profile h1 { font-size: 22px; }
     }
   &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
   &lt;div class="card"&gt;
     &lt;div class="profile"&gt;
-      &lt;!-- 실제 사진은 img 태그에 class="photo"를 붙여 사용 --&gt;
-      &lt;div class="photo"&gt;사진&lt;/div&gt;
+      &lt;img src="assets/tennis-ball-square.jpg" alt="테니스공 사진"&gt;
       &lt;div&gt;
         &lt;h1&gt;홍길동&lt;/h1&gt;
-        &lt;p&gt;21세 · 테니스를 좋아하는 대학생입니다.&lt;/p&gt;
+        &lt;p&gt;컴퓨터인공지능학부 · 테니스와 머신러닝&lt;/p&gt;
       &lt;/div&gt;
     &lt;/div&gt;
-    &lt;h2&gt;취미&lt;/h2&gt;
     &lt;ul class="hobbies"&gt;
-      &lt;li&gt;테니스&lt;/li&gt;
-      &lt;li&gt;음악 감상&lt;/li&gt;
-      &lt;li&gt;산책&lt;/li&gt;
+      &lt;li&gt;테니스&lt;/li&gt;&lt;li&gt;음악 감상&lt;/li&gt;&lt;li&gt;산책&lt;/li&gt;&lt;li&gt;사진&lt;/li&gt;
     &lt;/ul&gt;
-    &lt;a class="link" href="https://www.jbnu.ac.kr/" target="_blank" rel="noopener noreferrer"&gt;좋아하는 사이트&lt;/a&gt;
+    &lt;div class="links"&gt;
+      &lt;a href="https://huggingface.co" target="_blank"&gt;Hugging Face&lt;/a&gt;
+      &lt;a href="https://github.com" target="_blank"&gt;GitHub&lt;/a&gt;
+    &lt;/div&gt;
   &lt;/div&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
 </div>
 
-<p><b>완료 확인:</b> 넓은 화면과 좁은 화면에서 배치를 확인하고, 직접 바꾼 CSS 한 가지를 설명해 보세요.</p>
+<h3 id="s8-2">단계별로 만들기</h3>
+
+<p><b>0단계 · 준비</b> — <code>about-me.html</code>의 <code>&lt;head&gt;</code> 안에 <code>&lt;style&gt;</code> 태그를 만들고 아래 두 줄로 시작합니다. (<a href="#s2-1">2-1장</a>)</p>
+<pre class="rule"><code>* { box-sizing: border-box; }
+body { font-family: sans-serif; padding: 20px; background: #f3f4f6; }</code></pre>
+
+<p><b>1단계 · 사진 넣기</b> — 프로필 사진 자리에 실제 이미지를 넣습니다. 아래 주소를 그대로 써도 되고, 본인 사진을 같은 폴더에 두고 파일 이름을 써도 됩니다.</p>
+<pre class="rule"><code>&lt;img src="https://boseung2.github.io/project-beginner-ta/assets/tennis-ball-square.jpg" alt="테니스공"&gt;</code></pre>
+<figure class="shot">
+  <img src="assets/tennis-ball-square.jpg" alt="실습에 쓸 테니스공 사진" width="400" height="400" loading="lazy">
+  <figcaption>실습용 사진 — 오른쪽 클릭 → 이미지 저장으로 내려받아 써도 됩니다.<br>
+  <span style="font-size:12px">출처: Wikimedia Commons, <a href="https://commons.wikimedia.org/wiki/File:Tennis_ball_closeup.jpg" target="_blank" rel="noopener noreferrer">Tennis ball closeup</a> (CC0 / 퍼블릭 도메인)</span></figcaption>
+</figure>
+
+<p><b>2단계 · 카드 모양 만들기</b> — 소개 전체를 <code>&lt;div class="card"&gt;</code>로 감싸고 배경·테두리·안쪽 여백을 줍니다. (<a href="#s2">2장 박스 모델</a>)</p>
+<pre class="rule"><code>.card {
+  max-width: 640px;      /* 너무 넓어지지 않게 */
+  margin: 0 auto;        /* 좌우 auto → 가운데 정렬 */
+  padding: 24px;         /* 안쪽 여백 */
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 16px;   /* 모서리 둥글게 */
+}</code></pre>
+
+<p><b>3단계 · 사진과 글을 가로로</b> — 사진과 이름/소개를 <code>&lt;div class="profile"&gt;</code>로 묶고 flex를 줍니다. (<a href="#s6">6장 플렉스 박스</a>)</p>
+<pre class="rule"><code>.profile { display: flex; gap: 20px; align-items: center; }
+.profile img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; }</code></pre>
+<p class="note"><code>border-radius: 50%</code>이면 정사각형이 원이 됩니다. <code>object-fit: cover</code>는 사진 비율이 달라도 찌그러지지 않게 잘라 채웁니다.</p>
+
+<p><b>4단계 · 취미를 칸으로</b> — <code>&lt;ul&gt;</code>에 flex와 wrap을 주면 가로로 놓이고, 폭이 좁아지면 저절로 다음 줄로 넘어갑니다. (<a href="#s6-4">6-4장</a>)</p>
+<pre class="rule"><code>.hobbies { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; }
+.hobbies li { flex: 1 1 110px; padding: 12px; background: #dbeafe;
+              border-radius: 8px; text-align: center; }</code></pre>
+
+<p><b>5단계 · 링크를 버튼처럼 + hover</b> — 좋아하는 사이트 링크를 버튼 모양으로 만들고, 마우스를 올리면 부드럽게 바뀌게 합니다. (<a href="#s7-2">7-2장</a>)</p>
+<pre class="rule"><code>.links a {
+  display: inline-block;
+  padding: 10px 16px;
+  background: #1f2937;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;              /* 링크 밑줄 없애기 */
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+.links a:hover { background: #2563eb; transform: translateY(-3px); }</code></pre>
+<p class="note">링크는 본인이 자주 가는 사이트로 바꿔 보세요. 예: <a href="https://huggingface.co" target="_blank" rel="noopener noreferrer">huggingface.co</a> · <a href="https://github.com" target="_blank" rel="noopener noreferrer">github.com</a></p>
+
+<p><b>6단계 · 좁은 화면 대응</b> — 마지막에 미디어 쿼리 한 블록만 추가합니다. 가로로 놓였던 프로필을 세로로 바꾸는, flex 혼자서는 못 하는 일입니다. (<a href="#s6-5">6-5장</a>)</p>
+<pre class="rule"><code>@media (max-width: 520px) {
+  .card { padding: 16px; }
+  .profile { flex-direction: column; text-align: center; }
+}</code></pre>
+<p class="note">확인 방법: 브라우저 창 너비를 줄여 보거나, F12 → 왼쪽 위 기기 모양 아이콘을 눌러 모바일 화면으로 봅니다.</p>
+
+<h3 id="s8-3">다 됐다면</h3>
+<ul>
+  <li>취미 칸에 <code>:hover</code>로 배경색 바꾸기</li>
+  <li><code>@keyframes</code>로 카드가 아래에서 떠오르며 나타나게 하기 (<a href="#s7-3">7-3장</a>)</li>
+  <li>카드 모서리에 <code>position</code>으로 배지 붙이기 (<a href="#s3-2">3-2장</a>)</li>
+</ul>
+<p class="note"><b>완료 확인:</b> 넓은 화면과 좁은 화면에서 배치를 확인하고, 직접 바꾼 CSS 한 가지를 설명해 보세요.</p>
 <footer class="session-footer"><a href="1-HTML.html">← 이전 · 1. HTML</a><a href="index.html">전체 목차 →</a></footer>
 </main>
 </div>
