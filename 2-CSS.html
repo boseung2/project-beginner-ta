@@ -131,6 +131,7 @@
     </ol></li>
     <li><a href="#s2">2. 박스 모델</a><ol>
       <li><a class="sub" href="#s2-1">box-sizing</a></li>
+      <li><a class="sub" href="#s2-2">가운데 정렬</a></li>
     </ol></li>
     <li><a href="#s3">3. 박스 배치</a><ol>
       <li><a class="sub" href="#s3-1">display — block과 inline</a></li>
@@ -164,8 +165,10 @@
     </ol></li>
     <li><a href="#s8">8. 실습: 자기소개 페이지 꾸미기</a><ol>
       <li><a class="sub" href="#s8-1">목표 화면</a></li>
-      <li><a class="sub" href="#s8-2">단계별로 만들기</a></li>
-      <li><a class="sub" href="#s8-3">다 됐다면</a></li>
+      <li><a class="sub" href="#s8-2">1부 · 가운데에 카드 만들기</a></li>
+      <li><a class="sub" href="#s8-3">2부 · 안쪽 배치하기</a></li>
+      <li><a class="sub" href="#s8-4">3부 · 반응하게 만들기</a></li>
+      <li><a class="sub" href="#s8-5">보너스 · 내 색 고르기</a></li>
     </ol></li>
   </ol>
 </nav>
@@ -427,6 +430,52 @@
 <pre class="rule"><code>/* CSS 맨 위에 이 한 줄을 깔아 두면 크기 계산이 훨씬 쉬워집니다 */
 * { box-sizing: border-box; }</code></pre>
 <p class="note">이 자료의 뒤쪽 예제들도 대부분 이 한 줄로 시작합니다. 지금은 <b>"지정한 width가 그대로 실제 폭이 된다"</b> 정도로만 알아 두면 충분합니다.</p>
+
+<h3 id="s2-2">2-2. 가운데 정렬 — 상자를 화면 중앙에</h3>
+<p>상자를 가운데 놓는 일은 <b>두 단계</b>입니다. 순서가 중요합니다.</p>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>1단계</td><td>폭을 줄인다</td><td><code>max-width: 640px</code> — 남는 공간을 먼저 만든다</td></tr>
+<tr><td>2단계</td><td>남는 공간을 반씩</td><td><code>margin: 0 auto</code> — 좌우 여백을 auto로</td></tr>
+</tbody></table></div>
+<p>왜 순서가 중요하냐면, <b>block 요소는 기본적으로 가로를 꽉 채우기</b> 때문입니다. 폭이 꽉 차 있으면 남는 공간이 0이라, <code>margin: 0 auto</code>를 아무리 줘도 나눠 가질 것이 없어서 아무 일도 일어나지 않습니다. <b>가운데 정렬이 안 되는 대부분의 이유가 이것입니다.</b></p>
+<p><code>auto</code>는 <b>"남은 공간을 알아서 가져가라"</b>는 뜻입니다. 좌우 둘 다 auto면 서로 똑같이 나눠 가지므로 상자가 정확히 가운데로 갑니다.</p>
+<p><b>위아래 간격</b>은 사정이 다릅니다. 위아래 margin은 <code>auto</code>를 써도 0으로 계산되어 세로 가운데로 가지 않습니다. 그래서 <code>margin: 40px auto</code>처럼 <b>위아래는 숫자, 좌우는 auto</b>로 적습니다.</p>
+
+<div class="demo" data-name="가운데로 가는 것과 가지 않는 것" style="--h: 400px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;가운데 정렬&lt;/title&gt;
+  &lt;style&gt;
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; margin: 0; padding: 16px; background: #e5e7eb; }
+    .box { padding: 16px; background: #bfdbfe; border: 1px solid #2563eb; }
+
+    /* ① 폭을 안 줄이면 남는 공간이 없어서 auto가 소용없습니다 */
+    .a { margin: 0 auto; }
+
+    /* ② 폭은 줄였지만 margin이 없으니 왼쪽에 붙습니다 */
+    .b { max-width: 300px; }
+
+    /* ③ 폭을 줄이고 + 좌우를 auto → 가운데 */
+    .c { max-width: 300px; margin: 0 auto; }
+
+    /* ④ 위아래 간격은 숫자로, 좌우만 auto */
+    .d { max-width: 300px; margin: 40px auto; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="box a"&gt;① margin: 0 auto 만 — 그대로&lt;/div&gt;
+  &lt;div class="box b"&gt;② max-width 만 — 왼쪽&lt;/div&gt;
+  &lt;div class="box c"&gt;③ max-width + margin: 0 auto — 가운데&lt;/div&gt;
+  &lt;div class="box d"&gt;④ margin: 40px auto — 가운데 + 위아래 간격&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<p class="note"><b>상자</b>를 가운데 놓는 것과 <b>글자</b>를 가운데 놓는 것은 다른 속성입니다. 글자는 <code>text-align: center</code>입니다.</p>
 
 <h2 id="s3">3. 박스 배치 — display와 position</h2>
 <h3 id="s3-1">3-1. display — block과 inline</h3>
@@ -1167,7 +1216,7 @@
 
     /* ② 취미 목록: 미디어 쿼리 없이 flex만으로 칸 수가 알아서 바뀜 */
     .hobbies { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; margin-top: 16px; }
-    .hobbies li { flex: 1 1 120px; padding: 12px; background: #dbeafe; border-radius: 6px; text-align: center; }
+    .hobbies li { flex: 1 1 120px; padding: 12px 20px; background: #eee; border-radius: 6px; text-align: center; }
 
     /* ③ 좁아지면 프로필만 세로로 — 이건 flex 혼자 못 하는 일 */
     @media (max-width: 500px) {
@@ -1395,12 +1444,12 @@
 </details>
 
 <h2 id="s8">8. 실습: 자기소개 페이지 꾸미기</h2>
-<p>1일차에 만든 <code>about-me.html</code>에 CSS를 입혀, 아래 <b>목표 화면</b>처럼 만들어 봅니다. 단계마다 하나씩만 추가하면 되고, 각 단계에서 쓸 속성은 이 자료의 몇 장을 보면 되는지 적어 두었습니다.</p>
+<p>1일차에 만든 <code>about-me.html</code>에 CSS를 입혀 아래 <b>목표 화면</b>처럼 만들어 봅니다. 정답 코드는 적어 두지 않았습니다. 어떤 속성을 쓸지는 각 구역에 적힌 <b>참고 절</b>을 열어 보고 직접 찾아 보세요.</p>
 
 <h3 id="s8-1">목표 화면</h3>
-<p>넓은 화면에서는 사진과 소개가 가로로, 좁은 화면에서는 세로로 쌓입니다. 취미는 칸으로, 링크는 마우스를 올리면 색이 바뀝니다.</p>
+<p>넓은 화면에서는 사진과 소개가 가로로, 좁은 화면에서는 세로로 쌓입니다. 아래 버튼으로 폭을 바꿔 보세요.</p>
 
-<div class="demo stack resizable" data-name="목표 화면 — 폭을 바꿔 보세요" style="--h: 560px;" data-width-controls data-preview-only>
+<div class="demo stack resizable" data-name="목표 화면 — 폭을 바꿔 보세요" style="--h: 540px;" data-width-controls data-preview-only>
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
@@ -1412,9 +1461,9 @@
     body { font-family: sans-serif; margin: 0; padding: 20px; background: #f3f4f6; }
 
     .card {
-      max-width: 640px;
+      max-width: 600px;
       margin: 0 auto;
-      padding: 24px;
+      padding: 28px;
       background: #fff;
       border: 1px solid #d1d5db;
       border-radius: 16px;
@@ -1425,20 +1474,22 @@
     .profile h1 { margin: 0 0 6px; font-size: 26px; }
     .profile p { margin: 0; color: #6b7280; }
 
-    .hobbies { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 20px 0; list-style: none; }
-    .hobbies li { flex: 1 1 110px; padding: 12px; background: #dbeafe; color: #1e3a8a;
-                  border-radius: 8px; text-align: center; font-size: 14px; }
+    .hobbies { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; margin: 22px 0; list-style: none; }
+    .hobbies li { padding: 12px 20px; background: #eee; border-radius: 6px; }
 
-    .links { display: flex; flex-wrap: wrap; gap: 10px; }
-    .links a {
-      display: inline-block; padding: 10px 16px; background: #1f2937; color: #fff;
-      border-radius: 8px; text-decoration: none; font-size: 14px;
+    .site {
+      display: inline-block;
+      padding: 12px 20px;
+      background: #1f2937;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
       transition: background-color 0.25s ease, transform 0.25s ease;
     }
-    .links a:hover { background: #2563eb; transform: translateY(-3px); }
+    .site:hover { background: #2563eb; transform: translateY(-3px); }
 
     @media (max-width: 520px) {
-      .card { padding: 16px; }
+      .card { padding: 18px; }
       .profile { flex-direction: column; text-align: center; }
       .profile h1 { font-size: 22px; }
     }
@@ -1447,7 +1498,7 @@
 &lt;body&gt;
   &lt;div class="card"&gt;
     &lt;div class="profile"&gt;
-      &lt;img src="assets/tennis-ball-square.jpg" alt="테니스공 사진"&gt;
+      &lt;img src="assets/tennis-ball-square.jpg" alt="테니스 코트 사진"&gt;
       &lt;div&gt;
         &lt;h1&gt;홍길동&lt;/h1&gt;
         &lt;p&gt;컴퓨터인공지능학부 · 테니스와 머신러닝&lt;/p&gt;
@@ -1456,76 +1507,92 @@
     &lt;ul class="hobbies"&gt;
       &lt;li&gt;테니스&lt;/li&gt;&lt;li&gt;음악 감상&lt;/li&gt;&lt;li&gt;산책&lt;/li&gt;&lt;li&gt;사진&lt;/li&gt;
     &lt;/ul&gt;
-    &lt;div class="links"&gt;
-      &lt;a href="https://huggingface.co" target="_blank"&gt;Hugging Face&lt;/a&gt;
-      &lt;a href="https://github.com" target="_blank"&gt;GitHub&lt;/a&gt;
-    &lt;/div&gt;
+    &lt;a class="site" href="https://huggingface.co" target="_blank"&gt;관심 있는 사이트&lt;/a&gt;
   &lt;/div&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
 </div>
 
-<h3 id="s8-2">단계별로 만들기</h3>
+<h3 id="s8-2">1부 · 가운데에 카드 만들기</h3>
+<p>먼저 소개 내용 전체를 <code>div</code> 하나로 감싸고, 그 상자를 <b>화면 가운데</b>에 놓습니다. 여기가 첫 관문입니다. 폭을 먼저 줄여야 좌우에 남는 공간이 생기고, 그래야 좌우 여백을 <code>auto</code>로 줬을 때 가운데로 갑니다. 위아래 간격은 <code>auto</code>가 듣지 않으니 숫자로 줍니다.</p>
+<p>상자가 가운데로 왔으면 <b>카드처럼</b> 보이게 합니다. 흰 배경, 옅은 테두리, 둥근 모서리, 그리고 글자가 테두리에 붙지 않도록 안쪽 여백을 줍니다. 바탕이 되는 <code>body</code>에도 연한 배경색을 깔면 카드가 떠 보입니다.</p>
+<p class="note">참고: <a href="#s2-2">2-2 가운데 정렬</a> · <a href="#s2">2 박스 모델</a> · <a href="#s2-1">2-1 box-sizing</a><br>
+막히는 지점: 폭을 줄이지 않고 좌우 여백만 <code>auto</code>로 주면 아무 일도 일어나지 않습니다.</p>
 
-<p><b>0단계 · 준비</b> — <code>about-me.html</code>의 <code>&lt;head&gt;</code> 안에 <code>&lt;style&gt;</code> 태그를 만들고 아래 두 줄로 시작합니다. (<a href="#s2-1">2-1장</a>)</p>
-<pre class="rule"><code>* { box-sizing: border-box; }
-body { font-family: sans-serif; padding: 20px; background: #f3f4f6; }</code></pre>
+<h3 id="s8-3">2부 · 안쪽 배치하기</h3>
+<p>카드 안을 두 덩어리로 나눕니다.</p>
+<p><b>프로필 줄</b> — 사진과 (이름 + 한 줄 소개)를 가로로 나란히 놓습니다. 부모에 flex를 주면 되고, 둘 사이 간격과 세로 중앙 맞춤도 flex 속성으로 해결됩니다. 사진은 가로·세로를 같게 지정한 뒤 모서리를 <b>50%</b>로 둥글리면 원이 되고, 사진 비율이 달라 찌그러진다면 <code>object-fit</code>을 찾아보세요. 이름은 <code>h1</code>, 소개는 <code>p</code>로 두고 글자 크기와 색으로 둘의 위계를 만듭니다.</p>
+<p><b>취미 목록</b> — <code>ul</code>에 flex를 주면 가로로 나란히 놓입니다. 목록 기본 점과 왼쪽 들여쓰기는 꺼 주고, 각 항목은 안쪽 여백과 옅은 배경, 둥근 모서리로 알약 모양을 만듭니다. 폭이 좁아질 때 다음 줄로 넘어가게 하려면 한 줄을 더 추가해야 합니다 — 기본값이 무엇인지 6-4절에서 확인해 보세요.</p>
+<p class="note">참고: <a href="#s6">6 플렉스 박스</a> · <a href="#s6-3">6-3 정렬</a> · <a href="#s6-4">6-4 줄바꿈</a></p>
 
-<p><b>1단계 · 사진 넣기</b> — 프로필 사진 자리에 실제 이미지를 넣습니다. 아래 주소를 그대로 써도 되고, 본인 사진을 같은 폴더에 두고 파일 이름을 써도 됩니다.</p>
-<pre class="rule"><code>&lt;img src="https://boseung2.github.io/project-beginner-ta/assets/tennis-ball-square.jpg" alt="테니스공"&gt;</code></pre>
+<h3 id="s8-4">3부 · 반응하게 만들기</h3>
+<p><b>링크</b> — 관심 있는 사이트 링크 하나를 버튼처럼 만듭니다. <code>a</code>는 inline이라 위아래 여백이 먹지 않으니 성격을 바꿔 줘야 하고, 밑줄도 꺼 줍니다. 그리고 마우스를 올렸을 때 배경색이 바뀌거나 살짝 떠오르게 하되, <b>툭 바뀌지 않고 부드럽게</b> 이어지도록 만듭니다.</p>
+<p><b>좁은 화면</b> — 마지막으로 미디어 쿼리 한 블록만 추가합니다. 좁아지면 프로필의 사진과 글이 세로로 쌓이게 하는 것인데, 이건 flex 혼자서는 못 하는 일이라 미디어 쿼리가 필요합니다. 여백과 글자 크기도 함께 줄이면 좋습니다.</p>
+<p class="note">참고: <a href="#s3-1">3-1 display</a> · <a href="#s7-2">7-2 transition</a> · <a href="#s6-5">6-5 미디어 쿼리와 나눠 맡기</a><br>
+확인 방법: 브라우저 창 너비를 줄이거나, <kbd>F12</kbd> → 왼쪽 위 기기 모양 아이콘으로 모바일 화면을 봅니다.</p>
+
+<h3 id="s8-5">보너스 · 내 색 고르기</h3>
+<p>여기까지 하면 모두의 페이지가 비슷하게 생겼을 겁니다. 색을 한 군데에서 관리하면 <b>한 줄만 바꿔서</b> 페이지 전체 분위기를 자기 색으로 바꿀 수 있습니다.</p>
+<p>CSS에는 값에 이름을 붙여 두고 여기저기서 꺼내 쓰는 <b>변수</b>가 있습니다. 맨 위에 <code>--main: #86a86b;</code>처럼 이름을 정해 두고, 색이 들어가는 자리마다 <code>var(--main)</code>으로 바꿔 쓰면 됩니다. 아래 예제에서 맨 윗줄 색만 바꿔 보세요.</p>
+
+<div class="demo" data-name="색 한 줄로 분위기 바꾸기" style="--h: 420px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;내 색 고르기&lt;/title&gt;
+  &lt;style&gt;
+    /* ↓ 이 한 줄만 바꿔 보세요. #7c3aed, #d97706, #0891b2 … */
+    :root { --main: #86a86b; }
+
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; margin: 0; padding: 20px; background: #f3f4f6; }
+
+    .card {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #fff;
+      border-radius: 16px;
+      border-top: 6px solid var(--main);   /* 위쪽에 내 색 띠 */
+    }
+    h1 { margin: 0 0 4px; color: var(--main); }   /* 이름도 내 색 */
+    p { margin: 0 0 18px; color: #6b7280; }
+
+    .hobbies { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; margin: 0 0 18px; list-style: none; }
+    .hobbies li { padding: 10px 18px; background: #eee; border-radius: 6px; }
+
+    .site {
+      display: inline-block; padding: 12px 20px; border-radius: 8px;
+      background: var(--main);             /* 버튼도 내 색 */
+      color: #fff; text-decoration: none;
+      transition: transform 0.25s ease;
+    }
+    .site:hover { transform: translateY(-3px); }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="card"&gt;
+    &lt;h1&gt;홍길동&lt;/h1&gt;
+    &lt;p&gt;컴퓨터인공지능학부&lt;/p&gt;
+    &lt;ul class="hobbies"&gt;
+      &lt;li&gt;테니스&lt;/li&gt;&lt;li&gt;음악 감상&lt;/li&gt;&lt;li&gt;산책&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;a class="site" href="https://huggingface.co" target="_blank"&gt;관심 있는 사이트&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<p class="note">색이 잘 안 골라지면 <a href="https://coolors.co/" target="_blank" rel="noopener noreferrer">coolors.co ↗</a>에서 마음에 드는 조합을 뽑아 쓰세요. 다 만들었으면 옆 사람 화면과 비교해 보고, <b>바꾼 CSS 한 가지</b>를 설명해 봅니다.</p>
+
 <figure class="shot">
-  <img src="assets/tennis-ball-square.jpg" alt="실습에 쓸 테니스공 사진" width="400" height="400" loading="lazy">
-  <figcaption>실습용 사진 — 오른쪽 클릭 → 이미지 저장으로 내려받아 써도 됩니다.<br>
-  <span style="font-size:12px">출처: Wikimedia Commons, <a href="https://commons.wikimedia.org/wiki/File:Tennis_ball_closeup.jpg" target="_blank" rel="noopener noreferrer">Tennis ball closeup</a> (CC0 / 퍼블릭 도메인)</span></figcaption>
+  <img src="assets/tennis-ball-square.jpg" alt="실습에 쓸 테니스 코트 사진" width="440" height="440" loading="lazy">
+  <figcaption>실습용 사진 — 오른쪽 클릭 → 이미지 저장으로 내려받아 쓰거나, 본인 사진을 써도 됩니다.<br>
+  <span style="font-size:12px">출처: Santeri Viinamäki, <a href="https://commons.wikimedia.org/wiki/File:Tennis_ball_on_tennis_court_20170619.jpg" target="_blank" rel="noopener noreferrer">Tennis ball on tennis court</a>, Wikimedia Commons (CC BY-SA 4.0)</span></figcaption>
 </figure>
 
-<p><b>2단계 · 카드 모양 만들기</b> — 소개 전체를 <code>&lt;div class="card"&gt;</code>로 감싸고 배경·테두리·안쪽 여백을 줍니다. (<a href="#s2">2장 박스 모델</a>)</p>
-<pre class="rule"><code>.card {
-  max-width: 640px;      /* 너무 넓어지지 않게 */
-  margin: 0 auto;        /* 좌우 auto → 가운데 정렬 */
-  padding: 24px;         /* 안쪽 여백 */
-  background: #fff;
-  border: 1px solid #d1d5db;
-  border-radius: 16px;   /* 모서리 둥글게 */
-}</code></pre>
-
-<p><b>3단계 · 사진과 글을 가로로</b> — 사진과 이름/소개를 <code>&lt;div class="profile"&gt;</code>로 묶고 flex를 줍니다. (<a href="#s6">6장 플렉스 박스</a>)</p>
-<pre class="rule"><code>.profile { display: flex; gap: 20px; align-items: center; }
-.profile img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; }</code></pre>
-<p class="note"><code>border-radius: 50%</code>이면 정사각형이 원이 됩니다. <code>object-fit: cover</code>는 사진 비율이 달라도 찌그러지지 않게 잘라 채웁니다.</p>
-
-<p><b>4단계 · 취미를 칸으로</b> — <code>&lt;ul&gt;</code>에 flex와 wrap을 주면 가로로 놓이고, 폭이 좁아지면 저절로 다음 줄로 넘어갑니다. (<a href="#s6-4">6-4장</a>)</p>
-<pre class="rule"><code>.hobbies { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; list-style: none; }
-.hobbies li { flex: 1 1 110px; padding: 12px; background: #dbeafe;
-              border-radius: 8px; text-align: center; }</code></pre>
-
-<p><b>5단계 · 링크를 버튼처럼 + hover</b> — 좋아하는 사이트 링크를 버튼 모양으로 만들고, 마우스를 올리면 부드럽게 바뀌게 합니다. (<a href="#s7-2">7-2장</a>)</p>
-<pre class="rule"><code>.links a {
-  display: inline-block;
-  padding: 10px 16px;
-  background: #1f2937;
-  color: #fff;
-  border-radius: 8px;
-  text-decoration: none;              /* 링크 밑줄 없애기 */
-  transition: background-color 0.25s ease, transform 0.25s ease;
-}
-.links a:hover { background: #2563eb; transform: translateY(-3px); }</code></pre>
-<p class="note">링크는 본인이 자주 가는 사이트로 바꿔 보세요. 예: <a href="https://huggingface.co" target="_blank" rel="noopener noreferrer">huggingface.co</a> · <a href="https://github.com" target="_blank" rel="noopener noreferrer">github.com</a></p>
-
-<p><b>6단계 · 좁은 화면 대응</b> — 마지막에 미디어 쿼리 한 블록만 추가합니다. 가로로 놓였던 프로필을 세로로 바꾸는, flex 혼자서는 못 하는 일입니다. (<a href="#s6-5">6-5장</a>)</p>
-<pre class="rule"><code>@media (max-width: 520px) {
-  .card { padding: 16px; }
-  .profile { flex-direction: column; text-align: center; }
-}</code></pre>
-<p class="note">확인 방법: 브라우저 창 너비를 줄여 보거나, F12 → 왼쪽 위 기기 모양 아이콘을 눌러 모바일 화면으로 봅니다.</p>
-
-<h3 id="s8-3">다 됐다면</h3>
-<ul>
-  <li>취미 칸에 <code>:hover</code>로 배경색 바꾸기</li>
-  <li><code>@keyframes</code>로 카드가 아래에서 떠오르며 나타나게 하기 (<a href="#s7-3">7-3장</a>)</li>
-  <li>카드 모서리에 <code>position</code>으로 배지 붙이기 (<a href="#s3-2">3-2장</a>)</li>
-</ul>
-<p class="note"><b>완료 확인:</b> 넓은 화면과 좁은 화면에서 배치를 확인하고, 직접 바꾼 CSS 한 가지를 설명해 보세요.</p>
 <footer class="session-footer"><a href="1-HTML.html">← 이전 · 1. HTML</a><a href="index.html">전체 목차 →</a></footer>
 </main>
 </div>
