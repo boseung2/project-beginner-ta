@@ -1,0 +1,8 @@
+{
+  "id": 123,
+  "title": "오늘의 테니스 연습",
+  "author": "홍길동",
+  "likes": 42,
+  "commentCount": 8,
+  "isLiked": true
+}

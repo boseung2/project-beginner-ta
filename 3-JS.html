@@ -1,0 +1,2132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="초급프로젝트 TA SESSION — JavaScript 기본 문법, 함수, 이벤트, DOM, React에서 자주 쓰는 문법을 실행해 보고, 자기소개 페이지를 반응하게 만듭니다.">
+<title>3. JavaScript — 초급프로젝트 TA SESSION</title>
+<link rel="stylesheet" href="session.css">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1f2328; --muted: #6b7280; --line: #e5e7eb;
+    --code-bg: #f6f6f4; --accent: #2563eb; --pane: #fafafa;
+    --tag: #b91c1c; --attr: #7c3aed; --str: #15803d; --cmt: #9ca3af; --kw: #1d4ed8;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  nav.toc {
+    position: sticky; top: 0; height: 100vh; overflow: auto;
+    border-right: 1px solid var(--line); padding: 20px 16px; font-size: 13px;
+  }
+  nav.toc h1 { font-size: 22px; margin: 0 0 12px; }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 2px 0; }
+  nav.toc li ol { padding-left: 14px; }
+  nav.toc a { color: var(--fg); text-decoration: none; display: block; padding: 3px 6px; border-radius: 4px; }
+  nav.toc a:hover { background: var(--code-bg); }
+  nav.toc a.sub { color: var(--muted); }
+  main { padding: 32px 48px 120px; max-width: 1400px; }
+  h1.title { font-size: 40px; margin: 0 0 8px; }
+  .subtitle { color: var(--muted); margin: 0 0 40px; }
+  h2 { font-size: 24px; margin: 56px 0 16px; padding-top: 8px; }
+  h3 { font-size: 18px; margin: 32px 0 10px; }
+  h4 { font-size: 15px; margin: 22px 0 8px; color: #374151; }
+  p.note { color: var(--muted); font-size: 14px; margin: 8px 0 16px; }
+
+  /* 정리 표 */
+  table.ref { border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  table.ref td { border: 1px solid var(--line); padding: 5px 12px; vertical-align: top; }
+  table.ref td:first-child { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
+
+  /* 코드 + 실행 결과 */
+  .demo { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 16px 0 28px; background: var(--bg); }
+  .demo .bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--pane); font-size: 13px; }
+  .demo .bar .name { font-weight: 600; margin-right: auto; }
+  .demo .bar button { font: inherit; font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
+  .demo .bar button:hover { border-color: var(--accent); color: var(--accent); }
+  .demo .panes { display: grid; grid-template-columns: 1fr 1fr; }
+  .demo .panes > div { min-width: 0; }
+  .demo .code { background: var(--code-bg); border-right: 1px solid var(--line); }
+  .demo .code pre { margin: 0; padding: 14px 16px; overflow: auto; max-height: var(--h, 460px); font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
+  .demo .result { display: flex; flex-direction: column; }
+  .demo .result .label { font-size: 12px; color: var(--muted); padding: 6px 12px; border-bottom: 1px dashed var(--line); }
+  .demo iframe { border: 0; width: 100%; height: var(--frame-h, var(--h, 460px)); background: #fff; flex: 0 0 auto; }
+  .demo .panes:has(> .result:only-child) { grid-template-columns: 1fr; }
+  .demo.tall { --h: 640px; }
+  .demo.short { --h: 260px; }
+  .demo.stack .panes { grid-template-columns: 1fr; }
+  .demo.stack iframe { flex: 0 0 auto; height: max(760px, 85vh); }
+  .demo.stack .code { border-right: 0; border-top: 1px solid var(--line); }
+  .demo.stack .code pre { max-height: 520px; }
+  .demo.stack details > summary { cursor: pointer; padding: 10px 14px; font-size: 13px; color: var(--muted); background: var(--pane); user-select: none; }
+  .demo.stack details > summary:hover { color: var(--accent); }
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    main { padding: 24px 20px 80px; }
+    .demo .panes { grid-template-columns: 1fr; }
+    .demo .code { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+  /* 문법 색 */
+  .t { color: var(--tag); } .a { color: var(--attr); } .s { color: var(--str); } .c { color: var(--cmt); font-style: italic; } .k { color: var(--kw); } .n { color: var(--attr); }
+  textarea.src { display: none; }
+
+  /* 다이어그램 */
+  .diagram { margin: 12px 0 8px; max-width: 720px; }
+  .diagram svg { width: 100%; height: auto; }
+</style>
+<style>
+  main { min-width: 0; }
+  .demo .bar { flex-wrap: wrap; }
+  .demo .bar button:hover { border-color: #333; color: #333; }
+  .demo .bar button[aria-pressed="true"] { background: #ececec; border-color: #888; }
+  .demo .bar .name { flex: 1 0 180px; }
+  .demo.resizable iframe { flex: 0 0 auto; width: 100%; max-width: 100%; height: var(--frame-h, var(--h, 360px)); align-self: flex-start; }
+  .demo.resizable .result { background: #f0f0f0; }
+  .demo.resizable .result .label { background: #fff; }
+  .ref-wrap { overflow-x: auto; }
+  table.ref.cols3 td:first-child { font-family: inherit; font-size: 14px; color: var(--muted); background: transparent; white-space: nowrap; }
+  table.ref.cols3 td:nth-child(2) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
+  pre.rule { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 14px; margin: 8px 0 12px; overflow-x: auto; }
+  figure.shot { margin: 12px 0 16px; }
+  figure.shot img { display: block; width: min(100%, 220px); height: auto; border-radius: 12px; border: 1px solid var(--line); }
+  figure.shot figcaption { margin-top: 6px; font-size: 13px; color: var(--muted); }
+  kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; background: var(--code-bg); }
+  ul.plain { padding-left: 18px; margin: 6px 0 14px; }
+  ul.plain li { margin: 3px 0; }
+  ul.plain code, p code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  main > p a, main > details a { color: inherit; }
+  details.extra { margin: 12px 0 24px; }
+  details.extra > summary { cursor: pointer; }
+  /* JS: 콘솔 패널 · ▶ 실행(data-manual) */
+  .demo .console { flex: 1 1 auto; border-top: 1px solid var(--line); background: #fff; }
+  .demo .console .lines { max-height: var(--console-h, 320px); overflow: auto; font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .demo .console .line { display: flex; gap: 12px; min-height: calc(1.55em + 6px); padding: 3px 12px; border-bottom: 1px solid #f0f0f0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .demo .console .line .where { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .demo .console .line.warn { background: #fffbeb; color: #92400e; border-bottom-color: #fde68a; }
+  .demo .console .line.error { background: #fef2f2; color: #b91c1c; border-bottom-color: #fecaca; }
+  .demo .console .empty { padding: 6px 12px; font-size: 12px; color: var(--cmt); }
+  .demo.console-only .console { border-top: 0; }
+  .demo.console-only .console .lines { max-height: var(--console-h, var(--h, 460px)); }
+  .demo .run-gate { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: var(--frame-h, var(--h, 460px)); background: var(--pane); font-size: 13px; color: var(--muted); }
+  .demo.stack .run-gate { height: max(760px, 85vh); }
+  .demo.stack.resizable .run-gate { height: var(--frame-h, var(--h, 360px)); }
+  .demo .run-gate button { font: inherit; padding: 6px 16px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--fg); cursor: pointer; }
+  .demo .run-gate button:hover { border-color: #333; color: #333; }
+  .demo .run-gate[hidden] { display: none; }
+  @media print {
+    .layout { display: block; }
+    nav.toc, .demo .bar button { display: none; }
+    main { padding: 0; max-width: none; }
+    .demo .code pre { max-height: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+    h2, h3 { break-after: avoid; }
+    .demo .console .lines { max-height: none; overflow: visible; }
+    .demo .run-gate { height: auto; padding: 12px; }
+    .demo .run-gate button { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="자료 목차">
+  <a class="session-brand" href="index.html">초급프로젝트<br>TA SESSION</a>
+  <div class="session-nav">
+    <a href="0-web-flow.html">0. 웹 개발 흐름</a>
+    <a href="1-HTML.html">1. HTML</a>
+    <a href="2-CSS.html">2. CSS</a>
+    <a href="3-JS.html" aria-current="page">3. JavaScript</a>
+  </div>
+  <h1>3. JavaScript</h1>
+  <ol>
+    <li><a href="#s1">1. 기본 문법</a><ol>
+      <li><a class="sub" href="#s1-1">script와 콘솔</a></li>
+      <li><a class="sub" href="#s1-2">변수와 자료형</a></li>
+      <li><a class="sub" href="#s1-3">비교와 조건</a></li>
+      <li><a class="sub" href="#s1-4">기본 문법 정리표</a></li>
+    </ol></li>
+    <li><a href="#s2">2. 함수의 여러 가지 모양</a><ol>
+      <li><a class="sub" href="#s2-1">함수 선언</a></li>
+      <li><a class="sub" href="#s2-2">표현식 · 화살표</a></li>
+      <li><a class="sub" href="#s2-3">함수를 넘기기</a></li>
+    </ol></li>
+    <li><a href="#s3">3. 이벤트</a><ol>
+      <li><a class="sub" href="#s3-1">먼저 보기</a></li>
+      <li><a class="sub" href="#s3-2">자주 쓰는 이벤트</a></li>
+      <li><a class="sub" href="#s3-3">이벤트 객체</a></li>
+      <li><a class="sub" href="#s3-4">폼 제출</a></li>
+    </ol></li>
+    <li><a href="#s4">4. DOM</a><ol>
+      <li><a class="sub" href="#s4-1">DOM 나무</a></li>
+      <li><a class="sub" href="#s4-2">요소 찾기</a></li>
+      <li><a class="sub" href="#s4-3">글자와 값</a></li>
+      <li><a class="sub" href="#s4-4">모양</a></li>
+    </ol></li>
+    <li><a href="#s5">5. DOM 다루기</a><ol>
+      <li><a class="sub" href="#s5-1">추가</a></li>
+      <li><a class="sub" href="#s5-2">삭제</a></li>
+      <li><a class="sub" href="#s5-3">수정과 정리표</a></li>
+    </ol></li>
+    <li><a href="#s6">6. React에서 자주 쓰는 JS 문법</a><ol>
+      <li><a class="sub" href="#s6-1">먼저 보기</a></li>
+      <li><a class="sub" href="#s6-2">조건과 빈 값</a></li>
+      <li><a class="sub" href="#s6-3">구조 분해 할당</a></li>
+      <li><a class="sub" href="#s6-4">스프레드와 불변성</a></li>
+      <li><a class="sub" href="#s6-5">map · filter</a></li>
+      <li><a class="sub" href="#s6-6">async · await · fetch</a></li>
+      <li><a class="sub" href="#s6-7">import · export</a></li>
+      <li><a class="sub" href="#s6-8">정리표</a></li>
+    </ol></li>
+    <li><a href="#s7">7. 실습: 자기소개 페이지에 반응 넣기</a><ol>
+      <li><a class="sub" href="#s7-1">목표 화면 · 시작 코드</a></li>
+      <li><a class="sub" href="#s7-2">1부 · 버튼으로 어둡게 보기 켜고 끄기</a></li>
+      <li><a class="sub" href="#s7-3">2부 · 취미 추가하기</a></li>
+      <li><a class="sub" href="#s7-4">3부 · 누르면 지워지는 취미</a></li>
+    </ol></li>
+  </ol>
+</nav>
+<main>
+<h1 class="title">3. JavaScript</h1>
+<p class="subtitle">초급프로젝트 TA SESSION · 왼쪽은 코드, 오른쪽은 실행 결과입니다. <code>console.log</code> 출력과 오류는 실행 결과 아래 <b>콘솔</b> 칸에 함께 보입니다. 전체 HTML을 복사해 직접 바꿔 보세요.</p>
+
+<h2 id="s1">1. 기본 문법 — 값 담기 · 비교하기</h2>
+<p>JS는 <code>&lt;script&gt;</code> 안에 쓰고, 위에서 아래로 한 줄씩 실행됩니다.</p>
+<pre class="rule"><code>&lt;script&gt;는 &lt;/body&gt; 바로 위에 — 화면 요소가 다 만들어진 다음에 실행되도록</code></pre>
+
+<h3 id="s1-1">1-1. script와 콘솔</h3>
+<p>결과는 <b>콘솔</b>에서 봅니다. 이 페이지에서는 '콘솔' 칸에, 내 파일에서는 <kbd>F12</kbd> (Mac: <kbd>Cmd+Option+I</kbd>) → Console 탭에 나옵니다.</p>
+
+<div class="demo" data-name="console.log — 콘솔에 찍어 보기" data-console="only" style="--h: 376px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;콘솔에 찍어 보기&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;p&gt;결과는 개발자 도구(F12) → Console에 나옵니다.&lt;/p&gt;
+  &lt;script&gt;
+    console.log("안녕하세요");
+    console.log("홍길동", 21);  // 쉼표로 여러 값
+    console.log(1 + 2);       // 3
+    console.error("이건 빨간 줄");
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<p>alert · confirm · prompt는 페이지 위에 작은 창을 띄웁니다. <b>▶ 실행</b>을 눌러 보세요.</p>
+
+<div class="demo" data-name="alert · confirm · prompt — 실행을 눌러야 뜹니다" data-console="only" data-manual="누르면 알림 → 확인 → 입력 창이 차례로 뜹니다" style="--h: 356px; --frame-h: 140px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;alert · confirm · prompt&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;script&gt;
+    alert("환영합니다!");
+    const ok = confirm("테니스를 좋아하나요?");
+    const name = prompt("이름을 입력하세요", "홍길동");
+    console.log("확인:", ok, "이름:", name);
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref"><tbody>
+<tr><td>console.log(값, 값)</td><td>콘솔에 출력. 쉼표로 여러 값을 한 줄에</td></tr>
+<tr><td>alert("글")</td><td>알림 창</td></tr>
+<tr><td>confirm("글")</td><td>확인은 true, 취소는 false</td></tr>
+<tr><td>prompt("글")</td><td>입력한 글자를 돌려줌. 취소하면 null</td></tr>
+</tbody></table></div>
+
+<details class="extra"><summary>JS를 별도 파일로 분리하려면?</summary>
+<p><code>&lt;script&gt;</code> 안의 코드를 <code>main.js</code>로 옮기고, HTML의 <code>&lt;/body&gt;</code> 바로 위에서 연결합니다.</p>
+<pre><code>&lt;script src="main.js"&gt;&lt;/script&gt;</code></pre>
+<p class="note">HTML과 JS 파일을 같은 폴더에 두세요. <code>main.js</code>에는 <code>&lt;script&gt;</code> 태그 없이 코드만 씁니다.</p>
+</details>
+
+<h3 id="s1-2">1-2. 변수와 자료형</h3>
+<p>값에 이름을 붙여 담아 두는 것이 <b>변수</b>입니다.</p>
+<pre class="rule"><code>먼저 const로 쓰고, 다시 담아야 할 때만 let</code></pre>
+
+<div class="demo" data-name="홍길동을 값으로 담기 — 마지막 줄은 일부러 낸 오류" data-console="only" style="--h: 452px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;홍길동을 값으로 담기&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;script&gt;
+    const name = "홍길동";                  // 문자열
+    let age = 21;                         // 숫자
+    age = age + 1;                        // 다시 담기 OK
+    const hobbies = ["테니스", "산책"];      // 배열
+    const me = { name: name, age: age };  // 객체
+
+    console.log(`${me.name}, ${age}세`);
+    console.log(hobbies[0], hobbies.length, me);
+    name = "김철수";  // (X) const는 다시 담으면 오류
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>변수</td><td>const name = "홍길동";</td><td>다시 담을 수 없음</td></tr>
+<tr><td>변수</td><td>let age = 21;</td><td>다시 담을 수 있음. age = 22;</td></tr>
+<tr><td>문자열</td><td>"홍길동"</td><td>따옴표로 감싼 글자</td></tr>
+<tr><td>템플릿</td><td>`${name}님`</td><td>백틱(`)으로 감싸고 ${ } 안에 값을 넣음</td></tr>
+<tr><td>숫자</td><td>21 · 3.14</td><td>정수와 소수 모두 숫자</td></tr>
+<tr><td>불리언</td><td>true · false</td><td>참 · 거짓</td></tr>
+<tr><td>배열</td><td>["테니스", "산책"]</td><td>순서 있는 목록. hobbies[0]이 첫 칸</td></tr>
+<tr><td>객체</td><td>{ name: "홍길동", age: 21 }</td><td>이름: 값 묶음. me.name으로 꺼냄</td></tr>
+</tbody></table></div>
+
+<p class="note">오류가 나면 콘솔에 빨간 줄이 뜨고, 오른쪽에 몇 번째 줄인지 나옵니다.</p>
+
+<h3 id="s1-3">1-3. 비교와 조건 — === · if · 삼항</h3>
+<p>같은지 볼 때는 <code>===</code>, 할 일을 나눌 때는 <code>if</code>, 두 값 중 하나를 고를 때는 <b>삼항</b> <code>조건 ? A : B</code>를 씁니다.</p>
+
+<div class="demo" data-name="빈칸인지 확인하기 — === · if · 삼항" data-console="only" style="--h: 532px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;빈칸인지 확인하기&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;script&gt;
+    const text = "";  // 입력칸이 비었다고 치면
+    if (text === "") {
+      console.log("빈칸입니다");
+    } else {
+      console.log(`입력: ${text}`);
+    }
+
+    const hidden = true;  // 공지가 접혀 있으면
+    console.log(hidden ? "공지 펼치기" : "공지 접기");
+
+    // typeof는 타입을 알려 줌 — "21"과 21은 다름
+    console.log(typeof "21", typeof 21);
+    console.log("21" === 21);  // false
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>같다 · 다르다</td><td>=== · !==</td><td>값과 타입이 모두 같은지</td></tr>
+<tr><td>조건</td><td>if (조건) { … } else { … }</td><td>else는 없어도 됨</td></tr>
+<tr><td>삼항</td><td>조건 ? A : B</td><td>참이면 A, 거짓이면 B</td></tr>
+<tr><td>주의</td><td>= 와 ===</td><td>= 는 담기, === 는 비교</td></tr>
+</tbody></table></div>
+
+<h3 id="s1-4">1-4. 기본 문법 정리표</h3>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>타입 확인</td><td>typeof 값</td><td>"string" · "number" · "boolean" · "object"</td></tr>
+<tr><td>빈 값</td><td>undefined</td><td>아직 값이 없음. return 없는 함수의 결과</td></tr>
+<tr><td>개수</td><td>.length</td><td>문자열의 글자 수 · 배열의 칸 수</td></tr>
+</tbody></table></div>
+
+<h2 id="s2">2. 함수의 여러 가지 모양</h2>
+<p>함수는 만들어 두고(정의) 필요할 때 불러서(호출) 씁니다. JS는 같은 함수를 여러 모양으로 쓰고, React에는 화살표 모양이 가장 많이 나옵니다.</p>
+<pre class="rule"><code>정의:  function 이름(재료) { 할 일; return 결과; }      호출:  이름(값)</code></pre>
+
+<h3 id="s2-1">2-1. 함수 선언 — 매개변수 · return · 기본값</h3>
+<p>괄호 안의 <b>매개변수</b>로 재료를 받고, <code>return</code>으로 결과를 돌려줍니다. <code>return</code>을 만나면 함수는 그 자리에서 끝납니다.</p>
+
+<div class="demo" data-name="만들고, 부르고, 돌려받기" data-console="only" style="--h: 608px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;만들고, 부르고, 돌려받기&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;script&gt;
+    function greet(name = "손님") {  // 기본값
+      return `${name}, 반가워요!`;    // 돌려주기
+    }
+    console.log(greet("홍길동"));
+    console.log(greet());
+
+    function showNotice(text) {
+      if (text === "") return;  // 빈칸이면 멈춤
+      console.log(`공지: ${text}`);
+    }
+    showNotice("수강신청 안내");
+    showNotice("");  // 아무것도 안 찍힘
+
+    function add(a, b) {
+      a + b;  // (X) return 빠뜨림
+    }
+    console.log(add(2, 3));  // undefined
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>호출</td><td>greet("홍길동")</td><td>괄호를 붙여야 실행됨</td></tr>
+<tr><td>돌려주기</td><td>return 값;</td><td>결과를 돌려주고 끝냄</td></tr>
+<tr><td>멈추기</td><td>if (text === "") return;</td><td>여기서 끝냄. 아래 줄은 실행되지 않음</td></tr>
+<tr><td>기본값</td><td>(name = "손님")</td><td>값을 넘기지 않으면 쓰는 값</td></tr>
+</tbody></table></div>
+
+<p class="note">결과가 <code>undefined</code>로 나오면 return을 빠뜨린 것입니다. <code>if (…) return;</code>은 실습 2부에서 빈칸을 막을 때 씁니다.</p>
+
+<h3 id="s2-2">2-2. 표현식 · 화살표 — 같은 함수, 네 가지 모양</h3>
+<p>아래 1~4는 모양만 다른 같은 덧셈 함수입니다.</p>
+<pre class="rule"><code>function (a, b) { … }   →   (a, b) =&gt; { … }   →   (a, b) =&gt; a + b        재료가 없으면  () =&gt; { … }</code></pre>
+
+<div class="demo" data-name="같은 덧셈, 네 가지 모양" data-console="only" style="--h: 550px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;같은 덧셈, 네 가지 모양&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;script&gt;
+    // 1. 선언
+    function add1(a, b) { return a + b; }
+    // 2. 표현식
+    const add2 = function (a, b) { return a + b; };
+    // 3. 화살표
+    const add3 = (a, b) =&gt; { return a + b; };
+    // 4. 한 줄 화살표 — 중괄호와 return을 함께 뺌
+    const add4 = (a, b) =&gt; a + b;
+
+    console.log(add1(2, 3), add2(2, 3));  // 5 5
+    console.log(add3(2, 3), add4(2, 3));  // 5 5
+
+    const hello = () =&gt; "안녕하세요";  // 재료가 없으면 ()
+    console.log(hello());  // 안녕하세요
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>1. 선언</td><td>function add(a, b) { … }</td><td>가장 기본 모양</td></tr>
+<tr><td>2. 표현식</td><td>const add = function (a, b) { … };</td><td>이름 없는 함수를 변수에 담음</td></tr>
+<tr><td>3. 화살표</td><td>const add = (a, b) =&gt; { … };</td><td>function 대신 =&gt;</td></tr>
+<tr><td>4. 한 줄 화살표</td><td>const add = (a, b) =&gt; a + b;</td><td>중괄호와 return을 함께 뺌</td></tr>
+</tbody></table></div>
+
+<p class="note">3장부터 이벤트 함수는 <code>() =&gt; { … }</code> 모양으로 씁니다.</p>
+
+<h3 id="s2-3">2-3. 함수를 넘기기 — 괄호가 있고 없고</h3>
+<p>함수도 값이라서 다른 함수에 넘길 수 있습니다. 넘길 때는 괄호 없이 이름만 씁니다.</p>
+<pre class="rule"><code>넘길 때:  sayHi        부를 때:  sayHi()</code></pre>
+
+<div class="demo" data-name="나중에 불러 줘 — setTimeout · forEach" data-console="only" style="--h: 590px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;나중에 불러 줘 — setTimeout&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;script&gt;
+    function sayHi() {
+      console.log("4. 1초 뒤: 안녕!");
+    }
+
+    console.log("1. 시작");
+    setTimeout(sayHi, 1000);  // 이름만 넘김
+    setTimeout(() =&gt; {        // 만들어서 넘김
+      console.log("5. 2초 뒤: 또 만나요!");
+    }, 2000);
+
+    const notices = ["수강신청", "장학금"];
+    notices.forEach((item) =&gt; {  // 칸마다 바로
+      console.log(`2. 공지: ${item}`);
+    });
+    console.log("3. 끝");
+    // (X) setTimeout(sayHi(), 1000); → 바로 실행
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>이름으로 넘기기</td><td>setTimeout(sayHi, 1000)</td><td>1초 뒤에 불러 줌</td></tr>
+<tr><td>만들어 넘기기</td><td>setTimeout(() =&gt; { … }, 2000)</td><td>넘기는 자리에서 만듦</td></tr>
+<tr><td>잘못된 예</td><td>setTimeout(sayHi(), 1000)</td><td>괄호를 붙이면 지금 바로 실행됨</td></tr>
+<tr><td>클릭할 때</td><td>addEventListener("click", 함수)</td><td>누를 때마다 불러 줌(3장)</td></tr>
+<tr><td>칸마다 바로</td><td>배열.forEach(함수)</td><td>칸마다 그 자리에서 불러 줌</td></tr>
+</tbody></table></div>
+
+<p class="note">setTimeout은 기다리지 않고 다음 줄로 넘어가서, 4 · 5번이 맨 나중에 찍힙니다.</p>
+
+<h2 id="s3">3. 이벤트 — 언제 실행할까</h2>
+<p>지금까지 본 코드는 대부분 페이지가 열릴 때 한 번 실행됐습니다. <b>이벤트</b>는 "버튼을 클릭했을 때"처럼 코드를 <b>실행할 때</b>를 정합니다.</p>
+<pre class="rule"><code>요소.addEventListener("이벤트 이름", 실행할 함수);
+예)  button.addEventListener("click", () =&gt; { … });</code></pre>
+
+<h3 id="s3-1">3-1. 먼저 보기 — 선택 → 이벤트 → 변경</h3>
+<p><a href="0-web-flow.html#s3">0장</a>에서 본 교내공지 접기 버튼입니다. <b>1. 쓸 요소를 집고 → 2. 언제 실행할지 정하고 → 3. 화면을 바꿉니다.</b> 버튼을 눌러 보세요.</p>
+
+<div class="demo" data-name="0장 교내공지 접기 버튼 — 1. 선택 · 2. 이벤트 · 3. 변경" style="--h: 1000px; --frame-h: 290px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;교내공지 — HTML + CSS + JavaScript 예시&lt;/title&gt;
+  &lt;style&gt;
+    body {
+      font-family: sans-serif;
+      margin: 16px;
+    }
+    h1 {
+      font-size: 24px;
+      border-bottom: 2px solid #333;
+    }
+    li {
+      margin: 8px 0;
+      padding: 8px;
+      background: #f2f2f2;
+    }
+    a { color: #333; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;교내공지&lt;/h1&gt;
+  &lt;p&gt;학생 여러분에게 안내드립니다.&lt;/p&gt;
+  &lt;button id="toggle" type="button"&gt;공지 접기&lt;/button&gt;
+  &lt;ul&gt;
+    &lt;li&gt;수강신청 안내&lt;/li&gt;
+    &lt;li&gt;장학금 신청 안내&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;a href="https://www.jbnu.ac.kr/web/news/notice/sub01.do"
+     target="_blank" rel="noopener noreferrer"&gt;
+    전북대학교 공지사항 보기
+  &lt;/a&gt;
+  &lt;script&gt;
+    // 1. 선택: 쓸 요소를 집어 둡니다
+    const button = document.querySelector("#toggle");
+    const list = document.querySelector("ul");
+
+    // 2. 이벤트: 버튼을 클릭하면 → 아래 함수 실행
+    button.addEventListener("click", () =&gt; {
+      // 3. 변경: 목록을 숨기거나 보이고, 버튼 글자도 바꿉니다
+      list.hidden = !list.hidden;
+      button.textContent = list.hidden ? "공지 펼치기" : "공지 접기";
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>1. 선택</td><td>document.querySelector("#toggle")</td><td>쓸 요소를 집어 변수에 담기</td></tr>
+<tr><td>2. 이벤트</td><td>button.addEventListener("click", …)</td><td>클릭하면 넘겨 둔 함수 실행</td></tr>
+<tr><td>3. 변경</td><td>list.hidden = !list.hidden</td><td>숨김을 뒤집기(! = 반대로)</td></tr>
+<tr><td>3. 변경</td><td>button.textContent = 조건 ? A : B</td><td>상태에 맞는 글자로 바꾸기</td></tr>
+</tbody></table></div>
+
+<pre class="rule"><code>선택 → 이벤트 → 변경      실습 1·2·3부가 모두 이 순서입니다</code></pre>
+
+<h3 id="s3-2">3-2. 자주 쓰는 이벤트 — addEventListener</h3>
+<p>버튼을 누르고, 입력칸에 적고, 회색 상자에 마우스를 올려 보세요. 콘솔에 이벤트 이름이 찍힙니다.</p>
+
+<div class="demo" data-name="눌러 보고, 적어 보고, 올려 보세요 — 이벤트 종류" style="--h: 845px; --frame-h: 200px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;자주 쓰는 이벤트&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 20px; }
+    .box { padding: 14px; background: #e5e7eb; border-radius: 8px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;p&gt;&lt;b&gt;click&lt;/b&gt; &lt;button type="button" id="btn"&gt;누르기&lt;/button&gt;&lt;/p&gt;
+  &lt;p&gt;&lt;b&gt;input · keydown&lt;/b&gt;&lt;br&gt;
+    &lt;input type="text" id="word" placeholder="여기에 적어 보세요"&gt;&lt;/p&gt;
+  &lt;div class="box"&gt;&lt;b&gt;mouseenter&lt;/b&gt; 마우스를 올려 보세요&lt;/div&gt;
+  &lt;script&gt;
+    const btn = document.querySelector("#btn");
+    const input = document.querySelector("#word");
+    const box = document.querySelector(".box");
+
+    let count = 0;
+    btn.addEventListener("click", () =&gt; {
+      count = count + 1;
+      console.log(`click ${count}번`);
+    });
+    // 한 글자 바뀔 때마다
+    input.addEventListener("input", () =&gt; {
+      console.log("input:", input.value);
+    });
+    // 키를 누를 때마다
+    input.addEventListener("keydown", (event) =&gt; {
+      console.log("keydown:", event.key);
+    });
+    // 마우스가 상자 안으로 들어올 때
+    box.addEventListener("mouseenter", () =&gt; {
+      console.log("mouseenter");
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref"><tbody>
+<tr><td>click</td><td>클릭할 때</td></tr>
+<tr><td>input</td><td>입력칸 글자가 바뀔 때마다</td></tr>
+<tr><td>keydown</td><td>키를 누를 때</td></tr>
+<tr><td>mouseenter</td><td>마우스가 요소 위로 들어올 때</td></tr>
+<tr><td>submit</td><td>form을 제출할 때</td></tr>
+</tbody></table></div>
+
+<p class="note">이벤트 이름 앞에 on을 붙이지 않습니다. <code>"onclick"</code>으로 적으면 오류 없이 아무 일도 일어나지 않습니다.</p>
+
+<h3 id="s3-3">3-3. 이벤트 객체 — event.target · event.key</h3>
+<p>이벤트가 일어나면 브라우저가 <b>무슨 일이 있었는지</b> 담은 객체를 함수에 넘겨 줍니다. 괄호 안에 이름을 적어 받습니다: <code>(event) =&gt; { … }</code>. 입력칸에 적고 Enter를 눌러 보세요.</p>
+
+<div class="demo" data-name="입력하는 대로 따라 쓰기 — event.target · event.key" style="--h: 650px; --frame-h: 120px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;이벤트 객체&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 20px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;input type="text" id="search" placeholder="검색어를 적고 Enter"&gt;
+  &lt;p&gt;입력 중: &lt;b id="preview"&gt;&lt;/b&gt;&lt;/p&gt;
+  &lt;script&gt;
+    const search = document.querySelector("#search");
+    const preview = document.querySelector("#preview");
+
+    // event.target: 이벤트가 일어난 요소 (이 입력칸)
+    search.addEventListener("input", (event) =&gt; {
+      preview.textContent = event.target.value;
+    });
+
+    // event.key: 누른 키의 이름
+    search.addEventListener("keydown", (event) =&gt; {
+      if (event.key === "Enter") {
+        console.log("검색:", event.target.value);
+      }
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>일어난 요소</td><td>event.target</td><td>이벤트가 일어난 요소(여기서는 입력칸)</td></tr>
+<tr><td>입력값</td><td>event.target.value</td><td>그 입력칸에 적힌 글자</td></tr>
+<tr><td>누른 키</td><td>event.key</td><td>"Enter", "a" 같은 키 이름</td></tr>
+<tr><td>짧은 이름</td><td>(e) =&gt; { … }</td><td>이름은 자유. e로 줄여 쓰기도 함</td></tr>
+</tbody></table></div>
+
+<h3 id="s3-4">3-4. 폼 제출 — submit · preventDefault</h3>
+<p>입력칸과 버튼을 <code>&lt;form&gt;</code>으로 감싸면 Enter만 쳐도 <b>제출(submit)</b>됩니다. 제출하면 페이지가 새로고침되므로 <code>event.preventDefault()</code>로 막습니다.</p>
+
+<div class="demo" data-name="Enter로 제출해도 새로고침되지 않게 — submit · preventDefault" style="--h: 690px; --frame-h: 90px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;폼 제출&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 20px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;form id="memo-form"&gt;
+    &lt;input type="text" id="memo" placeholder="메모를 적고 Enter"&gt;
+    &lt;button type="submit"&gt;저장&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;script&gt;
+    const form = document.querySelector("#memo-form");
+    const input = document.querySelector("#memo");
+
+    // 버튼 클릭과 Enter를 form의 submit 하나로 받습니다
+    form.addEventListener("submit", (event) =&gt; {
+      // 이 줄이 없으면 페이지가 새로고침됩니다
+      event.preventDefault();
+
+      const text = input.value.trim(); // 앞뒤 공백 지우기
+      if (text === "") return;         // 빈칸이면 여기서 멈춤
+
+      console.log("제출:", text);
+      input.value = "";                // 입력칸 비우기
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref"><tbody>
+<tr><td>form + "submit"</td><td>이벤트는 버튼이 아니라 form에 붙임. 클릭과 Enter를 한 번에 받음</td></tr>
+<tr><td>event.preventDefault()</td><td>새로고침 막기. 함수 첫 줄에</td></tr>
+<tr><td>.trim()</td><td>앞뒤 공백 지우기. 공백만 적었으면 ""이 됨</td></tr>
+</tbody></table></div>
+
+<p class="note">실습은 form 없이 <code>type="button"</code> 버튼만 써서 preventDefault가 없어도 됩니다.</p>
+
+<h2 id="s4">4. DOM — 요소 찾고 바꾸기</h2>
+<p>브라우저는 HTML을 읽어 요소들을 나무 모양으로 이어 둡니다. 이것이 <b>DOM</b>(Document Object Model)입니다. JS는 HTML 파일이 아니라 이 나무를 바꿉니다. 그래서 새로고침하면 처음으로 돌아옵니다.</p>
+
+<h3 id="s4-1">4-1. DOM 나무</h3>
+<p>실습 시작 코드(<a href="#s7-1">7장</a>)를 나무로 그리면 이렇습니다. 감싼 태그가 <b>부모</b>, 안에 든 태그가 <b>자식</b>입니다. <b>파란 마디</b>는 실습에서 JS가 집을 요소입니다.</p>
+<div class="diagram">
+<svg viewBox="0 0 720 448" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" font-size="13" role="img" aria-label="실습 시작 코드의 DOM 나무. document 아래 html, 그 아래 head와 body가 있고, body 아래 div.card와 맨 끝의 script가 있습니다. div.card의 자식은 div.toolbar(안에 button#mode-btn), div.profile(img와, h1·p를 담은 div), ul.hobbies(li 네 개), div.add-row(input#hobby-input, button#add-btn), a.site입니다. 파란색은 실습에서 JS가 집는 요소입니다.">
+  <g stroke="#9ca3af" stroke-width="1.5" fill="none">
+    <line x1="360" y1="40" x2="360" y2="62"/>
+    <line x1="360" y1="90" x2="360" y2="101"/>
+    <line x1="170" y1="101" x2="360" y2="101"/>
+    <line x1="170" y1="101" x2="170" y2="112"/>
+    <line x1="360" y1="101" x2="360" y2="112"/>
+    <line x1="360" y1="140" x2="360" y2="162"/>
+    <line x1="360" y1="151" x2="500" y2="151"/>
+    <line x1="500" y1="151" x2="500" y2="162"/>
+    <line x1="360" y1="190" x2="360" y2="206"/>
+    <line x1="56" y1="206" x2="671" y2="206"/>
+    <line x1="56" y1="206" x2="56" y2="222"/>
+    <line x1="222" y1="206" x2="222" y2="222"/>
+    <line x1="366" y1="206" x2="366" y2="222"/>
+    <line x1="504" y1="206" x2="504" y2="222"/>
+    <line x1="671" y1="206" x2="671" y2="222"/>
+    <line x1="22" y1="250" x2="22" y2="276"/>
+    <line x1="22" y1="276" x2="34" y2="276"/>
+    <line x1="188" y1="250" x2="188" y2="312"/>
+    <line x1="188" y1="276" x2="200" y2="276"/>
+    <line x1="188" y1="312" x2="200" y2="312"/>
+    <line x1="212" y1="326" x2="212" y2="384"/>
+    <line x1="212" y1="348" x2="224" y2="348"/>
+    <line x1="212" y1="384" x2="224" y2="384"/>
+    <line x1="332" y1="250" x2="332" y2="384"/>
+    <line x1="332" y1="276" x2="344" y2="276"/>
+    <line x1="332" y1="312" x2="344" y2="312"/>
+    <line x1="332" y1="348" x2="344" y2="348"/>
+    <line x1="332" y1="384" x2="344" y2="384"/>
+    <line x1="468" y1="250" x2="468" y2="312"/>
+    <line x1="468" y1="276" x2="480" y2="276"/>
+    <line x1="468" y1="312" x2="480" y2="312"/>
+  </g>
+  <rect x="305" y="12" width="110" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="360" y="31" text-anchor="middle" fill="#374151">document</text>
+  <rect x="320" y="62" width="80" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="360" y="81" text-anchor="middle" fill="#374151">html</text>
+  <rect x="130" y="112" width="80" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="170" y="131" text-anchor="middle" fill="#374151">head</text>
+  <rect x="320" y="112" width="80" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="360" y="131" text-anchor="middle" fill="#374151">body</text>
+  <rect x="310" y="162" width="100" height="28" rx="6" fill="#bfdbfe" stroke="#2563eb"/>
+  <text x="360" y="181" text-anchor="middle" fill="#1e3a8a" font-weight="600">div.card</text>
+  <rect x="465" y="162" width="70" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="500" y="181" text-anchor="middle" fill="#374151">script</text>
+  <text x="545" y="181" fill="#6b7280">body 맨 끝</text>
+  <rect x="8" y="222" width="96" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="56" y="241" text-anchor="middle" fill="#374151">div.toolbar</text>
+  <rect x="174" y="222" width="96" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="222" y="241" text-anchor="middle" fill="#374151">div.profile</text>
+  <rect x="318" y="222" width="96" height="28" rx="6" fill="#bfdbfe" stroke="#2563eb"/>
+  <text x="366" y="241" text-anchor="middle" fill="#1e3a8a" font-weight="600">ul.hobbies</text>
+  <rect x="454" y="222" width="100" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="504" y="241" text-anchor="middle" fill="#374151">div.add-row</text>
+  <rect x="636" y="222" width="70" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="671" y="241" text-anchor="middle" fill="#374151">a.site</text>
+  <rect x="34" y="262" width="130" height="28" rx="6" fill="#bfdbfe" stroke="#2563eb"/>
+  <text x="99" y="281" text-anchor="middle" fill="#1e3a8a" font-weight="600">button#mode-btn</text>
+  <rect x="200" y="262" width="44" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="222" y="281" text-anchor="middle" fill="#374151">img</text>
+  <rect x="200" y="298" width="44" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="222" y="317" text-anchor="middle" fill="#374151">div</text>
+  <rect x="224" y="334" width="84" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="266" y="353" text-anchor="middle" fill="#374151">h1 <tspan fill="#6b7280">"홍길동"</tspan></text>
+  <rect x="224" y="370" width="36" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="242" y="389" text-anchor="middle" fill="#374151">p</text>
+  <rect x="344" y="262" width="100" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="394" y="281" text-anchor="middle" fill="#374151">li <tspan fill="#6b7280">"테니스"</tspan></text>
+  <rect x="344" y="298" width="100" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="394" y="317" text-anchor="middle" fill="#374151">li <tspan fill="#6b7280">"음악 감상"</tspan></text>
+  <rect x="344" y="334" width="100" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="394" y="353" text-anchor="middle" fill="#374151">li <tspan fill="#6b7280">"산책"</tspan></text>
+  <rect x="344" y="370" width="100" height="28" rx="6" fill="#f3f4f6" stroke="#9ca3af"/>
+  <text x="394" y="389" text-anchor="middle" fill="#374151">li <tspan fill="#6b7280">"사진"</tspan></text>
+  <rect x="480" y="262" width="146" height="28" rx="6" fill="#bfdbfe" stroke="#2563eb"/>
+  <text x="553" y="281" text-anchor="middle" fill="#1e3a8a" font-weight="600">input#hobby-input</text>
+  <rect x="480" y="298" width="122" height="28" rx="6" fill="#bfdbfe" stroke="#2563eb"/>
+  <text x="541" y="317" text-anchor="middle" fill="#1e3a8a" font-weight="600">button#add-btn</text>
+  <text x="170" y="158" text-anchor="middle" fill="#6b7280">meta · title · style</text>
+  <g font-size="13">
+    <rect x="130" y="418" width="16" height="16" rx="3" fill="#bfdbfe" stroke="#2563eb"/>
+    <text x="154" y="431" fill="#374151">실습에서 JS가 집는 요소</text>
+    <rect x="330" y="418" width="16" height="16" rx="3" fill="#f3f4f6" stroke="#9ca3af"/>
+    <text x="354" y="431" fill="#374151">그 밖의 요소</text>
+    <text x="470" y="431" fill="#6b7280">"글자" = 텍스트</text>
+  </g>
+</svg>
+</div>
+
+<p class="note"><kbd>F12</kbd> → 요소(Elements) 탭이 이 나무입니다. JS로 바꾸면 여기가 바뀝니다.</p>
+
+<h3 id="s4-2">4-2. 요소 찾기 — querySelector · querySelectorAll</h3>
+<p>요소는 <b>CSS 선택자를 그대로</b> 써서 찾습니다. 하나만 집으면 <code>querySelector</code>, 모두 집으면 <code>querySelectorAll</code>입니다.</p>
+<pre class="rule"><code>선택자는 CSS와 똑같이:   태그 "h1"    클래스 ".highlight"    id "#intro"</code></pre>
+
+<div class="demo" data-name="하나 집기 · 전부 집기 · 못 찾으면 null" style="--h: 800px; --frame-h: 210px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;요소 찾기&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 20px; }
+    .highlight { background-color: #fef3c7; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;홍길동을 소개합니다&lt;/h1&gt;
+  &lt;p id="intro"&gt;테니스를 좋아하는 대학생입니다.&lt;/p&gt;
+  &lt;p class="highlight"&gt;나이: 21세&lt;/p&gt;
+  &lt;p class="highlight"&gt;좋아하는 것: 새로운 경험&lt;/p&gt;
+  &lt;script&gt;
+    // 하나 집기: 맞는 요소 중 첫 번째
+    const title = document.querySelector("h1");
+    const intro = document.querySelector("#intro");
+    console.log(title);
+    console.log(intro.textContent);
+
+    // 전부 집기: 맞는 요소 모두 → forEach로 하나씩
+    const items = document.querySelectorAll(".highlight");
+    console.log(items);
+    items.forEach((p) =&gt; {
+      console.log(p.textContent);
+    });
+
+    // 못 찾으면 null
+    console.log(document.querySelector("#nothing"));
+
+    // null 뒤에 .classList를 붙이면 오류 (빨간 줄)
+    document.querySelector("#nothing").classList.add("on");
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>하나</td><td>document.querySelector("선택자")</td><td>맞는 요소 중 첫 번째 하나</td></tr>
+<tr><td>전부</td><td>document.querySelectorAll("선택자")</td><td>맞는 요소 모두를 담은 목록(NodeList)</td></tr>
+<tr><td>하나씩</td><td>items.forEach((el) =&gt; { … })</td><td>전부 집은 것을 하나씩 꺼내 같은 일 하기</td></tr>
+<tr><td>못 찾으면</td><td>null</td><td>null 뒤에 점(.)을 붙이면 오류</td></tr>
+</tbody></table></div>
+
+<p class="note"><b>막히는 지점:</b> <code>Cannot read properties of null</code>이 뜨면 선택자 오타이거나 script가 그 요소보다 위에 있는 것입니다.</p>
+
+<h3 id="s4-3">4-3. 글자와 값 — textContent · value · 속성</h3>
+<p>태그 안의 글자는 <code>textContent</code>, 입력칸에 적힌 값은 <code>value</code>입니다.</p>
+
+<div class="demo" data-name="입력한 이름으로 인사하기 — 값은 누른 순간에" style="--h: 570px; --frame-h: 150px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;글자와 값&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 20px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1 id="hello"&gt;안녕하세요!&lt;/h1&gt;
+  &lt;input type="text" id="name" placeholder="이름"&gt;
+  &lt;button type="button" id="btn"&gt;인사하기&lt;/button&gt;
+  &lt;script&gt;
+    const hello = document.querySelector("#hello");
+    const nameInput = document.querySelector("#name");
+    const btn = document.querySelector("#btn");
+
+    btn.addEventListener("click", () =&gt; {
+      const name = nameInput.value;
+      hello.textContent = `안녕하세요, ${name}님!`;
+      nameInput.value = ""; // 입력칸 비우기
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref"><tbody>
+<tr><td>요소.textContent</td><td>태그 안의 글자 읽기 · 바꾸기</td></tr>
+<tr><td>입력칸.value</td><td>입력칸에 지금 적힌 글자</td></tr>
+<tr><td>입력칸.value = ""</td><td>입력칸 비우기</td></tr>
+<tr><td>요소.hidden = true</td><td>속성 바꾸기. true면 숨김, false면 보임</td></tr>
+</tbody></table></div>
+
+<p class="note"><b>막히는 지점:</b> 값을 읽는 줄이 클릭 함수 <b>바깥</b>에 있으면 늘 빈 값이 됩니다.</p>
+
+<h3 id="s4-4">4-4. 모양 — classList · style</h3>
+<p>모양은 CSS에 클래스로 적어 두고, JS는 그 클래스를 <b>붙였다 뗐다</b> 합니다. style로 직접 바꿀 수도 있습니다.</p>
+<pre class="rule"><code>querySelector에는 점을 붙여 ".box",     classList에는 점 없이 "highlight"</code></pre>
+
+<div class="demo" data-name="클래스 켜고 끄기 · style 직접 바꾸기" style="--h: 800px; --frame-h: 150px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;classList와 style&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 20px; }
+    .box { padding: 16px; border: 1px solid #ccc; border-radius: 8px; }
+    /* 이 클래스가 붙으면 노란 배경 */
+    .box.highlight { background: #fef3c7; border-color: #d97706; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="box"&gt;공지: 수강신청은 금요일까지입니다.&lt;/div&gt;
+  &lt;p&gt;
+    &lt;button type="button" id="toggle"&gt;강조 켜고 끄기&lt;/button&gt;
+    &lt;button type="button" id="red"&gt;style로 빨갛고 굵게&lt;/button&gt;
+  &lt;/p&gt;
+  &lt;script&gt;
+    const box = document.querySelector(".box");
+    const toggleBtn = document.querySelector("#toggle");
+    const redBtn = document.querySelector("#red");
+
+    // 클래스 켜고 끄기: 모양은 CSS에, JS는 이름만
+    toggleBtn.addEventListener("click", () =&gt; {
+      box.classList.toggle("highlight");
+      console.log(box.classList.contains("highlight"));
+    });
+
+    // style 직접: font-weight → fontWeight
+    redBtn.addEventListener("click", () =&gt; {
+      box.style.color = "red";
+      box.style.fontWeight = "bold";
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>붙이기</td><td>el.classList.add("highlight")</td><td>클래스 붙이기</td></tr>
+<tr><td>떼기</td><td>el.classList.remove("highlight")</td><td>클래스 떼기</td></tr>
+<tr><td>켜고 끄기</td><td>el.classList.toggle("highlight")</td><td>없으면 붙이고, 있으면 뗌</td></tr>
+<tr><td>있는지</td><td>el.classList.contains("highlight")</td><td>true / false</td></tr>
+<tr><td>직접</td><td>el.style.fontWeight = "bold"</td><td>태그에 바로 씀. font-weight → fontWeight</td></tr>
+</tbody></table></div>
+
+<h2 id="s5">5. DOM 다루기 — 추가 · 삭제 · 수정</h2>
+<p>이번에는 요소를 <b>새로 만들어 붙이고</b>, 필요 없으면 <b>떼어 냅니다</b>. 예제는 <a href="#s3-1">3-1</a>의 교내공지입니다.</p>
+<pre class="rule"><code>추가: 만들기 → 채우기 → 붙이기      삭제: 요소.remove()      수정: textContent · classList (4장)</code></pre>
+
+<h3 id="s5-1">5-1. 추가 — createElement · append</h3>
+<p>[공지 추가]를 눌러 보세요. 새 <code>li</code>를 만들고, 글자를 채우고, 목록 끝에 붙입니다. 실습 2부가 이 모양입니다.</p>
+
+<div class="demo" data-name="공지 추가하기 — 만들기 · 채우기 · 붙이기" style="--h: 744px; --frame-h: 360px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;공지 추가하기&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 16px; }
+    h1 { font-size: 24px; border-bottom: 2px solid #333; }
+    li { margin: 8px 0; padding: 8px; background: #f2f2f2; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;교내공지&lt;/h1&gt;
+  &lt;p&gt;학생 여러분에게 안내드립니다.&lt;/p&gt;
+  &lt;button id="add" type="button"&gt;공지 추가&lt;/button&gt;
+  &lt;ul id="notices"&gt;
+    &lt;li&gt;수강신청 안내&lt;/li&gt;
+    &lt;li&gt;장학금 신청 안내&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;script&gt;
+    const list = document.querySelector("#notices");
+    const addButton = document.querySelector("#add");
+
+    addButton.addEventListener("click", () =&gt; {
+      // 1. 만들기: 아직 화면에 없는 새 li
+      const li = document.createElement("li");
+      // 2. 채우기: children.length는 지금 li 개수
+      li.textContent = `새 공지 ${list.children.length + 1}`;
+      // 3. 붙이기: 목록 끝에
+      list.append(li);
+      console.log("공지 개수:", list.children.length);
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>1. 만들기</td><td>document.createElement("li")</td><td>아직 화면에는 없습니다</td></tr>
+<tr><td>2. 채우기</td><td>li.textContent = "…"</td><td>글자를 넣습니다</td></tr>
+<tr><td>3. 붙이기</td><td>목록.append(li)</td><td>목록 끝에 붙습니다</td></tr>
+</tbody></table></div>
+<p class="note">append를 빼면 요소는 만들어져도 화면에 보이지 않습니다.</p>
+
+<h3 id="s5-2">5-2. 삭제 — remove</h3>
+<p>공지를 누르면 <code>li.remove()</code>로 그 공지를 지웁니다. [공지 추가]로 새 공지를 만든 뒤 <b>새 공지를 눌러 보세요.</b> 새 공지는 지워지지 않습니다.</p>
+
+<div class="demo" data-name="누르면 지워지는 공지 — 새 공지는?" style="--h: 802px; --frame-h: 360px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;누르면 지워지는 공지&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 16px; }
+    h1 { font-size: 24px; border-bottom: 2px solid #333; }
+    li { margin: 8px 0; padding: 8px; background: #f2f2f2; cursor: pointer; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;교내공지&lt;/h1&gt;
+  &lt;p&gt;공지를 누르면 지워집니다.&lt;/p&gt;
+  &lt;button id="add" type="button"&gt;공지 추가&lt;/button&gt;
+  &lt;ul id="notices"&gt;
+    &lt;li&gt;수강신청 안내&lt;/li&gt;
+    &lt;li&gt;장학금 신청 안내&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;script&gt;
+    const list = document.querySelector("#notices");
+
+    // 지금 있는 공지 li마다: 누르면 그 li를 지운다
+    document.querySelectorAll("#notices li").forEach((li) =&gt; {
+      li.addEventListener("click", () =&gt; {
+        li.remove();
+      });
+    });
+
+    // 추가 버튼: 5-1과 같음 (새 li에는 이벤트 없음)
+    document.querySelector("#add").addEventListener("click", () =&gt; {
+      const li = document.createElement("li");
+      li.textContent = `새 공지 ${list.children.length + 1}`;
+      list.append(li);
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<p class="note"><b>막히는 지점:</b> <code>querySelectorAll</code>로 붙인 이벤트는 그 줄이 실행될 때 있던 <code>li</code>에만 있습니다. 새 요소에는 <b>만드는 그 자리에서</b> 이벤트를 붙입니다.</p>
+
+<details class="extra" id="s5-2-more"><summary>새 공지도 지워지게 — 만들 때 이벤트 붙이기</summary>
+<p><code>li</code>를 만든 뒤, 붙이기 전에 그 <code>li</code>에 이벤트를 붙입니다. 위 예제와 달라진 곳은 "더한 줄" 아래 세 줄뿐입니다.</p>
+<div class="demo" data-name="새 공지도 지워지는 공지" style="--h: 880px; --frame-h: 360px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;새 공지도 지워지게&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 16px; }
+    h1 { font-size: 24px; border-bottom: 2px solid #333; }
+    li { margin: 8px 0; padding: 8px; background: #f2f2f2; cursor: pointer; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;교내공지&lt;/h1&gt;
+  &lt;p&gt;공지를 누르면 지워집니다.&lt;/p&gt;
+  &lt;button id="add" type="button"&gt;공지 추가&lt;/button&gt;
+  &lt;ul id="notices"&gt;
+    &lt;li&gt;수강신청 안내&lt;/li&gt;
+    &lt;li&gt;장학금 신청 안내&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;script&gt;
+    const list = document.querySelector("#notices");
+
+    // 지금 있는 공지 li마다: 누르면 그 li를 지운다
+    document.querySelectorAll("#notices li").forEach((li) =&gt; {
+      li.addEventListener("click", () =&gt; {
+        li.remove();
+      });
+    });
+
+    // 추가 버튼: 새 li에도 이벤트를 붙인다
+    document.querySelector("#add").addEventListener("click", () =&gt; {
+      const li = document.createElement("li");
+      li.textContent = `새 공지 ${list.children.length + 1}`;
+      // 더한 줄: 만든 그 자리에서 이벤트 붙이기
+      li.addEventListener("click", () =&gt; {
+        li.remove();
+      });
+      list.append(li);
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+</details>
+
+<h3 id="s5-3">5-3. 수정과 정리표</h3>
+<p>수정은 새 문법이 아닙니다. 찾은 요소에 4장의 <code>textContent</code>와 <code>classList</code>를 쓰면 됩니다. [첫 공지 고치기]를 누르고, 공지도 눌러 보세요.</p>
+
+<div class="demo" data-name="첫 공지 고치기 · 눌러서 완료 표시" style="--h: 821px; --frame-h: 360px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;첫 공지 고치기 · 완료 표시&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 16px; }
+    h1 { font-size: 24px; border-bottom: 2px solid #333; }
+    li { margin: 8px 0; padding: 8px; background: #f2f2f2; cursor: pointer; }
+    li.done { color: #9ca3af; text-decoration: line-through; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;교내공지&lt;/h1&gt;
+  &lt;p&gt;공지를 누르면 완료 표시가 켜지고 꺼집니다.&lt;/p&gt;
+  &lt;input type="text" id="edit-input" value="수강신청 기간 변경 안내"&gt;
+  &lt;button id="edit" type="button"&gt;첫 공지 고치기&lt;/button&gt;
+  &lt;ul id="notices"&gt;
+    &lt;li&gt;수강신청 안내&lt;/li&gt;
+    &lt;li&gt;장학금 신청 안내&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;script&gt;
+    const list = document.querySelector("#notices");
+    const input = document.querySelector("#edit-input");
+
+    // 글자 수정: 첫 공지를 입력칸의 글자로
+    document.querySelector("#edit").addEventListener("click", () =&gt; {
+      list.firstElementChild.textContent = input.value;
+    });
+
+    // 모양 수정: 누른 공지에 done 켜고 끄기
+    document.querySelectorAll("#notices li").forEach((li) =&gt; {
+      li.addEventListener("click", () =&gt; {
+        li.classList.toggle("done");
+      });
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>추가</td><td>createElement("li") → 목록.append(li)</td><td>만들어서 목록 끝에 붙이기</td></tr>
+<tr><td>삭제</td><td>li.remove()</td><td>그 요소 떼어 내기</td></tr>
+<tr><td>수정</td><td>li.textContent · li.classList</td><td>글자와 모양 바꾸기</td></tr>
+<tr><td>첫 자식</td><td>목록.firstElementChild</td><td>목록의 첫 li</td></tr>
+<tr><td>자식 수</td><td>목록.children.length</td><td>지금 들어 있는 li 개수</td></tr>
+</tbody></table></div>
+
+<h2 id="s6">6. React에서 자주 쓰는 JS 문법</h2>
+<p>React 코드도 JS입니다. 낯선 기호 몇 개가 반복될 뿐입니다. 실습에는 나오지 않으니 모양만 눈에 익혀 두세요. 오늘은 6-1~6-5를 함께 보고, 나머지는 React 세션 전에 읽어 오세요.</p>
+
+<h3 id="s6-1">6-1. 먼저 보기 — 오늘 만든 카드를 React로</h3>
+<p>실습에서 만들 카드를 React로 쓰면 이렇습니다. ▶ 실행을 누른 뒤 [어둡게 보기], [추가], 취미 칸을 눌러 보세요. <code>Card</code>처럼 화면 한 덩어리를 그리는 함수를 <b>컴포넌트</b>라고 합니다.</p>
+<pre class="rule"><code>DOM 방식: 요소를 찾아서 직접 고친다        React: 값(상태)만 바꾸면 화면은 React가 다시 그린다</code></pre>
+
+<div class="demo stack resizable" data-name="오늘 만든 카드를 React로 (인터넷 필요)" style="--h: 380px;" data-manual="React를 인터넷에서 불러와 실행합니다">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;오늘 만든 카드를 React로&lt;/title&gt;
+  &lt;style&gt;
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; margin: 0; padding: 20px; background: #f3f4f6; }
+    .card { max-width: 560px; margin: 0 auto; padding: 24px;
+      background: #fff; border: 1px solid #d1d5db; border-radius: 16px;
+      transition: background-color .3s, color .3s; }
+    .card.dark { background: #1f2937; color: #f9fafb; border-color: #374151; }
+    .toolbar { text-align: right; }
+    button { padding: 8px 14px; border: 1px solid #9ca3af; border-radius: 8px; background: #fff; }
+    h1 { margin: 0 0 6px; font-size: 26px; }
+    .card p { margin: 0; color: #6b7280; }
+    .card.dark p { color: #d1d5db; }
+    .hobbies { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; list-style: none; }
+    .hobbies li { padding: 10px 18px; background: #eee; border-radius: 6px; cursor: pointer; }
+    .hobbies li:hover { text-decoration: line-through; }
+    .card.dark .hobbies li { background: #374151; }
+    .add-row { display: flex; gap: 8px; }
+    .add-row input { flex: 1; min-width: 0; padding: 8px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div id="root"&gt;React를 불러오는 중입니다…&lt;/div&gt;
+
+  &lt;!-- React와 번역기(Babel) 불러오기 --&gt;
+  &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"&gt;&lt;/script&gt;
+  &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"&gt;&lt;/script&gt;
+  &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.29.9/babel.min.js"&gt;&lt;/script&gt;
+  &lt;script type="text/babel"&gt;
+    const { useState } = React;
+
+    // 컴포넌트: 카드 한 장을 그리는 함수
+    function Card({ name, hobbies }) {
+      // 상태: [지금 값, 바꾸는 함수]
+      const [dark, setDark] = useState(false);
+      const [list, setList] = useState(hobbies);
+      const [text, setText] = useState("");
+
+      // 2부 · 추가: 새 배열로 바꾸기 (빈칸 · 이미 있으면 멈춤)
+      const add = () =&gt; {
+        if (text === "" || list.includes(text)) return;
+        setList([...list, text]);
+        setText("");
+      };
+
+      // 3부 · 삭제: 누른 것만 뺀 새 배열로
+      const remove = (hobby) =&gt; setList(list.filter((h) =&gt; h !== hobby));
+
+      // 화면: 지금 값대로 그리기
+      return (
+        &lt;div className={dark ? "card dark" : "card"}&gt;
+          &lt;div className="toolbar"&gt;
+            &lt;button type="button" onClick={() =&gt; setDark(!dark)}&gt;
+              {dark ? "밝게 보기" : "어둡게 보기"}
+            &lt;/button&gt;
+          &lt;/div&gt;
+          &lt;h1&gt;{name}&lt;/h1&gt;
+          &lt;p&gt;컴퓨터인공지능학부 · 테니스와 머신러닝&lt;/p&gt;
+          &lt;ul className="hobbies"&gt;
+            {list.map((h) =&gt; (
+              &lt;li key={h} onClick={() =&gt; remove(h)}&gt;{h}&lt;/li&gt;
+            ))}
+          &lt;/ul&gt;
+          &lt;div className="add-row"&gt;
+            &lt;input placeholder="새 취미" value={text}
+              onChange={(e) =&gt; setText(e.target.value)} /&gt;
+            &lt;button type="button" onClick={add}&gt;추가&lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.querySelector("#root"));
+    root.render(
+      &lt;Card name="홍길동" hobbies={["테니스", "음악 감상", "산책", "사진"]} /&gt;
+    );
+  &lt;/script&gt;
+  &lt;script&gt;
+    // 불러오지 못하면 안내 문구
+    if (!window.React || !window.ReactDOM || !window.Babel) {
+      document.querySelector("#root").textContent =
+        "React를 불러오지 못했습니다. 인터넷 연결을 확인하세요.";
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<p>가운데가 오늘 쓰는 DOM 방식, 오른쪽이 React 방식입니다.</p>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>1부 어둡게 보기</td><td>card.classList.toggle("dark")</td><td>setDark(!dark)</td></tr>
+<tr><td>2부 취미 추가</td><td>createElement → append</td><td>setList([...list, text])</td></tr>
+<tr><td>3부 누르면 삭제</td><td>li.remove()</td><td>setList(list.filter((h) =&gt; h !== hobby))</td></tr>
+<tr><td>이벤트</td><td>addEventListener("click", 함수)</td><td>onClick={함수}</td></tr>
+</tbody></table></div>
+
+<h3 id="s6-2">6-2. 조건과 빈 값 — &amp;&amp; · ?. · ??</h3>
+<p>조건이 맞을 때만 보여 주기와, 데이터에 빈 칸이 있을 때를 다룹니다.</p>
+
+<div class="demo" data-name="조건에 따라, 비어 있어도 안전하게" data-console="only" style="--h: 647px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;조건과 빈 값&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;script&gt;
+    // 게시글 데이터 (place는 없음)
+    const post = {
+      title: "오늘의 테니스 연습",
+      likes: 42,
+      isLiked: true,
+    };
+
+    // 삼항: 참이면 앞 값, 거짓이면 뒤 값
+    console.log(post.isLiked ? "♥" : "♡");
+
+    // &amp;&amp;: 앞이 참일 때만 뒤 값, 거짓이면 false
+    console.log(post.likes &gt;= 40 &amp;&amp; "인기 글");
+    console.log(post.likes &gt;= 100 &amp;&amp; "인기 글");
+
+    // ?.: 앞이 비어 있으면 오류 대신 undefined
+    console.log(post.place?.name);
+
+    // ??: 앞이 null · undefined면 뒤 값
+    console.log(post.place?.name ?? "장소 미정");
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>그리고</td><td>조건 &amp;&amp; 값</td><td>참일 때만 뒤 값. 거짓이면 false</td></tr>
+<tr><td>있으면 꺼내기</td><td>post.place?.name</td><td>place가 없으면 오류 대신 undefined</td></tr>
+<tr><td>없으면 대신</td><td>값 ?? "기본값"</td><td>null · undefined일 때 기본값</td></tr>
+</tbody></table></div>
+
+<h3 id="s6-3">6-3. 구조 분해 할당</h3>
+<p>객체나 배열에서 값을 꺼내 <b>한 번에 변수 여러 개</b>에 담습니다. React 컴포넌트의 첫 줄마다 나옵니다.</p>
+
+<div class="demo" data-name="객체와 배열에서 꺼내기" data-console="only" style="--h: 531px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;구조 분해 할당&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;script&gt;
+    const me = { name: "홍길동", age: 21 };
+
+    // 객체: 같은 이름의 키를 꺼내기
+    const { name, age } = me;
+    console.log(name, age);
+
+    // 배열: 순서대로 꺼내기
+    const [first, second] = ["테니스", "음악 감상"];
+    console.log(first, "/", second);
+
+    // 매개변수에서 바로 꺼내기
+    const intro = ({ name }) =&gt; `저는 ${name}입니다`;
+    console.log(intro(me));
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>객체</td><td>const { name, age } = me</td><td>같은 이름의 키를 꺼냅니다</td></tr>
+<tr><td>배열</td><td>const [first, second] = arr</td><td>순서대로 꺼냅니다</td></tr>
+<tr><td>매개변수</td><td>({ name }) =&gt; …</td><td>받은 객체에서 바로 꺼냅니다</td></tr>
+<tr><td>React</td><td>const [dark, setDark] = useState(false)</td><td>[지금 값, 바꾸는 함수]를 꺼냅니다</td></tr>
+</tbody></table></div>
+
+<h3 id="s6-4">6-4. 스프레드와 불변성</h3>
+<p><code>...</code>(스프레드)는 배열이나 객체를 펼쳐 <b>새</b> 배열 · 새 객체를 만듭니다. 원본은 그대로입니다.</p>
+<pre class="rule"><code>React 상태는 고치지 말고 새로 만든다:   list.push(x)  (X)   →   [...list, x]  (O)</code></pre>
+
+<div class="demo" data-name="원본은 그대로, 새로 만들기" data-console="only" style="--h: 570px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;스프레드와 불변성&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;script&gt;
+    const hobbies = ["테니스", "음악 감상"];
+
+    // 배열: 펼쳐 넣어 새 배열 만들기
+    const more = [...hobbies, "산책"];
+    console.log(hobbies);
+    console.log(more);
+
+    // 객체: 복사하면서 age만 바꾸기
+    const me = { name: "홍길동", age: 21 };
+    const older = { ...me, age: 22 };
+    console.log(me, older);
+
+    // push는 새로 만들지 않고 원본을 바꿈
+    hobbies.push("사진");
+    console.log(hobbies);
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>배열에 더하기</td><td>[...arr, x]</td><td>새 배열. 원본은 그대로</td></tr>
+<tr><td>객체 고치기</td><td>{ ...obj, age: 22 }</td><td>복사한 뒤 age만 바꾼 새 객체</td></tr>
+<tr><td>원본 바꾸기</td><td>arr.push(x)</td><td>React 상태에는 쓰지 않습니다</td></tr>
+</tbody></table></div>
+<p class="note">React는 새 배열 · 새 객체가 들어와야 바뀐 것을 알아챕니다(<b>불변성</b>).</p>
+
+<h3 id="s6-5">6-5. map · filter</h3>
+<p>배열의 칸마다 함수를 불러 <b>새 배열</b>을 만듭니다. <code>map</code>은 칸마다 바꾸고, <code>filter</code>는 조건에 맞는 칸만 남깁니다.</p>
+
+<div class="demo" data-name="배열 → 새 배열" data-console="only" style="--h: 511px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;map · filter&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;script&gt;
+    const hobbies = ["테니스", "음악 감상", "산책"];
+
+    // map: 칸마다 바꾼 새 배열 (개수 그대로)
+    const tagged = hobbies.map((h) =&gt; `#${h}`);
+    console.log(tagged);
+
+    // filter: 조건이 참인 칸만 남긴 새 배열
+    const without = hobbies.filter((h) =&gt; h !== "산책");
+    console.log(without);
+
+    // 원본은 그대로
+    console.log(hobbies);
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>칸마다 바꾸기</td><td>arr.map((h) =&gt; …)</td><td>개수가 같은 새 배열. React에서 목록을 그릴 때</td></tr>
+<tr><td>골라 남기기</td><td>arr.filter((h) =&gt; 조건)</td><td>조건이 참인 칸만. React에서 삭제할 때</td></tr>
+</tbody></table></div>
+
+<h3 id="s6-6">6-6. async · await · fetch</h3>
+<p>서버에 데이터를 요청하고, 응답이 오면 화면에 넣습니다. [불러오기]를 눌러 보세요.</p>
+
+<div class="demo" data-name="게시글 JSON 받아 오기 (인터넷 필요)" style="--h: 899px; --frame-h: 300px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;게시글 JSON 받아 오기&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 16px; }
+    #meta { color: #6b7280; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;button id="load" type="button"&gt;불러오기&lt;/button&gt;
+  &lt;h2 id="title"&gt;(아직 없음)&lt;/h2&gt;
+  &lt;p id="meta"&gt;&lt;/p&gt;
+  &lt;script&gt;
+    const title = document.querySelector("#title");
+    const meta = document.querySelector("#meta");
+    const url =
+      "https://boseung2.github.io/project-beginner-ta/examples/post.json";
+
+    // async: 안에서 await를 쓸 수 있는 함수
+    async function load() {
+      title.textContent = "불러오는 중…";
+      try {
+        // 요청하고 응답이 올 때까지 기다리기
+        const res = await fetch(url);
+        // 주소가 틀리면(404) catch로 보내기
+        if (!res.ok) throw new Error(`응답 ${res.status}`);
+        // JSON 글자 → 객체
+        const post = await res.json();
+        title.textContent = post.title;
+        meta.textContent = `${post.author} · 좋아요 ${post.likes}`;
+        console.log(post);
+      } catch (error) {
+        title.textContent = "불러오지 못했습니다";
+        console.error(error);
+      }
+    }
+
+    document.querySelector("#load").addEventListener("click", load);
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>요청</td><td>fetch(url)</td><td>응답은 조금 뒤에 옵니다</td></tr>
+<tr><td>기다리기</td><td>await</td><td>응답이 올 때까지 기다립니다. async 함수 안에서 씁니다</td></tr>
+<tr><td>JSON → 객체</td><td>await res.json()</td><td>받은 글자를 객체로 바꿉니다</td></tr>
+<tr><td>실패 대비</td><td>try { … } catch (error) { … }</td><td>오류가 나면 catch로 건너뜁니다</td></tr>
+</tbody></table></div>
+
+<h3 id="s6-7">6-7. import · export</h3>
+<p>한 파일에서 내보낸(export) 것을 다른 파일에서 가져와(import) 씁니다. 여기서는 실행하지 않고 코드만 봅니다.</p>
+<p class="note"><b>profile.js</b> — 내보내는 쪽</p>
+<pre class="rule"><code>export function greet(who) {
+  return `안녕하세요, ${who}님`;
+}
+
+export default function intro() {
+  return "저는 홍길동입니다";
+}</code></pre>
+<p class="note"><b>main.js</b> — 가져오는 쪽</p>
+<pre class="rule"><code>import intro, { greet } from "./profile.js";
+
+console.log(greet("홍길동"));   // 안녕하세요, 홍길동님
+console.log(intro());          // 저는 홍길동입니다</code></pre>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>이름 붙여 내보내기</td><td>export function greet</td><td>가져올 때 중괄호에 같은 이름으로</td></tr>
+<tr><td>기본 내보내기</td><td>export default</td><td>파일마다 하나. 가져올 때 이름은 마음대로</td></tr>
+</tbody></table></div>
+
+<h3 id="s6-8">6-8. 정리표 — React에서 다시 만날 모습</h3>
+<p>가운데는 오늘 쓴 모습, 오른쪽은 React에서 보게 될 모습입니다. 외우지 않아도 됩니다.</p>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td><a href="#s2-3">함수 넘기기 2-3</a></td><td>addEventListener("click", sayHi)</td><td>onClick={sayHi} (O) · onClick={sayHi()} (X)</td></tr>
+<tr><td><a href="#s6-3">구조 분해 6-3</a></td><td>const { name } = me</td><td>const [dark, setDark] = useState(false)</td></tr>
+<tr><td><a href="#s6-5">map 6-5</a></td><td>list.map((h) =&gt; `#${h}`)</td><td>{list.map((h) =&gt; &lt;li key={h}&gt;{h}&lt;/li&gt;)}</td></tr>
+<tr><td><a href="#s6-7">import 6-7</a></td><td>import { greet } from "./profile.js"</td><td>import { useState } from "react"</td></tr>
+</tbody></table></div>
+
+<h2 id="s7">7. 실습: 자기소개 페이지에 반응 넣기</h2>
+<p>자기소개 카드에 JS를 붙여 아래 <b>목표 화면</b>처럼 반응하게 만들어 봅니다. 정답 코드는 적어 두지 않았습니다. 각 구역에 적힌 <b>참고 절</b>을 열어 보고 직접 찾아 보세요. 세 부 모두 <a href="#s3-1">3-1</a>의 선택 → 이벤트 → 변경 모양입니다.</p>
+
+<h3 id="s7-1">목표 화면 · 시작 코드</h3>
+<p>버튼, 입력칸, 취미 칸을 눌러 보세요.</p>
+
+<div class="demo stack resizable" data-name="목표 화면 — 눌러 보세요" style="--h: 560px;" data-width-controls data-preview-only>
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;홍길동을 소개합니다&lt;/title&gt;
+  &lt;style&gt;
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; margin: 0; padding: 20px; background: #f3f4f6; }
+
+    .card {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 28px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 16px;
+    }
+
+    .profile { display: flex; gap: 20px; align-items: center; }
+    .profile img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; }
+    .profile h1 { margin: 0 0 6px; font-size: 26px; }
+    .profile p { margin: 0; color: #6b7280; }
+
+    .hobbies { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; margin: 22px 0; list-style: none; }
+    .hobbies li { padding: 12px 20px; background: #eee; border-radius: 6px; }
+
+    .site {
+      display: inline-block;
+      padding: 12px 20px;
+      background: #1f2937;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background-color 0.25s ease, transform 0.25s ease;
+    }
+    .site:hover { background: #2563eb; transform: translateY(-3px); }
+
+    /* 3일차 추가 · 버튼과 입력칸 */
+    .toolbar { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+    button { padding: 8px 14px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; font: inherit; cursor: pointer; }
+    .add-row { display: flex; gap: 8px; margin-bottom: 22px; }
+    .add-row input { flex: 1; min-width: 0; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font: inherit; }
+    .hobbies li { cursor: pointer; }
+    .hobbies li:hover { text-decoration: line-through; }
+
+    /* 3일차 추가 · 어둡게 보기 색 (.card에 dark 클래스가 붙으면 적용) */
+    .card { transition: background-color 0.3s, color 0.3s; }
+    .card.dark { background: #111827; color: #f9fafb; border-color: #374151; }
+    .card.dark .profile p { color: #9ca3af; }
+    .card.dark .hobbies li { background: #374151; }
+
+    @media (max-width: 520px) {
+      .card { padding: 18px; }
+      .profile { flex-direction: column; text-align: center; }
+      .profile h1 { font-size: 22px; }
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="card"&gt;
+    &lt;!-- 3일차 추가 --&gt;
+    &lt;div class="toolbar"&gt;
+      &lt;button type="button" id="mode-btn"&gt;어둡게 보기&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class="profile"&gt;
+      &lt;img src="assets/tennis-ball-square.jpg" alt="테니스 코트 사진"&gt;
+      &lt;div&gt;
+        &lt;h1&gt;홍길동&lt;/h1&gt;
+        &lt;p&gt;컴퓨터인공지능학부 · 테니스와 머신러닝&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;ul class="hobbies"&gt;
+      &lt;li&gt;테니스&lt;/li&gt;&lt;li&gt;음악 감상&lt;/li&gt;&lt;li&gt;산책&lt;/li&gt;&lt;li&gt;사진&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;!-- 3일차 추가 --&gt;
+    &lt;div class="add-row"&gt;
+      &lt;input type="text" id="hobby-input" placeholder="새 취미"&gt;
+      &lt;button type="button" id="add-btn"&gt;추가&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;a class="site" href="https://huggingface.co" target="_blank"&gt;관심 있는 사이트&lt;/a&gt;
+  &lt;/div&gt;
+
+  &lt;!-- 3일차 추가 --&gt;
+  &lt;script&gt;
+    const card = document.querySelector(".card");
+    const modeBtn = document.querySelector("#mode-btn");
+    const hobbies = document.querySelector(".hobbies");
+    const input = document.querySelector("#hobby-input");
+    const addBtn = document.querySelector("#add-btn");
+
+    // 1부 · #mode-btn → .card에 dark 켜고 끄기
+    modeBtn.addEventListener("click", () =&gt; {
+      card.classList.toggle("dark");
+      modeBtn.textContent = card.classList.contains("dark") ? "밝게 보기" : "어둡게 보기";
+    });
+
+    // 2부 · #add-btn → .hobbies 끝에 새 li
+    addBtn.addEventListener("click", () =&gt; {
+      const text = input.value.trim();
+      if (text === "") return;
+      const li = document.createElement("li");
+      li.textContent = text;
+      li.addEventListener("click", () =&gt; li.remove());
+      hobbies.append(li);
+      input.value = "";
+    });
+
+    // 3부 · 취미 li를 누르면 지우기
+    document.querySelectorAll(".hobbies li").forEach((li) =&gt; {
+      li.addEventListener("click", () =&gt; li.remove());
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<p>아래 시작 코드를 복사해 새 파일 <code>about-me-js.html</code>로 저장하고 Live Server로 엽니다. HTML과 CSS는 다 들어 있으니 맨 아래 <code>&lt;script&gt;</code> 안만 채우면 됩니다.</p>
+
+<div class="demo stack resizable" data-name="시작 코드 — 복사해서 about-me-js.html로 저장" style="--h: 560px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;홍길동을 소개합니다&lt;/title&gt;
+  &lt;style&gt;
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; margin: 0; padding: 20px; background: #f3f4f6; }
+
+    .card {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 28px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 16px;
+    }
+
+    .profile { display: flex; gap: 20px; align-items: center; }
+    .profile img { width: 110px; height: 110px; border-radius: 50%; object-fit: cover; }
+    .profile h1 { margin: 0 0 6px; font-size: 26px; }
+    .profile p { margin: 0; color: #6b7280; }
+
+    .hobbies { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; margin: 22px 0; list-style: none; }
+    .hobbies li { padding: 12px 20px; background: #eee; border-radius: 6px; }
+
+    .site {
+      display: inline-block;
+      padding: 12px 20px;
+      background: #1f2937;
+      color: #fff;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: background-color 0.25s ease, transform 0.25s ease;
+    }
+    .site:hover { background: #2563eb; transform: translateY(-3px); }
+
+    /* 3일차 추가 · 버튼과 입력칸 */
+    .toolbar { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+    button { padding: 8px 14px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; font: inherit; cursor: pointer; }
+    .add-row { display: flex; gap: 8px; margin-bottom: 22px; }
+    .add-row input { flex: 1; min-width: 0; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font: inherit; }
+    .hobbies li { cursor: pointer; }
+    .hobbies li:hover { text-decoration: line-through; }
+
+    /* 3일차 추가 · 어둡게 보기 색 (.card에 dark 클래스가 붙으면 적용) */
+    .card { transition: background-color 0.3s, color 0.3s; }
+    .card.dark { background: #111827; color: #f9fafb; border-color: #374151; }
+    .card.dark .profile p { color: #9ca3af; }
+    .card.dark .hobbies li { background: #374151; }
+
+    @media (max-width: 520px) {
+      .card { padding: 18px; }
+      .profile { flex-direction: column; text-align: center; }
+      .profile h1 { font-size: 22px; }
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="card"&gt;
+    &lt;!-- 3일차 추가 --&gt;
+    &lt;div class="toolbar"&gt;
+      &lt;button type="button" id="mode-btn"&gt;어둡게 보기&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class="profile"&gt;
+      &lt;img src="assets/tennis-ball-square.jpg" alt="테니스 코트 사진"&gt;
+      &lt;div&gt;
+        &lt;h1&gt;홍길동&lt;/h1&gt;
+        &lt;p&gt;컴퓨터인공지능학부 · 테니스와 머신러닝&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;ul class="hobbies"&gt;
+      &lt;li&gt;테니스&lt;/li&gt;&lt;li&gt;음악 감상&lt;/li&gt;&lt;li&gt;산책&lt;/li&gt;&lt;li&gt;사진&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;!-- 3일차 추가 --&gt;
+    &lt;div class="add-row"&gt;
+      &lt;input type="text" id="hobby-input" placeholder="새 취미"&gt;
+      &lt;button type="button" id="add-btn"&gt;추가&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;a class="site" href="https://huggingface.co" target="_blank"&gt;관심 있는 사이트&lt;/a&gt;
+  &lt;/div&gt;
+
+  &lt;!-- 3일차 추가 --&gt;
+  &lt;script&gt;
+    // 1부 · #mode-btn → .card에 dark 켜고 끄기
+    // 2부 · #add-btn → .hobbies 끝에 새 li
+    // 3부 · 취미 li를 누르면 지우기
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<p class="note">사진은 <a href="#s7-photo">맨 아래</a>에서 내려받아 같은 폴더에 두고 <code>src="tennis-ball-square.jpg"</code>로 고치세요. 콘솔(<kbd>F12</kbd>)도 미리 열어 두세요.</p>
+
+<details class="extra"><summary>2일차 파일에 이어 쓰려면?</summary>
+<p>클래스 이름을 <code>.card</code> · <code>.profile</code> · <code>.hobbies</code>로 맞춘 경우에만 됩니다. 시작 코드에서 <code>3일차 추가</code> 주석이 달린 곳만 내 파일의 같은 자리로 옮기세요. 헷갈리면 시작 코드로 새로 시작하세요.</p>
+</details>
+
+<h3 id="s7-2">1부 · 버튼으로 어둡게 보기 켜고 끄기</h3>
+<p>'어둡게 보기' 버튼(<code>#mode-btn</code>)을 누를 때마다 카드(<code>.card</code>)에 <code>dark</code> 클래스를 붙였다 뗐다 합니다.</p>
+<p>버튼 글자도 상태에 맞게 '어둡게 보기' ↔ '밝게 보기'로 바꿉니다.</p>
+<p class="note">참고: <a href="#s3-1">3-1 선택 → 이벤트 → 변경</a> · <a href="#s4-2">4-2 요소 찾기</a> · <a href="#s4-4">4-4 classList</a> · <a href="#s1-3">1-3 비교와 조건</a><br>
+막히는 지점:</p>
+<ul class="plain">
+  <li>classList에는 점 없이 씁니다. <code>toggle(".dark")</code>는 오류는 안 나지만 색이 안 바뀝니다.</li>
+  <li><code>Cannot read properties of null</code>이 뜨면 선택자의 <code>#</code> · <code>.</code>이나 이름이 틀린 것입니다.</li>
+</ul>
+
+<h3 id="s7-3">2부 · 취미 추가하기</h3>
+<p>'추가' 버튼(<code>#add-btn</code>)을 누르면 입력칸(<code>#hobby-input</code>)의 글자로 <code>li</code>를 만들어 <code>.hobbies</code> 끝에 붙이고, 입력칸을 비웁니다.</p>
+<p>빈칸이면 아무것도 붙이지 않습니다. <code>if (값 === "") return;</code>이나 <code>if (값 !== "") { … }</code> 중 편한 쪽을 쓰세요.</p>
+<p class="note">참고: <a href="#s5-1">5-1 추가</a> · <a href="#s4-3">4-3 글자와 값</a> · <a href="#s1-3">1-3 비교와 조건</a> · <a href="#s2-1">2-1 return</a> · <a href="#s3-4">3-4 trim</a><br>
+막히는 지점:</p>
+<ul class="plain">
+  <li>입력값은 클릭 함수 안에서 읽습니다. 바깥에서 읽으면 늘 빈 값입니다.</li>
+  <li><code>li</code>도 클릭 함수 안에서 만듭니다. 바깥에서 만들면 칸이 하나만 생기고 글자만 바뀝니다.</li>
+  <li>괄호 · 따옴표 하나만 틀려도 script 전체가 멈춥니다. 콘솔의 첫 빨간 줄부터 보세요.</li>
+</ul>
+
+<h3 id="s7-4">3부 · 누르면 지워지는 취미</h3>
+<p>취미 칸을 누르면 그 취미가 지워지게 합니다. 원래 있던 네 개부터 해 봅니다.</p>
+<p>2부에서 추가한 취미도 지워지게 합니다.</p>
+<p class="note">참고: <a href="#s4-2">4-2 querySelectorAll · forEach</a> · <a href="#s5-2-more">5-2 '새 공지도 지워지게'</a> · <a href="#s2-3">2-3 함수를 넘기기</a><br>
+막히는 지점:</p>
+<ul class="plain">
+  <li>querySelectorAll 목록에 addEventListener를 바로 붙이면 <code>is not a function</code> 오류가 납니다. forEach로 하나씩 붙이세요.</li>
+  <li>새로 만든 <code>li</code>에는 이벤트가 없습니다. 2부에서 <code>li</code>를 만드는 자리에서 붙이세요.</li>
+</ul>
+
+<p class="note"><b>완료 확인:</b> 아래 네 가지를 TA에게 보여 주고, 내 코드에서 <b>선택 · 이벤트 · 변경</b>에 해당하는 줄을 짚어 설명하면 먼저 나가도 됩니다.</p>
+<ul class="plain">
+  <li>어둡게 보기 버튼을 두 번 누르면 카드와 버튼 글자가 원래대로 돌아옵니다.</li>
+  <li>취미를 추가하면 목록 끝에 붙고 입력칸이 비워집니다. 빈칸이면 붙지 않습니다.</li>
+  <li>원래 취미와 새 취미 모두 누르면 지워집니다.</li>
+  <li>콘솔에 빨간 줄이 없습니다.</li>
+</ul>
+<p class="note">AI에게 물을 때는 요소 이름과 동작을 함께 적습니다. 예: "#mode-btn을 누르면 .card에 dark 클래스를 켜고 끄는 코드를 써 줘."</p>
+
+<figure class="shot" id="s7-photo">
+  <img src="assets/tennis-ball-square.jpg" alt="실습에 쓸 테니스 코트 사진" width="440" height="440" loading="lazy">
+  <figcaption>실습용 사진 — 오른쪽 클릭 → 이미지 저장으로 내려받아 쓰거나, 본인 사진을 써도 됩니다.<br>
+  <span style="font-size:12px">출처: Santeri Viinamäki, <a href="https://commons.wikimedia.org/wiki/File:Tennis_ball_on_tennis_court_20170619.jpg" target="_blank" rel="noopener noreferrer">Tennis ball on tennis court</a>, Wikimedia Commons (CC BY-SA 4.0)</span></figcaption>
+</figure>
+
+<footer class="session-footer"><a href="2-CSS.html">← 이전 · 2. CSS</a><a href="index.html">전체 목차 →</a></footer>
+</main>
+</div>
+<noscript><p>코드와 실행 결과를 보려면 브라우저에서 JavaScript를 켜 주세요.</p></noscript>
+
+<script>
+(function () {
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // ---- 간단한 문법 강조 ----
+  function hlHtml(src) {
+    let out = "", i = 0;
+    const re = /<!-{2}[\s\S]*?-{2}>|<\/?[a-zA-Z][^>]*>|<!DOCTYPE[^>]*>/g;
+    let m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const tok = m[0];
+      if (tok.startsWith("<!-")) out += `<span class="c">${esc(tok)}</span>`;
+      else out += hlTag(tok);
+      i = m.index + tok.length;
+      // <style>, <script> 내부는 별도 처리
+      const low = tok.toLowerCase();
+      if (/^<(style|script)\b/.test(low)) {
+        const close = low.startsWith("<style") ? "</style>" : "<\/script>";
+        const end = src.toLowerCase().indexOf(close, i);
+        if (end !== -1) {
+          out += hlCode(src.slice(i, end), !low.startsWith("<style"));
+          i = end; re.lastIndex = end;
+        }
+      }
+    }
+    out += esc(src.slice(i));
+    return out;
+  }
+  function hlTag(tok) {
+    // <name attr="v" attr2 /> 를 한 번에 토큰화
+    const m = /^(<\/?)([A-Za-z!][\w-]*)([\s\S]*?)(\/?>)$/.exec(tok);
+    if (!m) return esc(tok);
+    const attrs = m[3].replace(/([\w:-]+)(\s*=\s*)("[^"]*"|'[^']*'|[^\s>]+)|([\w:-]+)/g, (a, n, eq, v, bare) =>
+      bare ? `<span class="a">${esc(bare)}</span>` : `<span class="a">${esc(n)}</span>${eq}<span class="s">${esc(v)}</span>`);
+    return `${esc(m[1])}<span class="t">${esc(m[2])}</span>${attrs}${esc(m[4])}`;
+  }
+  function hlCode(src, js = true) {
+    // JS / CSS / JSX 공용: 주석, 문자열, 키워드, 숫자(JS만)
+    const re = /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b(const|let|var|function|return|if|else|for|of|in|while|break|continue|switch|case|async|await|class|this|try|catch|finally|throw|import|export|from|default|new|typeof|true|false|null|undefined)\b|\b\d+(?:\.\d+)?\b/g;
+    let out = "", i = 0, m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const t = m[0];
+      const before = src[m.index - 1] || "", after = src[m.index + t.length] || "";
+      if (t.startsWith("//") || t.startsWith("/*")) out += `<span class="c">${esc(t)}</span>`;
+      else if (/^["'`]/.test(t)) out += `<span class="s">${esc(t)}</span>`;
+      else if (/^\d/.test(t)) out += js && before !== "#" ? `<span class="n">${esc(t)}</span>` : esc(t); // CSS 안의 숫자는 그대로
+      else if (/[.#$-]/.test(before) || after === "-") out += esc(t); // promise.catch · ease-in · break-after 는 키워드가 아님
+      else out += `<span class="k">${esc(t)}</span>`;
+      i = m.index + t.length;
+    }
+    return out + esc(src.slice(i));
+  }
+
+  // ---- 콘솔 패널: 실행용 문서에만 넣는 스크립트 (iframe 안에서 실행) ----
+  // 줄 번호가 원본 코드와 같도록 한 줄로 합쳐 <head> 바로 뒤에 넣는다. 그래서 이 함수 안에는 // 주석을 쓰지 않고 문장마다 ;를 붙인다.
+  function consoleBridge(run) {
+    const post = (level, text, line) => {
+      try { parent.postMessage({ jsDemoConsole: run, level: level, text: text, line: line || 0 }, "*"); } catch (e) { }
+    };
+    const voidTags = /^(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)$/;
+    const ctorName = (v) => { try { const p = Object.getPrototypeOf(v); return (p && p.constructor && p.constructor.name) || ""; } catch (e) { return ""; } };
+    const openTag = (el) => {
+      let s = "<" + el.tagName.toLowerCase();
+      for (let i = 0; i < el.attributes.length && i < 4; i++) {
+        const a = el.attributes[i];
+        const v = a.value.length > 40 ? a.value.slice(0, 40) + "…" : a.value;
+        s += " " + a.name + (a.value === "" ? "" : "=\"" + v + "\"");
+      }
+      return s + ">";
+    };
+    const fnText = (f) => {
+      let code = "";
+      try { code = Function.prototype.toString.call(f); } catch (e) { }
+      if (/^class[\s{]/.test(code)) return "class " + f.name;
+      const m = /^[^(=]*\(([^()]*)\)/.exec(code) || /^(?:async\s+)?([\w$]+)\s*=>/.exec(code);
+      return "ƒ " + f.name + "(" + (m ? m[1].replace(/\s+/g, " ").trim() : "") + ")";
+    };
+    const fmt = (v, d, seen) => {
+      const t = typeof v;
+      if (v === null) return "null";
+      if (t === "undefined") return "undefined";
+      if (t === "string") return d === 0 ? v : JSON.stringify(v);
+      if (t === "number") return Object.is(v, -0) ? "-0" : String(v);
+      if (t === "bigint") return v + "n";
+      if (t === "boolean" || t === "symbol") return String(v);
+      if (t === "function") return fnText(v);
+      try {
+        if (v === window) return "Window";
+        if (v instanceof Node) {
+          if (v.nodeType === 9) return "#document";
+          if (v.nodeType === 3) return JSON.stringify(v.nodeValue);
+          if (v.nodeType !== 1) return v.nodeName;
+          const tag = v.tagName.toLowerCase();
+          if (d > 0 || voidTags.test(tag)) return openTag(v);
+          const text = v.textContent.trim().replace(/\s+/g, " ");
+          return openTag(v) + (v.children.length || text.length > 40 ? "…" : text) + "</" + tag + ">";
+        }
+        if (v instanceof Error) return v.name + ": " + v.message;
+        if (v instanceof Date || v instanceof RegExp) return String(v);
+        if (v instanceof Promise) return "Promise {…}";
+        const name = ctorName(v);
+        const deep = d >= 3 || seen.indexOf(v) !== -1;
+        seen = seen.concat([v]);
+        if (Array.isArray(v) || v instanceof NodeList || v instanceof HTMLCollection) {
+          const head = Array.isArray(v) ? "" : name + "(" + v.length + ") ";
+          if (deep) return head + "[…]";
+          const items = [];
+          for (let i = 0; i < v.length && i < 100; i++) items.push(i in v ? fmt(v[i], d + 1, seen) : "empty");
+          if (v.length > 100) items.push("…");
+          return head + "[" + items.join(", ") + "]";
+        }
+        if (v instanceof Map || v instanceof Set) {
+          if (deep) return name + "(" + v.size + ") {…}";
+          const items = [];
+          v.forEach((val, key) => { if (items.length < 50) items.push(v instanceof Map ? fmt(key, d + 1, seen) + " => " + fmt(val, d + 1, seen) : fmt(val, d + 1, seen)); });
+          return name + "(" + v.size + ") {" + items.join(", ") + "}";
+        }
+        if (v instanceof Event) {
+          const items = ["type: " + JSON.stringify(v.type)];
+          if (v.target) items.push("target: " + fmt(v.target, 1, seen));
+          if ("key" in v) items.push("key: " + JSON.stringify(v.key));
+          return name + " {" + items.join(", ") + "}";
+        }
+        const head = name && name !== "Object" ? name + " " : "";
+        if (deep) return head + "{…}";
+        const keys = Object.keys(v);
+        const items = keys.slice(0, 30).map((k) => (/^[A-Za-z_$][\w$]*$/.test(k) ? k : JSON.stringify(k)) + ": " + fmt(v[k], d + 1, seen));
+        if (keys.length > 30) items.push("…");
+        return head + "{" + items.join(", ") + "}";
+      } catch (e) {
+        try { return String(v); } catch (e2) { return "?"; }
+      }
+    };
+    const join = (args) => {
+      args = Array.prototype.slice.call(args);
+      if (typeof args[0] === "string" && args.length > 1 && /%[sdifoOc]/.test(args[0])) {
+        const rest = args.slice(1);
+        const first = args[0].replace(/%([sdifoOc%])/g, (all, f) => {
+          if (f === "%") return "%";
+          if (!rest.length) return all;
+          const a = rest.shift();
+          if (f === "c") return "";
+          if (f === "s") return typeof a === "string" ? a : fmt(a, 1, []);
+          if (f === "d" || f === "i") return String(parseInt(a, 10));
+          if (f === "f") return String(parseFloat(a));
+          return fmt(a, 1, []);
+        });
+        args = [first].concat(rest);
+      }
+      return args.map((a) => fmt(a, 0, [])).join(" ");
+    };
+    const levels = { log: "log", info: "info", debug: "log", dir: "log", table: "log", warn: "warn", error: "error" };
+    Object.keys(levels).forEach((method) => {
+      const original = console[method];
+      console[method] = function () {
+        try { post(levels[method], join(arguments)); } catch (e) { }
+        if (original) return original.apply(console, arguments);
+      };
+    });
+    const originalClear = console.clear;
+    console.clear = function () {
+      post("clear", "");
+      if (originalClear) originalClear.apply(console, arguments);
+    };
+    window.addEventListener("error", (e) => {
+      const err = e.error;
+      post("error", err && err.name ? "Uncaught " + err.name + ": " + err.message : String(e.message || "Error"), e.lineno);
+    });
+    window.addEventListener("unhandledrejection", (e) => {
+      const r = e.reason;
+      post("error", "Uncaught (in promise) " + (r instanceof Error ? r.name + ": " + r.message : fmt(r, 1, [])));
+    });
+  }
+  const bridgeCode = consoleBridge.toString().replace(/\s*\n\s*/g, " ");
+
+  // 실행용 문서 = 원본 + <head> 바로 뒤에 한 줄짜리 콘솔 스크립트. 화면의 코드 · 복사 · 새 창 열기는 원본(src) 그대로.
+  function runDoc(src, run) {
+    const tag = `<script>(${bridgeCode})(${run});<\/script>`;
+    const m = /<head(?:\s[^>]*)?>/i.exec(src) || /<html(?:\s[^>]*)?>/i.exec(src) || /<!DOCTYPE[^>]*>/i.exec(src);
+    if (!m) return tag + src;
+    const at = m.index + m[0].length;
+    return src.slice(0, at) + tag + src.slice(at);
+  }
+
+  // iframe → 부모 메시지를 어느 데모가 보냈는지 event.source로 구분한다. 다시 실행 전의 늦은 메시지는 run 번호로 버린다.
+  let runSeq = 0;
+  const frames = [];
+  window.addEventListener("message", (event) => {
+    const data = event.data;
+    if (!data || typeof data !== "object" || typeof data.jsDemoConsole !== "number") return;
+    const entry = frames.find((f) => f.iframe.contentWindow === event.source);
+    if (entry && data.jsDemoConsole === entry.run) entry.write(data);
+  });
+
+  async function copySource(src) {
+    try {
+      await navigator.clipboard.writeText(src);
+    } catch (_) {
+      const field = document.createElement("textarea");
+      field.value = src;
+      field.style.cssText = "position:fixed;left:-10000px;top:0";
+      document.body.append(field);
+      field.select();
+      const copied = document.execCommand("copy");
+      field.remove();
+      if (!copied) throw new Error("Copy failed");
+    }
+  }
+
+  const firstRuns = [];
+  document.querySelectorAll(".demo").forEach((demo) => {
+    const src = demo.querySelector("textarea.src").value;
+    const name = demo.dataset.name;
+    const previewOnly = demo.hasAttribute("data-preview-only");
+    const manual = demo.hasAttribute("data-manual");
+    const showConsole = demo.hasAttribute("data-console") || (!previewOnly && src.includes("console."));
+    // data-console="only": 화면(iframe)은 숨기고 콘솔 칸만 보여 준다 (결과가 콘솔에만 나오는 기초 문법 예제용)
+    const consoleOnly = demo.dataset.console === "only";
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.innerHTML = `<span class="name">${esc(name)}</span>`;
+    if (!previewOnly) {
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="copy" aria-live="polite">복사</button>
+        <button type="button" data-act="reload">다시 실행</button>
+        <button type="button" data-act="open">새 창에서 열기</button>`);
+    }
+    if (demo.hasAttribute("data-width-controls")) {
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="narrow" aria-pressed="false">좁게 (360px)</button>
+        <button type="button" data-act="mid" aria-pressed="false">중간 (760px)</button>
+        <button type="button" data-act="wide" aria-pressed="true">넓게 (전체)</button>`);
+    }
+    const panes = document.createElement("div");
+    panes.className = "panes";
+    const result = document.createElement("div");
+    result.className = "result";
+    const label = document.createElement("div");
+    label.className = "label";
+    label.textContent = previewOnly ? "화면 예시" : "실행 결과";
+    const iframe = document.createElement("iframe");
+    iframe.title = name + " 실행 결과";
+    // allow-same-origin은 넣지 않는다: 스크립트 + 같은 출처면 예제가 이 페이지를 건드리거나 sandbox를 풀 수 있다.
+    iframe.setAttribute("sandbox", "allow-scripts allow-modals allow-forms allow-popups allow-popups-to-escape-sandbox");
+    result.append(label, iframe);
+    if (consoleOnly) { demo.classList.add("console-only"); label.hidden = true; iframe.hidden = true; }
+
+    // 콘솔 패널: 코드에 console.이 있거나 data-console일 때 표시. 패널이 없던 예제도 에러가 나면 열린다.
+    const entry = { iframe, run: 0, write: null };
+    let lines = null;
+    const clearConsole = () => {
+      if (lines) lines.innerHTML = `<div class="empty">(아직 출력 없음)</div>`;
+    };
+    const openConsole = () => {
+      if (lines) return;
+      const box = document.createElement("div");
+      box.className = "console";
+      box.innerHTML = `<div class="label">콘솔</div><div class="lines" role="log" aria-label="${esc(name)} 콘솔 출력"></div>`;
+      lines = box.querySelector(".lines");
+      result.append(box);
+      clearConsole();
+    };
+    entry.write = (data) => {
+      if (data.level === "clear") return clearConsole();
+      if (!lines) {
+        if (data.level !== "error") return;
+        openConsole();
+      }
+      lines.querySelector(".empty")?.remove();
+      const line = document.createElement("div");
+      line.className = `line ${data.level}`;
+      line.textContent = String(data.text);
+      if (data.line) {
+        const where = document.createElement("span");
+        where.className = "where";
+        where.textContent = `${data.line}번째 줄`;
+        line.append(where);
+      }
+      lines.append(line);
+      if (lines.childElementCount > 300) lines.firstElementChild.remove();
+      lines.scrollTop = lines.scrollHeight;
+    };
+    if (showConsole) openConsole();
+    frames.push(entry);
+
+    // data-manual: 처음에는 ▶ 실행 버튼만 보이고, 누를 때 실행 (alert · prompt가 페이지를 열자마자 뜨지 않게)
+    let gate = null;
+    const run = () => {
+      entry.run = ++runSeq;
+      clearConsole();
+      if (gate) gate.hidden = true;
+      iframe.hidden = consoleOnly;
+      iframe.srcdoc = runDoc(src, entry.run);
+    };
+    if (manual) {
+      gate = document.createElement("div");
+      gate.className = "run-gate";
+      gate.innerHTML = `<button type="button">▶ 실행</button><span>${esc(demo.dataset.manual || "누르면 코드가 실행됩니다")}</span>`;
+      gate.querySelector("button").addEventListener("click", run);
+      iframe.hidden = true;
+      label.after(gate);
+    } else {
+      firstRuns.push(run);
+    }
+    if (previewOnly) {
+      panes.append(result);
+    } else {
+      const code = document.createElement("div");
+      code.className = "code";
+      code.innerHTML = `<pre>${hlHtml(src)}</pre>`;
+      if (demo.classList.contains("stack")) {
+        const details = document.createElement("details");
+        details.innerHTML = "<summary>코드 보기 / 접기</summary>";
+        details.append(code);
+        panes.append(result, details);
+      } else {
+        panes.append(code, result);
+      }
+    }
+    demo.append(bar, panes);
+
+    bar.addEventListener("click", async (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      const act = button.dataset.act;
+      if (act === "copy") {
+        try {
+          await copySource(src);
+          button.textContent = "복사됨 ✓";
+        } catch (_) {
+          button.textContent = "코드를 선택해 복사하세요";
+        }
+        setTimeout(() => (button.textContent = "복사"), 1600);
+      } else if (act === "reload") {
+        run();
+      } else if (act === "open") {
+        // blob: 주소에서는 assets/ 같은 상대 경로가 깨지므로, 새 창용 문서에만 <base>를 넣는다 (복사는 원본 그대로)
+        const base = `<base href="${new URL(".", location.href).href}">`;
+        const opened = /<head[^>]*>/i.test(src) ? src.replace(/<head[^>]*>/i, (m) => m + base) : base + src;
+        const url = URL.createObjectURL(new Blob([opened], { type: "text/html;charset=utf-8" }));
+        window.open(url, "_blank", "noopener,noreferrer");
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      } else if (act === "narrow" || act === "mid" || act === "wide") {
+        iframe.style.width = act === "narrow" ? "360px" : act === "mid" ? "760px" : "100%";
+        bar.querySelectorAll("[aria-pressed]").forEach((control) => {
+          control.setAttribute("aria-pressed", String(control.dataset.act === act));
+        });
+      }
+    });
+  });
+  // 레이아웃을 한 번 계산한 뒤 실행해야 예제 안의 window.innerWidth가 처음부터 0이 아니다.
+  void document.body.offsetWidth;
+  firstRuns.forEach((run) => run());
+})();
+</script>
+</body>
+</html>
