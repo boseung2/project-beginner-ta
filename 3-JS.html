@@ -145,21 +145,15 @@
   <h1>3. JavaScript</h1>
   <ol>
     <li><a href="#s1">1. 기본 문법</a><ol>
-      <li><a class="sub" href="#s1-1">script와 콘솔</a></li>
-      <li><a class="sub" href="#s1-2">변수와 자료형</a></li>
-      <li><a class="sub" href="#s1-3">비교와 조건</a></li>
-      <li><a class="sub" href="#s1-4">기본 문법 정리표</a></li>
+      <li><a class="sub" href="#s1-1">한 번에 훑기</a></li>
+      <li><a class="sub" href="#s1-2">입출력</a></li>
     </ol></li>
-    <li><a href="#s2">2. 함수의 여러 가지 모양</a><ol>
-      <li><a class="sub" href="#s2-1">함수 선언</a></li>
-      <li><a class="sub" href="#s2-2">표현식 · 화살표</a></li>
-      <li><a class="sub" href="#s2-3">함수를 넘기기</a></li>
+    <li><a href="#s2">2. 함수</a><ol>
+      <li><a class="sub" href="#s2-1">함수의 여러 모양과 함수 넘기기</a></li>
     </ol></li>
     <li><a href="#s3">3. 이벤트</a><ol>
       <li><a class="sub" href="#s3-1">먼저 보기</a></li>
-      <li><a class="sub" href="#s3-2">자주 쓰는 이벤트</a></li>
-      <li><a class="sub" href="#s3-3">이벤트 객체</a></li>
-      <li><a class="sub" href="#s3-4">폼 제출</a></li>
+      <li><a class="sub" href="#s3-2">이벤트 종류 · 이벤트 객체 · 폼 제출</a></li>
     </ol></li>
     <li><a href="#s4">4. DOM</a><ol>
       <li><a class="sub" href="#s4-1">DOM 나무</a></li>
@@ -168,25 +162,21 @@
       <li><a class="sub" href="#s4-4">모양</a></li>
     </ol></li>
     <li><a href="#s5">5. DOM 다루기</a><ol>
-      <li><a class="sub" href="#s5-1">추가</a></li>
-      <li><a class="sub" href="#s5-2">삭제</a></li>
-      <li><a class="sub" href="#s5-3">수정과 정리표</a></li>
+      <li><a class="sub" href="#s5-1">추가 · 삭제 · 수정</a></li>
     </ol></li>
     <li><a href="#s6">6. React에서 자주 쓰는 JS 문법</a><ol>
       <li><a class="sub" href="#s6-1">먼저 보기</a></li>
-      <li><a class="sub" href="#s6-2">조건과 빈 값</a></li>
-      <li><a class="sub" href="#s6-3">구조 분해 할당</a></li>
-      <li><a class="sub" href="#s6-4">스프레드와 불변성</a></li>
-      <li><a class="sub" href="#s6-5">map · filter</a></li>
-      <li><a class="sub" href="#s6-6">async · await · fetch</a></li>
-      <li><a class="sub" href="#s6-7">import · export</a></li>
-      <li><a class="sub" href="#s6-8">정리표</a></li>
+      <li><a class="sub" href="#s6-2">자주 쓰는 문법 모음</a></li>
+      <li><a class="sub" href="#s6-3">async · await · fetch</a></li>
+      <li><a class="sub" href="#s6-4">import · export</a></li>
     </ol></li>
     <li><a href="#s7">7. 실습: 자기소개 페이지에 반응 넣기</a><ol>
       <li><a class="sub" href="#s7-1">목표 화면 · 시작 코드</a></li>
       <li><a class="sub" href="#s7-2">1부 · 버튼으로 어둡게 보기 켜고 끄기</a></li>
       <li><a class="sub" href="#s7-3">2부 · 취미 추가하기</a></li>
       <li><a class="sub" href="#s7-4">3부 · 누르면 지워지는 취미</a></li>
+      <li><a class="sub" href="#s7-5">4부 (Advanced) · Enter로 추가하고 취미 개수 세기</a></li>
+      <li><a class="sub" href="#s7-6">5부 (Advanced) · 날씨 API로 지금 기온 보여 주기</a></li>
     </ol></li>
   </ol>
 </nav>
@@ -194,33 +184,67 @@
 <h1 class="title">3. JavaScript</h1>
 <p class="subtitle">초급프로젝트 TA SESSION · 왼쪽은 코드, 오른쪽은 실행 결과입니다. <code>console.log</code> 출력과 오류는 실행 결과 아래 <b>콘솔</b> 칸에 함께 보입니다. 전체 HTML을 복사해 직접 바꿔 보세요.</p>
 
-<h2 id="s1">1. 기본 문법 — 값 담기 · 비교하기</h2>
-<p>JS는 <code>&lt;script&gt;</code> 안에 쓰고, 위에서 아래로 한 줄씩 실행됩니다.</p>
+<h2 id="s1">1. 기본 문법 — C · Python과 다른 점</h2>
+<p>C · Python과 같은 부분은 넘어가고, JS에서 모양이 다른 곳만 빠르게 훑습니다.</p>
 <pre class="rule"><code>&lt;script&gt;는 &lt;/body&gt; 바로 위에 — 화면 요소가 다 만들어진 다음에 실행되도록</code></pre>
 
-<h3 id="s1-1">1-1. script와 콘솔</h3>
-<p>결과는 <b>콘솔</b>에서 봅니다. 이 페이지에서는 '콘솔' 칸에, 내 파일에서는 <kbd>F12</kbd> (Mac: <kbd>Cmd+Option+I</kbd>) → Console 탭에 나옵니다.</p>
+<h3 id="s1-1">1-1. 한 번에 훑기 — 변수 · 자료형 · 비교 · 반복</h3>
+<p>결과는 <b>콘솔</b>에 나옵니다. 이 페이지에서는 '콘솔' 칸, 내 파일에서는 <kbd>F12</kbd> (Mac: <kbd>Cmd+Option+I</kbd>) → Console 탭입니다.</p>
 
-<div class="demo" data-name="console.log — 콘솔에 찍어 보기" data-console="only" style="--h: 376px;">
+<div class="demo" data-name="한 번에 훑기 — 변수 · 자료형 · 조건 · 반복" data-console="only" style="--h: 744px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;콘솔에 찍어 보기&lt;/title&gt;
+  &lt;title&gt;한 번에 훑기&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
-  &lt;p&gt;결과는 개발자 도구(F12) → Console에 나옵니다.&lt;/p&gt;
   &lt;script&gt;
-    console.log("안녕하세요");
-    console.log("홍길동", 21);  // 쉼표로 여러 값
-    console.log(1 + 2);       // 3
-    console.error("이건 빨간 줄");
+    const name = "홍길동";  // 문자열
+    let age = 21;  // 숫자 — 바뀔 값만 let
+    age = age + 1;
+    const hobbies = ["테니스", "산책"];  // 배열
+    const me = { name: name, age: age, student: true };  // 객체 · 불리언
+
+    console.log(`${me.name}, ${age}세`);  // 홍길동, 22세
+    console.log(hobbies[0], hobbies.length, me);
+    console.log(typeof age, age === "22");  // number false
+
+    for (const hobby of hobbies) {
+      console.log(`취미: ${hobby}`);
+    }
+
+    const text = "";
+    if (text === "") {
+      console.log("빈칸입니다");
+    } else {
+      console.log(`입력: ${text}`);
+    }
+    console.log(me.student ? "학생" : "일반");  // 학생
+
+    let memo;  // 값을 안 넣으면 undefined
+    console.log(memo, me.phone, null);  // undefined undefined null
   &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
 </div>
 
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>변수 선언</td><td>const name = "홍길동"; let age = 21;</td><td>C: int age = 21; / Python: age = 21 — JS는 타입을 적지 않고, 바뀔 값만 let</td></tr>
+<tr><td>문자열 포맷</td><td>`${name}, ${age}세`</td><td>C: printf("%s, %d세", …) / Python: f"{name}, {age}세"</td></tr>
+<tr><td>같다 비교</td><td>a === b · a !== b</td><td>C · Python: == · !=</td></tr>
+<tr><td>삼항</td><td>조건 ? A : B</td><td>C: 같음 / Python: A if 조건 else B</td></tr>
+<tr><td>목록</td><td>["테니스", "산책"] · hobbies.length</td><td>C: 배열 / Python: list · len(hobbies)</td></tr>
+<tr><td>키-값</td><td>{ name: "홍길동", age: 22 } · me.name</td><td>C: struct / Python: dict · me["name"]</td></tr>
+<tr><td>없음</td><td>undefined · null</td><td>C: NULL / Python: None — 값을 안 넣으면 undefined</td></tr>
+<tr><td>출력</td><td>console.log(a, b)</td><td>C: printf / Python: print(a, b)</td></tr>
+<tr><td>반복</td><td>for (const x of arr) { … }</td><td>C: for (int i = 0; …) / Python: for x in arr:</td></tr>
+</tbody></table></div>
+
+<p class="note">JS의 <code>==</code>는 타입을 바꿔 비교해서 <code>"22" == 22</code>도 true입니다. 비교는 항상 <code>===</code>로 씁니다.</p>
+
+<h3 id="s1-2">1-2. 입출력 — console · alert · confirm · prompt</h3>
 <p>alert · confirm · prompt는 페이지 위에 작은 창을 띄웁니다. <b>▶ 실행</b>을 눌러 보세요.</p>
 
 <div class="demo" data-name="alert · confirm · prompt — 실행을 눌러야 뜹니다" data-console="only" data-manual="누르면 알림 → 확인 → 입력 창이 차례로 뜹니다" style="--h: 356px; --frame-h: 140px;">
@@ -255,226 +279,62 @@
 <p class="note">HTML과 JS 파일을 같은 폴더에 두세요. <code>main.js</code>에는 <code>&lt;script&gt;</code> 태그 없이 코드만 씁니다.</p>
 </details>
 
-<h3 id="s1-2">1-2. 변수와 자료형</h3>
-<p>값에 이름을 붙여 담아 두는 것이 <b>변수</b>입니다.</p>
-<pre class="rule"><code>먼저 const로 쓰고, 다시 담아야 할 때만 let</code></pre>
+<h2 id="s2">2. 함수 — 모양과 넘기기</h2>
+<p>JS 함수는 모양이 여럿이고, 값처럼 다른 함수에 넘길 수 있습니다.</p>
 
-<div class="demo" data-name="홍길동을 값으로 담기 — 마지막 줄은 일부러 낸 오류" data-console="only" style="--h: 452px;">
-<textarea class="src">&lt;!DOCTYPE html&gt;
-&lt;html lang="ko"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;홍길동을 값으로 담기&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;script&gt;
-    const name = "홍길동";                  // 문자열
-    let age = 21;                         // 숫자
-    age = age + 1;                        // 다시 담기 OK
-    const hobbies = ["테니스", "산책"];      // 배열
-    const me = { name: name, age: age };  // 객체
-
-    console.log(`${me.name}, ${age}세`);
-    console.log(hobbies[0], hobbies.length, me);
-    name = "김철수";  // (X) const는 다시 담으면 오류
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
-</div>
-
-<div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>변수</td><td>const name = "홍길동";</td><td>다시 담을 수 없음</td></tr>
-<tr><td>변수</td><td>let age = 21;</td><td>다시 담을 수 있음. age = 22;</td></tr>
-<tr><td>문자열</td><td>"홍길동"</td><td>따옴표로 감싼 글자</td></tr>
-<tr><td>템플릿</td><td>`${name}님`</td><td>백틱(`)으로 감싸고 ${ } 안에 값을 넣음</td></tr>
-<tr><td>숫자</td><td>21 · 3.14</td><td>정수와 소수 모두 숫자</td></tr>
-<tr><td>불리언</td><td>true · false</td><td>참 · 거짓</td></tr>
-<tr><td>배열</td><td>["테니스", "산책"]</td><td>순서 있는 목록. hobbies[0]이 첫 칸</td></tr>
-<tr><td>객체</td><td>{ name: "홍길동", age: 21 }</td><td>이름: 값 묶음. me.name으로 꺼냄</td></tr>
-</tbody></table></div>
-
-<p class="note">오류가 나면 콘솔에 빨간 줄이 뜨고, 오른쪽에 몇 번째 줄인지 나옵니다.</p>
-
-<h3 id="s1-3">1-3. 비교와 조건 — === · if · 삼항</h3>
-<p>같은지 볼 때는 <code>===</code>, 할 일을 나눌 때는 <code>if</code>, 두 값 중 하나를 고를 때는 <b>삼항</b> <code>조건 ? A : B</code>를 씁니다.</p>
-
-<div class="demo" data-name="빈칸인지 확인하기 — === · if · 삼항" data-console="only" style="--h: 532px;">
-<textarea class="src">&lt;!DOCTYPE html&gt;
-&lt;html lang="ko"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;빈칸인지 확인하기&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;script&gt;
-    const text = "";  // 입력칸이 비었다고 치면
-    if (text === "") {
-      console.log("빈칸입니다");
-    } else {
-      console.log(`입력: ${text}`);
-    }
-
-    const hidden = true;  // 공지가 접혀 있으면
-    console.log(hidden ? "공지 펼치기" : "공지 접기");
-
-    // typeof는 타입을 알려 줌 — "21"과 21은 다름
-    console.log(typeof "21", typeof 21);
-    console.log("21" === 21);  // false
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
-</div>
-
-<div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>같다 · 다르다</td><td>=== · !==</td><td>값과 타입이 모두 같은지</td></tr>
-<tr><td>조건</td><td>if (조건) { … } else { … }</td><td>else는 없어도 됨</td></tr>
-<tr><td>삼항</td><td>조건 ? A : B</td><td>참이면 A, 거짓이면 B</td></tr>
-<tr><td>주의</td><td>= 와 ===</td><td>= 는 담기, === 는 비교</td></tr>
-</tbody></table></div>
-
-<h3 id="s1-4">1-4. 기본 문법 정리표</h3>
-<div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>타입 확인</td><td>typeof 값</td><td>"string" · "number" · "boolean" · "object"</td></tr>
-<tr><td>빈 값</td><td>undefined</td><td>아직 값이 없음. return 없는 함수의 결과</td></tr>
-<tr><td>개수</td><td>.length</td><td>문자열의 글자 수 · 배열의 칸 수</td></tr>
-</tbody></table></div>
-
-<h2 id="s2">2. 함수의 여러 가지 모양</h2>
-<p>함수는 만들어 두고(정의) 필요할 때 불러서(호출) 씁니다. JS는 같은 함수를 여러 모양으로 쓰고, React에는 화살표 모양이 가장 많이 나옵니다.</p>
-<pre class="rule"><code>정의:  function 이름(재료) { 할 일; return 결과; }      호출:  이름(값)</code></pre>
-
-<h3 id="s2-1">2-1. 함수 선언 — 매개변수 · return · 기본값</h3>
-<p>괄호 안의 <b>매개변수</b>로 재료를 받고, <code>return</code>으로 결과를 돌려줍니다. <code>return</code>을 만나면 함수는 그 자리에서 끝납니다.</p>
-
-<div class="demo" data-name="만들고, 부르고, 돌려받기" data-console="only" style="--h: 608px;">
-<textarea class="src">&lt;!DOCTYPE html&gt;
-&lt;html lang="ko"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;만들고, 부르고, 돌려받기&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;script&gt;
-    function greet(name = "손님") {  // 기본값
-      return `${name}, 반가워요!`;    // 돌려주기
-    }
-    console.log(greet("홍길동"));
-    console.log(greet());
-
-    function showNotice(text) {
-      if (text === "") return;  // 빈칸이면 멈춤
-      console.log(`공지: ${text}`);
-    }
-    showNotice("수강신청 안내");
-    showNotice("");  // 아무것도 안 찍힘
-
-    function add(a, b) {
-      a + b;  // (X) return 빠뜨림
-    }
-    console.log(add(2, 3));  // undefined
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
-</div>
-
-<div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>호출</td><td>greet("홍길동")</td><td>괄호를 붙여야 실행됨</td></tr>
-<tr><td>돌려주기</td><td>return 값;</td><td>결과를 돌려주고 끝냄</td></tr>
-<tr><td>멈추기</td><td>if (text === "") return;</td><td>여기서 끝냄. 아래 줄은 실행되지 않음</td></tr>
-<tr><td>기본값</td><td>(name = "손님")</td><td>값을 넘기지 않으면 쓰는 값</td></tr>
-</tbody></table></div>
-
-<p class="note">결과가 <code>undefined</code>로 나오면 return을 빠뜨린 것입니다. <code>if (…) return;</code>은 실습 2부에서 빈칸을 막을 때 씁니다.</p>
-
-<h3 id="s2-2">2-2. 표현식 · 화살표 — 같은 함수, 네 가지 모양</h3>
-<p>아래 1~4는 모양만 다른 같은 덧셈 함수입니다.</p>
-<pre class="rule"><code>function (a, b) { … }   →   (a, b) =&gt; { … }   →   (a, b) =&gt; a + b        재료가 없으면  () =&gt; { … }</code></pre>
-
-<div class="demo" data-name="같은 덧셈, 네 가지 모양" data-console="only" style="--h: 550px;">
-<textarea class="src">&lt;!DOCTYPE html&gt;
-&lt;html lang="ko"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;같은 덧셈, 네 가지 모양&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;script&gt;
-    // 1. 선언
-    function add1(a, b) { return a + b; }
-    // 2. 표현식
-    const add2 = function (a, b) { return a + b; };
-    // 3. 화살표
-    const add3 = (a, b) =&gt; { return a + b; };
-    // 4. 한 줄 화살표 — 중괄호와 return을 함께 뺌
-    const add4 = (a, b) =&gt; a + b;
-
-    console.log(add1(2, 3), add2(2, 3));  // 5 5
-    console.log(add3(2, 3), add4(2, 3));  // 5 5
-
-    const hello = () =&gt; "안녕하세요";  // 재료가 없으면 ()
-    console.log(hello());  // 안녕하세요
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
-</div>
-
-<div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>1. 선언</td><td>function add(a, b) { … }</td><td>가장 기본 모양</td></tr>
-<tr><td>2. 표현식</td><td>const add = function (a, b) { … };</td><td>이름 없는 함수를 변수에 담음</td></tr>
-<tr><td>3. 화살표</td><td>const add = (a, b) =&gt; { … };</td><td>function 대신 =&gt;</td></tr>
-<tr><td>4. 한 줄 화살표</td><td>const add = (a, b) =&gt; a + b;</td><td>중괄호와 return을 함께 뺌</td></tr>
-</tbody></table></div>
-
-<p class="note">3장부터 이벤트 함수는 <code>() =&gt; { … }</code> 모양으로 씁니다.</p>
-
-<h3 id="s2-3">2-3. 함수를 넘기기 — 괄호가 있고 없고</h3>
-<p>함수도 값이라서 다른 함수에 넘길 수 있습니다. 넘길 때는 괄호 없이 이름만 씁니다.</p>
+<h3 id="s2-1">2-1. 함수의 여러 모양과 함수 넘기기</h3>
+<p>①~④가 함수의 네 가지 모양이고, 아래쪽이 함수를 넘기는 예입니다. 3장 이벤트와 React에는 ③ 화살표 모양이 가장 많이 나옵니다.</p>
 <pre class="rule"><code>넘길 때:  sayHi        부를 때:  sayHi()</code></pre>
 
-<div class="demo" data-name="나중에 불러 줘 — setTimeout · forEach" data-console="only" style="--h: 590px;">
+<div class="demo" data-name="함수의 여러 모양과 넘기기 — setTimeout · forEach" data-console="only" style="--h: 763px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;나중에 불러 줘 — setTimeout&lt;/title&gt;
+  &lt;title&gt;함수의 여러 모양과 넘기기&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
   &lt;script&gt;
-    function sayHi() {
-      console.log("4. 1초 뒤: 안녕!");
+    // ① 선언 — 기본값을 줄 수 있음
+    function greet(name = "손님") {
+      return `${name}, 반가워요!`;
     }
+    // ② 표현식 — 함수를 변수에 담음
+    const sayHi = function () { console.log("6. 1초 뒤: 안녕!"); };
+    // ③ 화살표
+    const showNotice = (text) =&gt; {
+      if (text === "") return;  // 빈칸이면 여기서 끝
+      console.log(`4. 공지: ${text}`);
+    };
+    // ④ 한 줄 화살표 — 중괄호와 return을 함께 뺌
+    const double = (n) =&gt; n * 2;
 
-    console.log("1. 시작");
-    setTimeout(sayHi, 1000);  // 이름만 넘김
-    setTimeout(() =&gt; {        // 만들어서 넘김
-      console.log("5. 2초 뒤: 또 만나요!");
-    }, 2000);
+    console.log("1.", greet("홍길동"));  // 1. 홍길동, 반가워요!
+    console.log("2.", greet());  // 2. 손님, 반가워요!
+    console.log("3.", double(4));  // 3. 8
+    showNotice("");  // 아무것도 안 찍힘
 
-    const notices = ["수강신청", "장학금"];
-    notices.forEach((item) =&gt; {  // 칸마다 바로
-      console.log(`2. 공지: ${item}`);
-    });
-    console.log("3. 끝");
-    // (X) setTimeout(sayHi(), 1000); → 바로 실행
+    // 넘길 때는 괄호 없이 이름만
+    const notices = ["수강신청 안내", "장학금 신청 안내"];
+    notices.forEach(showNotice);  // 칸마다 바로 불러 줌
+    setTimeout(sayHi, 1000);  // 1초 뒤에 불러 줌
+    console.log("5. 끝");
+    // (X) setTimeout(sayHi(), 1000); → 지금 바로 실행
   &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>이름으로 넘기기</td><td>setTimeout(sayHi, 1000)</td><td>1초 뒤에 불러 줌</td></tr>
-<tr><td>만들어 넘기기</td><td>setTimeout(() =&gt; { … }, 2000)</td><td>넘기는 자리에서 만듦</td></tr>
-<tr><td>잘못된 예</td><td>setTimeout(sayHi(), 1000)</td><td>괄호를 붙이면 지금 바로 실행됨</td></tr>
-<tr><td>클릭할 때</td><td>addEventListener("click", 함수)</td><td>누를 때마다 불러 줌(3장)</td></tr>
-<tr><td>칸마다 바로</td><td>배열.forEach(함수)</td><td>칸마다 그 자리에서 불러 줌</td></tr>
+<tr><td>① 선언</td><td>function greet(name = "손님") { … }</td><td>값을 안 넘기면 기본값 "손님"</td></tr>
+<tr><td>② 표현식</td><td>const sayHi = function () { … };</td><td>함수를 변수에 담음</td></tr>
+<tr><td>③ 화살표</td><td>const showNotice = (text) =&gt; { … };</td><td>function 대신 =&gt;</td></tr>
+<tr><td>④ 한 줄 화살표</td><td>const double = (n) =&gt; n * 2;</td><td>중괄호와 return을 함께 뺌</td></tr>
+<tr><td>넘기기</td><td>setTimeout(sayHi, 1000)</td><td>괄호 없이 이름만. setTimeout(sayHi(), 1000)은 지금 바로 실행됨</td></tr>
 </tbody></table></div>
 
-<p class="note">setTimeout은 기다리지 않고 다음 줄로 넘어가서, 4 · 5번이 맨 나중에 찍힙니다.</p>
+<p class="note">setTimeout은 기다리지 않고 다음 줄로 넘어가서, 6번이 맨 나중에 찍힙니다.</p>
 
 <h2 id="s3">3. 이벤트 — 언제 실행할까</h2>
 <p>지금까지 본 코드는 대부분 페이지가 열릴 때 한 번 실행됐습니다. <b>이벤트</b>는 "버튼을 클릭했을 때"처럼 코드를 <b>실행할 때</b>를 정합니다.</p>
@@ -545,47 +405,53 @@
 
 <pre class="rule"><code>선택 → 이벤트 → 변경      실습 1·2·3부가 모두 이 순서입니다</code></pre>
 
-<h3 id="s3-2">3-2. 자주 쓰는 이벤트 — addEventListener</h3>
-<p>버튼을 누르고, 입력칸에 적고, 회색 상자에 마우스를 올려 보세요. 콘솔에 이벤트 이름이 찍힙니다.</p>
+<h3 id="s3-2">3-2. 이벤트 종류 · 이벤트 객체 · 폼 제출</h3>
+<p>함수 괄호 안에 <code>event</code>를 적으면 브라우저가 <b>무슨 일이 있었는지</b>(누른 키, 일어난 요소)를 넘겨 줍니다. 버튼을 누르고, 입력칸에 영어로 적은 뒤 Enter를 쳐 보세요. 공백만 적고 Enter도 쳐 보세요.</p>
 
-<div class="demo" data-name="눌러 보고, 적어 보고, 올려 보세요 — 이벤트 종류" style="--h: 845px; --frame-h: 200px;">
+<div class="demo" data-name="눌러 보고, 적어 보고, 제출해 보세요 — 이벤트 종류 · event · submit" style="--h: 957px; --frame-h: 120px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;자주 쓰는 이벤트&lt;/title&gt;
+  &lt;title&gt;이벤트 종류 · 이벤트 객체 · 폼 제출&lt;/title&gt;
   &lt;style&gt;
     body { font-family: sans-serif; margin: 20px; }
-    .box { padding: 14px; background: #e5e7eb; border-radius: 8px; }
   &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
-  &lt;p&gt;&lt;b&gt;click&lt;/b&gt; &lt;button type="button" id="btn"&gt;누르기&lt;/button&gt;&lt;/p&gt;
-  &lt;p&gt;&lt;b&gt;input · keydown&lt;/b&gt;&lt;br&gt;
-    &lt;input type="text" id="word" placeholder="여기에 적어 보세요"&gt;&lt;/p&gt;
-  &lt;div class="box"&gt;&lt;b&gt;mouseenter&lt;/b&gt; 마우스를 올려 보세요&lt;/div&gt;
+  &lt;p&gt;&lt;button type="button" id="btn"&gt;눌러 보기&lt;/button&gt;&lt;/p&gt;
+  &lt;form id="memo-form"&gt;
+    &lt;input type="text" id="memo" placeholder="영어로 적고 Enter"&gt;
+    &lt;button type="submit"&gt;저장&lt;/button&gt;
+  &lt;/form&gt;
   &lt;script&gt;
     const btn = document.querySelector("#btn");
-    const input = document.querySelector("#word");
-    const box = document.querySelector(".box");
+    const form = document.querySelector("#memo-form");
+    const input = document.querySelector("#memo");
 
-    let count = 0;
+    // click: 버튼을 누를 때
     btn.addEventListener("click", () =&gt; {
-      count = count + 1;
-      console.log(`click ${count}번`);
+      console.log("click");
     });
-    // 한 글자 바뀔 때마다
-    input.addEventListener("input", () =&gt; {
-      console.log("input:", input.value);
+
+    // input: 글자가 바뀔 때마다 (event.target = 이 입력칸)
+    input.addEventListener("input", (event) =&gt; {
+      console.log("input:", event.target.value);
     });
-    // 키를 누를 때마다
+
+    // keydown: 키를 누를 때 (event.key = 누른 키 이름)
     input.addEventListener("keydown", (event) =&gt; {
       console.log("keydown:", event.key);
     });
-    // 마우스가 상자 안으로 들어올 때
-    box.addEventListener("mouseenter", () =&gt; {
-      console.log("mouseenter");
+
+    // submit: [저장]을 누르거나 Enter를 치면 form이 제출됨
+    form.addEventListener("submit", (event) =&gt; {
+      event.preventDefault();          // 이 줄이 없으면 페이지가 새로고침됩니다
+      const text = input.value.trim(); // 앞뒤 공백 지우기
+      if (text === "") return;         // 빈칸이면 여기서 멈춤
+      console.log("저장:", text);
+      input.value = "";                // 입력칸 비우기
     });
   &lt;/script&gt;
 &lt;/body&gt;
@@ -596,102 +462,14 @@
 <tr><td>click</td><td>클릭할 때</td></tr>
 <tr><td>input</td><td>입력칸 글자가 바뀔 때마다</td></tr>
 <tr><td>keydown</td><td>키를 누를 때</td></tr>
-<tr><td>mouseenter</td><td>마우스가 요소 위로 들어올 때</td></tr>
-<tr><td>submit</td><td>form을 제출할 때</td></tr>
-</tbody></table></div>
-
-<p class="note">이벤트 이름 앞에 on을 붙이지 않습니다. <code>"onclick"</code>으로 적으면 오류 없이 아무 일도 일어나지 않습니다.</p>
-
-<h3 id="s3-3">3-3. 이벤트 객체 — event.target · event.key</h3>
-<p>이벤트가 일어나면 브라우저가 <b>무슨 일이 있었는지</b> 담은 객체를 함수에 넘겨 줍니다. 괄호 안에 이름을 적어 받습니다: <code>(event) =&gt; { … }</code>. 입력칸에 적고 Enter를 눌러 보세요.</p>
-
-<div class="demo" data-name="입력하는 대로 따라 쓰기 — event.target · event.key" style="--h: 650px; --frame-h: 120px;">
-<textarea class="src">&lt;!DOCTYPE html&gt;
-&lt;html lang="ko"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;이벤트 객체&lt;/title&gt;
-  &lt;style&gt;
-    body { font-family: sans-serif; margin: 20px; }
-  &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;input type="text" id="search" placeholder="검색어를 적고 Enter"&gt;
-  &lt;p&gt;입력 중: &lt;b id="preview"&gt;&lt;/b&gt;&lt;/p&gt;
-  &lt;script&gt;
-    const search = document.querySelector("#search");
-    const preview = document.querySelector("#preview");
-
-    // event.target: 이벤트가 일어난 요소 (이 입력칸)
-    search.addEventListener("input", (event) =&gt; {
-      preview.textContent = event.target.value;
-    });
-
-    // event.key: 누른 키의 이름
-    search.addEventListener("keydown", (event) =&gt; {
-      if (event.key === "Enter") {
-        console.log("검색:", event.target.value);
-      }
-    });
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
-</div>
-
-<div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>일어난 요소</td><td>event.target</td><td>이벤트가 일어난 요소(여기서는 입력칸)</td></tr>
-<tr><td>입력값</td><td>event.target.value</td><td>그 입력칸에 적힌 글자</td></tr>
-<tr><td>누른 키</td><td>event.key</td><td>"Enter", "a" 같은 키 이름</td></tr>
-<tr><td>짧은 이름</td><td>(e) =&gt; { … }</td><td>이름은 자유. e로 줄여 쓰기도 함</td></tr>
-</tbody></table></div>
-
-<h3 id="s3-4">3-4. 폼 제출 — submit · preventDefault</h3>
-<p>입력칸과 버튼을 <code>&lt;form&gt;</code>으로 감싸면 Enter만 쳐도 <b>제출(submit)</b>됩니다. 제출하면 페이지가 새로고침되므로 <code>event.preventDefault()</code>로 막습니다.</p>
-
-<div class="demo" data-name="Enter로 제출해도 새로고침되지 않게 — submit · preventDefault" style="--h: 690px; --frame-h: 90px;">
-<textarea class="src">&lt;!DOCTYPE html&gt;
-&lt;html lang="ko"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;폼 제출&lt;/title&gt;
-  &lt;style&gt;
-    body { font-family: sans-serif; margin: 20px; }
-  &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;form id="memo-form"&gt;
-    &lt;input type="text" id="memo" placeholder="메모를 적고 Enter"&gt;
-    &lt;button type="submit"&gt;저장&lt;/button&gt;
-  &lt;/form&gt;
-  &lt;script&gt;
-    const form = document.querySelector("#memo-form");
-    const input = document.querySelector("#memo");
-
-    // 버튼 클릭과 Enter를 form의 submit 하나로 받습니다
-    form.addEventListener("submit", (event) =&gt; {
-      // 이 줄이 없으면 페이지가 새로고침됩니다
-      event.preventDefault();
-
-      const text = input.value.trim(); // 앞뒤 공백 지우기
-      if (text === "") return;         // 빈칸이면 여기서 멈춤
-
-      console.log("제출:", text);
-      input.value = "";                // 입력칸 비우기
-    });
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
-</div>
-
-<div class="ref-wrap"><table class="ref"><tbody>
-<tr><td>form + "submit"</td><td>이벤트는 버튼이 아니라 form에 붙임. 클릭과 Enter를 한 번에 받음</td></tr>
-<tr><td>event.preventDefault()</td><td>새로고침 막기. 함수 첫 줄에</td></tr>
+<tr><td>submit</td><td>form을 제출할 때(버튼 클릭 · Enter). 이벤트는 form에 붙임</td></tr>
+<tr><td>event.target.value</td><td>이벤트가 일어난 입력칸에 적힌 글자</td></tr>
+<tr><td>event.key</td><td>누른 키 이름("Enter", "a" …)</td></tr>
+<tr><td>event.preventDefault()</td><td>제출할 때 새로고침 막기. 함수 첫 줄에</td></tr>
 <tr><td>.trim()</td><td>앞뒤 공백 지우기. 공백만 적었으면 ""이 됨</td></tr>
 </tbody></table></div>
 
-<p class="note">실습은 form 없이 <code>type="button"</code> 버튼만 써서 preventDefault가 없어도 됩니다.</p>
+<p class="note">이벤트 이름 앞에 on을 붙이지 않습니다. <code>"onclick"</code>으로 적으면 오류 없이 아무 일도 일어나지 않습니다.</p>
 
 <h2 id="s4">4. DOM — 요소 찾고 바꾸기</h2>
 <p>브라우저는 HTML을 읽어 요소들을 나무 모양으로 이어 둡니다. 이것이 <b>DOM</b>(Document Object Model)입니다. JS는 HTML 파일이 아니라 이 나무를 바꿉니다. 그래서 새로고침하면 처음으로 돌아옵니다.</p>
@@ -944,42 +722,52 @@
 <p>이번에는 요소를 <b>새로 만들어 붙이고</b>, 필요 없으면 <b>떼어 냅니다</b>. 예제는 <a href="#s3-1">3-1</a>의 교내공지입니다.</p>
 <pre class="rule"><code>추가: 만들기 → 채우기 → 붙이기      삭제: 요소.remove()      수정: textContent · classList (4장)</code></pre>
 
-<h3 id="s5-1">5-1. 추가 — createElement · append</h3>
-<p>[공지 추가]를 눌러 보세요. 새 <code>li</code>를 만들고, 글자를 채우고, 목록 끝에 붙입니다. 실습 2부가 이 모양입니다.</p>
+<h3 id="s5-1">5-1. 추가 · 삭제 · 수정</h3>
+<p>[공지 추가]는 새 <code>li</code>를 만들어 붙이고, 공지를 누르면 지워지고, [첫 공지 고치기]는 첫 공지의 글자를 바꿉니다. <b>공지를 추가한 뒤 새 공지를 눌러 보세요.</b></p>
 
-<div class="demo" data-name="공지 추가하기 — 만들기 · 채우기 · 붙이기" style="--h: 744px; --frame-h: 360px;">
+<div class="demo" data-name="교내공지 — 추가 · 삭제 · 수정" style="--h: 938px; --frame-h: 360px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;공지 추가하기&lt;/title&gt;
+  &lt;title&gt;공지 추가 · 삭제 · 수정&lt;/title&gt;
   &lt;style&gt;
-    body { font-family: sans-serif; margin: 16px; }
+    body { font-family: sans-serif; margin: 20px; }
     h1 { font-size: 24px; border-bottom: 2px solid #333; }
-    li { margin: 8px 0; padding: 8px; background: #f2f2f2; }
+    li { margin: 8px 0; padding: 8px; background: #f2f2f2; cursor: pointer; }
   &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
   &lt;h1&gt;교내공지&lt;/h1&gt;
-  &lt;p&gt;학생 여러분에게 안내드립니다.&lt;/p&gt;
-  &lt;button id="add" type="button"&gt;공지 추가&lt;/button&gt;
+  &lt;button type="button" id="add"&gt;공지 추가&lt;/button&gt;
+  &lt;button type="button" id="edit"&gt;첫 공지 고치기&lt;/button&gt;
   &lt;ul id="notices"&gt;
     &lt;li&gt;수강신청 안내&lt;/li&gt;
     &lt;li&gt;장학금 신청 안내&lt;/li&gt;
   &lt;/ul&gt;
   &lt;script&gt;
     const list = document.querySelector("#notices");
-    const addButton = document.querySelector("#add");
 
-    addButton.addEventListener("click", () =&gt; {
-      // 1. 만들기: 아직 화면에 없는 새 li
+    // 삭제: 지금 있는 공지 li마다, 누르면 그 li를 지운다
+    document.querySelectorAll("#notices li").forEach((li) =&gt; {
+      li.addEventListener("click", () =&gt; {
+        li.remove();
+      });
+    });
+
+    // 추가: 만들기 → 채우기 → 붙이기 (새 li에는 이벤트 없음)
+    document.querySelector("#add").addEventListener("click", () =&gt; {
       const li = document.createElement("li");
-      // 2. 채우기: children.length는 지금 li 개수
       li.textContent = `새 공지 ${list.children.length + 1}`;
-      // 3. 붙이기: 목록 끝에
       list.append(li);
-      console.log("공지 개수:", list.children.length);
+    });
+
+    // 수정: 첫 공지의 글자 바꾸기
+    document.querySelector("#edit").addEventListener("click", () =&gt; {
+      const first = list.firstElementChild; // 첫 li (없으면 null)
+      if (first === null) return;
+      first.textContent = "수강신청 기간 변경 안내";
     });
   &lt;/script&gt;
 &lt;/body&gt;
@@ -987,62 +775,18 @@
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>1. 만들기</td><td>document.createElement("li")</td><td>아직 화면에는 없습니다</td></tr>
-<tr><td>2. 채우기</td><td>li.textContent = "…"</td><td>글자를 넣습니다</td></tr>
-<tr><td>3. 붙이기</td><td>목록.append(li)</td><td>목록 끝에 붙습니다</td></tr>
+<tr><td>1. 만들기</td><td>document.createElement("li")</td><td>아직 화면에는 없음</td></tr>
+<tr><td>2. 채우기</td><td>li.textContent = "…"</td><td>글자 넣기</td></tr>
+<tr><td>3. 붙이기</td><td>목록.append(li)</td><td>목록 끝에 붙임. 빼면 화면에 안 보임</td></tr>
+<tr><td>지우기</td><td>li.remove()</td><td>그 요소 떼어 내기</td></tr>
+<tr><td>고치기</td><td>요소.textContent · 요소.classList</td><td>찾은 요소의 글자 · 모양 바꾸기(4장)</td></tr>
 </tbody></table></div>
-<p class="note">append를 빼면 요소는 만들어져도 화면에 보이지 않습니다.</p>
 
-<h3 id="s5-2">5-2. 삭제 — remove</h3>
-<p>공지를 누르면 <code>li.remove()</code>로 그 공지를 지웁니다. [공지 추가]로 새 공지를 만든 뒤 <b>새 공지를 눌러 보세요.</b> 새 공지는 지워지지 않습니다.</p>
+<p class="note"><b>막히는 지점:</b> 새 공지는 눌러도 지워지지 않습니다. <code>querySelectorAll</code>로 붙인 이벤트는 그 줄이 실행될 때 있던 <code>li</code>에만 있기 때문입니다. 새 요소에는 <b>만드는 그 자리에서</b> 이벤트를 붙입니다.</p>
 
-<div class="demo" data-name="누르면 지워지는 공지 — 새 공지는?" style="--h: 802px; --frame-h: 360px;">
-<textarea class="src">&lt;!DOCTYPE html&gt;
-&lt;html lang="ko"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;누르면 지워지는 공지&lt;/title&gt;
-  &lt;style&gt;
-    body { font-family: sans-serif; margin: 16px; }
-    h1 { font-size: 24px; border-bottom: 2px solid #333; }
-    li { margin: 8px 0; padding: 8px; background: #f2f2f2; cursor: pointer; }
-  &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;h1&gt;교내공지&lt;/h1&gt;
-  &lt;p&gt;공지를 누르면 지워집니다.&lt;/p&gt;
-  &lt;button id="add" type="button"&gt;공지 추가&lt;/button&gt;
-  &lt;ul id="notices"&gt;
-    &lt;li&gt;수강신청 안내&lt;/li&gt;
-    &lt;li&gt;장학금 신청 안내&lt;/li&gt;
-  &lt;/ul&gt;
-  &lt;script&gt;
-    const list = document.querySelector("#notices");
-
-    // 지금 있는 공지 li마다: 누르면 그 li를 지운다
-    document.querySelectorAll("#notices li").forEach((li) =&gt; {
-      li.addEventListener("click", () =&gt; {
-        li.remove();
-      });
-    });
-
-    // 추가 버튼: 5-1과 같음 (새 li에는 이벤트 없음)
-    document.querySelector("#add").addEventListener("click", () =&gt; {
-      const li = document.createElement("li");
-      li.textContent = `새 공지 ${list.children.length + 1}`;
-      list.append(li);
-    });
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
-</div>
-
-<p class="note"><b>막히는 지점:</b> <code>querySelectorAll</code>로 붙인 이벤트는 그 줄이 실행될 때 있던 <code>li</code>에만 있습니다. 새 요소에는 <b>만드는 그 자리에서</b> 이벤트를 붙입니다.</p>
-
-<details class="extra" id="s5-2-more"><summary>새 공지도 지워지게 — 만들 때 이벤트 붙이기</summary>
-<p><code>li</code>를 만든 뒤, 붙이기 전에 그 <code>li</code>에 이벤트를 붙입니다. 위 예제와 달라진 곳은 "더한 줄" 아래 세 줄뿐입니다.</p>
-<div class="demo" data-name="새 공지도 지워지는 공지" style="--h: 880px; --frame-h: 360px;">
+<details class="extra" id="s5-fix"><summary>새 공지도 지워지게 — 만들 때 이벤트 붙이기</summary>
+<p><code>li</code>를 만든 뒤 붙이기 전에 그 <code>li</code>에 이벤트를 붙입니다. 위 예제와 달라진 곳은 "더한 줄" 아래 세 줄뿐입니다.</p>
+<div class="demo" data-name="새 공지도 지워지는 교내공지" style="--h: 1015px; --frame-h: 360px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
@@ -1050,15 +794,15 @@
   &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
   &lt;title&gt;새 공지도 지워지게&lt;/title&gt;
   &lt;style&gt;
-    body { font-family: sans-serif; margin: 16px; }
+    body { font-family: sans-serif; margin: 20px; }
     h1 { font-size: 24px; border-bottom: 2px solid #333; }
     li { margin: 8px 0; padding: 8px; background: #f2f2f2; cursor: pointer; }
   &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
   &lt;h1&gt;교내공지&lt;/h1&gt;
-  &lt;p&gt;공지를 누르면 지워집니다.&lt;/p&gt;
-  &lt;button id="add" type="button"&gt;공지 추가&lt;/button&gt;
+  &lt;button type="button" id="add"&gt;공지 추가&lt;/button&gt;
+  &lt;button type="button" id="edit"&gt;첫 공지 고치기&lt;/button&gt;
   &lt;ul id="notices"&gt;
     &lt;li&gt;수강신청 안내&lt;/li&gt;
     &lt;li&gt;장학금 신청 안내&lt;/li&gt;
@@ -1066,14 +810,14 @@
   &lt;script&gt;
     const list = document.querySelector("#notices");
 
-    // 지금 있는 공지 li마다: 누르면 그 li를 지운다
+    // 삭제: 지금 있는 공지 li마다, 누르면 그 li를 지운다
     document.querySelectorAll("#notices li").forEach((li) =&gt; {
       li.addEventListener("click", () =&gt; {
         li.remove();
       });
     });
 
-    // 추가 버튼: 새 li에도 이벤트를 붙인다
+    // 추가: 만들기 → 채우기 → 붙이기 (새 li에도 이벤트 붙이기)
     document.querySelector("#add").addEventListener("click", () =&gt; {
       const li = document.createElement("li");
       li.textContent = `새 공지 ${list.children.length + 1}`;
@@ -1083,68 +827,21 @@
       });
       list.append(li);
     });
+
+    // 수정: 첫 공지의 글자 바꾸기
+    document.querySelector("#edit").addEventListener("click", () =&gt; {
+      const first = list.firstElementChild; // 첫 li (없으면 null)
+      if (first === null) return;
+      first.textContent = "수강신청 기간 변경 안내";
+    });
   &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
 </div>
 </details>
 
-<h3 id="s5-3">5-3. 수정과 정리표</h3>
-<p>수정은 새 문법이 아닙니다. 찾은 요소에 4장의 <code>textContent</code>와 <code>classList</code>를 쓰면 됩니다. [첫 공지 고치기]를 누르고, 공지도 눌러 보세요.</p>
-
-<div class="demo" data-name="첫 공지 고치기 · 눌러서 완료 표시" style="--h: 821px; --frame-h: 360px;">
-<textarea class="src">&lt;!DOCTYPE html&gt;
-&lt;html lang="ko"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;첫 공지 고치기 · 완료 표시&lt;/title&gt;
-  &lt;style&gt;
-    body { font-family: sans-serif; margin: 16px; }
-    h1 { font-size: 24px; border-bottom: 2px solid #333; }
-    li { margin: 8px 0; padding: 8px; background: #f2f2f2; cursor: pointer; }
-    li.done { color: #9ca3af; text-decoration: line-through; }
-  &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;h1&gt;교내공지&lt;/h1&gt;
-  &lt;p&gt;공지를 누르면 완료 표시가 켜지고 꺼집니다.&lt;/p&gt;
-  &lt;input type="text" id="edit-input" value="수강신청 기간 변경 안내"&gt;
-  &lt;button id="edit" type="button"&gt;첫 공지 고치기&lt;/button&gt;
-  &lt;ul id="notices"&gt;
-    &lt;li&gt;수강신청 안내&lt;/li&gt;
-    &lt;li&gt;장학금 신청 안내&lt;/li&gt;
-  &lt;/ul&gt;
-  &lt;script&gt;
-    const list = document.querySelector("#notices");
-    const input = document.querySelector("#edit-input");
-
-    // 글자 수정: 첫 공지를 입력칸의 글자로
-    document.querySelector("#edit").addEventListener("click", () =&gt; {
-      list.firstElementChild.textContent = input.value;
-    });
-
-    // 모양 수정: 누른 공지에 done 켜고 끄기
-    document.querySelectorAll("#notices li").forEach((li) =&gt; {
-      li.addEventListener("click", () =&gt; {
-        li.classList.toggle("done");
-      });
-    });
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
-</div>
-
-<div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>추가</td><td>createElement("li") → 목록.append(li)</td><td>만들어서 목록 끝에 붙이기</td></tr>
-<tr><td>삭제</td><td>li.remove()</td><td>그 요소 떼어 내기</td></tr>
-<tr><td>수정</td><td>li.textContent · li.classList</td><td>글자와 모양 바꾸기</td></tr>
-<tr><td>첫 자식</td><td>목록.firstElementChild</td><td>목록의 첫 li</td></tr>
-<tr><td>자식 수</td><td>목록.children.length</td><td>지금 들어 있는 li 개수</td></tr>
-</tbody></table></div>
-
 <h2 id="s6">6. React에서 자주 쓰는 JS 문법</h2>
-<p>React 코드도 JS입니다. 낯선 기호 몇 개가 반복될 뿐입니다. 실습에는 나오지 않으니 모양만 눈에 익혀 두세요. 오늘은 6-1~6-5를 함께 보고, 나머지는 React 세션 전에 읽어 오세요.</p>
+<p>React 코드도 JS입니다. 실습에는 나오지 않으니, 자주 나오는 기호의 모양만 눈에 익혀 두세요.</p>
 
 <h3 id="s6-1">6-1. 먼저 보기 — 오늘 만든 카드를 React로</h3>
 <p>실습에서 만들 카드를 React로 쓰면 이렇습니다. ▶ 실행을 누른 뒤 [어둡게 보기], [추가], 취미 칸을 눌러 보세요. <code>Card</code>처럼 화면 한 덩어리를 그리는 함수를 <b>컴포넌트</b>라고 합니다.</p>
@@ -1252,164 +949,60 @@
 <tr><td>이벤트</td><td>addEventListener("click", 함수)</td><td>onClick={함수}</td></tr>
 </tbody></table></div>
 
-<h3 id="s6-2">6-2. 조건과 빈 값 — &amp;&amp; · ?. · ??</h3>
-<p>조건이 맞을 때만 보여 주기와, 데이터에 빈 칸이 있을 때를 다룹니다.</p>
+<h3 id="s6-2">6-2. 자주 쓰는 문법 모음 — ?. · ?? · 구조 분해 · 스프레드 · map · filter</h3>
+<p>React 코드에 자주 나오는 문법을 한 번에 봅니다. 주석의 결과와 아래 콘솔을 비교해 보세요.</p>
 
-<div class="demo" data-name="조건에 따라, 비어 있어도 안전하게" data-console="only" style="--h: 647px;">
+<div class="demo" data-name="자주 쓰는 문법 모음" data-console="only" style="--h: 725px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
   &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;조건과 빈 값&lt;/title&gt;
+  &lt;title&gt;자주 쓰는 문법 모음&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
   &lt;script&gt;
-    // 게시글 데이터 (place는 없음)
-    const post = {
-      title: "오늘의 테니스 연습",
-      likes: 42,
-      isLiked: true,
-    };
+    const me = { name: "홍길동", age: 21, hobbies: ["테니스", "음악 감상"] };
 
-    // 삼항: 참이면 앞 값, 거짓이면 뒤 값
-    console.log(post.isLiked ? "♥" : "♡");
+    // 1. &amp;&amp; · ?. · ?? — 조건일 때만, 비어 있어도 안전하게
+    console.log(me.age &gt;= 20 &amp;&amp; "성인");          // 성인
+    console.log(me.school?.name);                 // undefined
+    console.log(me.school?.name ?? "학교 미정");  // 학교 미정
 
-    // &amp;&amp;: 앞이 참일 때만 뒤 값, 거짓이면 false
-    console.log(post.likes &gt;= 40 &amp;&amp; "인기 글");
-    console.log(post.likes &gt;= 100 &amp;&amp; "인기 글");
-
-    // ?.: 앞이 비어 있으면 오류 대신 undefined
-    console.log(post.place?.name);
-
-    // ??: 앞이 null · undefined면 뒤 값
-    console.log(post.place?.name ?? "장소 미정");
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
-</div>
-
-<div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>그리고</td><td>조건 &amp;&amp; 값</td><td>참일 때만 뒤 값. 거짓이면 false</td></tr>
-<tr><td>있으면 꺼내기</td><td>post.place?.name</td><td>place가 없으면 오류 대신 undefined</td></tr>
-<tr><td>없으면 대신</td><td>값 ?? "기본값"</td><td>null · undefined일 때 기본값</td></tr>
-</tbody></table></div>
-
-<h3 id="s6-3">6-3. 구조 분해 할당</h3>
-<p>객체나 배열에서 값을 꺼내 <b>한 번에 변수 여러 개</b>에 담습니다. React 컴포넌트의 첫 줄마다 나옵니다.</p>
-
-<div class="demo" data-name="객체와 배열에서 꺼내기" data-console="only" style="--h: 531px;">
-<textarea class="src">&lt;!DOCTYPE html&gt;
-&lt;html lang="ko"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;구조 분해 할당&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;script&gt;
-    const me = { name: "홍길동", age: 21 };
-
-    // 객체: 같은 이름의 키를 꺼내기
+    // 2. 구조 분해 — 한 번에 꺼내기
     const { name, age } = me;
-    console.log(name, age);
+    const [first, second] = me.hobbies;
+    console.log(name, age, first, second);  // 홍길동 21 테니스 음악 감상
 
-    // 배열: 순서대로 꺼내기
-    const [first, second] = ["테니스", "음악 감상"];
-    console.log(first, "/", second);
-
-    // 매개변수에서 바로 꺼내기
-    const intro = ({ name }) =&gt; `저는 ${name}입니다`;
-    console.log(intro(me));
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
-</div>
-
-<div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>객체</td><td>const { name, age } = me</td><td>같은 이름의 키를 꺼냅니다</td></tr>
-<tr><td>배열</td><td>const [first, second] = arr</td><td>순서대로 꺼냅니다</td></tr>
-<tr><td>매개변수</td><td>({ name }) =&gt; …</td><td>받은 객체에서 바로 꺼냅니다</td></tr>
-<tr><td>React</td><td>const [dark, setDark] = useState(false)</td><td>[지금 값, 바꾸는 함수]를 꺼냅니다</td></tr>
-</tbody></table></div>
-
-<h3 id="s6-4">6-4. 스프레드와 불변성</h3>
-<p><code>...</code>(스프레드)는 배열이나 객체를 펼쳐 <b>새</b> 배열 · 새 객체를 만듭니다. 원본은 그대로입니다.</p>
-<pre class="rule"><code>React 상태는 고치지 말고 새로 만든다:   list.push(x)  (X)   →   [...list, x]  (O)</code></pre>
-
-<div class="demo" data-name="원본은 그대로, 새로 만들기" data-console="only" style="--h: 570px;">
-<textarea class="src">&lt;!DOCTYPE html&gt;
-&lt;html lang="ko"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;스프레드와 불변성&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;script&gt;
-    const hobbies = ["테니스", "음악 감상"];
-
-    // 배열: 펼쳐 넣어 새 배열 만들기
-    const more = [...hobbies, "산책"];
-    console.log(hobbies);
-    console.log(more);
-
-    // 객체: 복사하면서 age만 바꾸기
-    const me = { name: "홍길동", age: 21 };
+    // 3. 스프레드 — 새로 만들기 (원본은 그대로)
+    const more = [...me.hobbies, "산책"];
     const older = { ...me, age: 22 };
-    console.log(me, older);
+    console.log(more);              // ["테니스", "음악 감상", "산책"]
+    console.log(older.age, me.age); // 22 21
 
-    // push는 새로 만들지 않고 원본을 바꿈
-    hobbies.push("사진");
-    console.log(hobbies);
+    // 4. map · filter — 새 배열 만들기
+    console.log(more.map((h) =&gt; `#${h}`));
+    // ["#테니스", "#음악 감상", "#산책"]
+    console.log(more.filter((h) =&gt; h !== "산책"));
+    // ["테니스", "음악 감상"]
   &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
 </div>
 
+<p>가운데는 데모의 모습, 오른쪽은 React에서 보게 될 모습입니다. 외우지 않아도 됩니다.</p>
 <div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>배열에 더하기</td><td>[...arr, x]</td><td>새 배열. 원본은 그대로</td></tr>
-<tr><td>객체 고치기</td><td>{ ...obj, age: 22 }</td><td>복사한 뒤 age만 바꾼 새 객체</td></tr>
-<tr><td>원본 바꾸기</td><td>arr.push(x)</td><td>React 상태에는 쓰지 않습니다</td></tr>
+<tr><td>조건일 때만</td><td>조건 &amp;&amp; 값</td><td>{dark &amp;&amp; &lt;p&gt;어둡게 보는 중&lt;/p&gt;}</td></tr>
+<tr><td>비어 있으면 대신</td><td>me.school?.name ?? "학교 미정"</td><td>{post.place?.name ?? "장소 미정"}</td></tr>
+<tr><td>구조 분해</td><td>const { name } = me · const [a, b] = arr</td><td>const [dark, setDark] = useState(false)</td></tr>
+<tr><td>스프레드</td><td>[...arr, x] · { ...me, age: 22 }</td><td>setList([...list, text])</td></tr>
+<tr><td>map 칸마다 바꾸기</td><td>arr.map((h) =&gt; `#${h}`)</td><td>{list.map((h) =&gt; &lt;li key={h}&gt;{h}&lt;/li&gt;)}</td></tr>
+<tr><td>filter 골라 남기기</td><td>arr.filter((h) =&gt; h !== "산책")</td><td>setList(list.filter((h) =&gt; h !== hobby))</td></tr>
+<tr><td><a href="#s2-1">함수 넘기기 2-1</a></td><td>addEventListener("click", sayHi)</td><td>onClick={sayHi} (O) · onClick={sayHi()} (X)</td></tr>
 </tbody></table></div>
-<p class="note">React는 새 배열 · 새 객체가 들어와야 바뀐 것을 알아챕니다(<b>불변성</b>).</p>
+<p class="note">React 상태는 고치지 말고 <b>새로 만듭니다</b>(<b>불변성</b>). push 대신 [...list, x]를 쓰는 이유입니다.</p>
 
-<h3 id="s6-5">6-5. map · filter</h3>
-<p>배열의 칸마다 함수를 불러 <b>새 배열</b>을 만듭니다. <code>map</code>은 칸마다 바꾸고, <code>filter</code>는 조건에 맞는 칸만 남깁니다.</p>
-
-<div class="demo" data-name="배열 → 새 배열" data-console="only" style="--h: 511px;">
-<textarea class="src">&lt;!DOCTYPE html&gt;
-&lt;html lang="ko"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
-  &lt;title&gt;map · filter&lt;/title&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;script&gt;
-    const hobbies = ["테니스", "음악 감상", "산책"];
-
-    // map: 칸마다 바꾼 새 배열 (개수 그대로)
-    const tagged = hobbies.map((h) =&gt; `#${h}`);
-    console.log(tagged);
-
-    // filter: 조건이 참인 칸만 남긴 새 배열
-    const without = hobbies.filter((h) =&gt; h !== "산책");
-    console.log(without);
-
-    // 원본은 그대로
-    console.log(hobbies);
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;</textarea>
-</div>
-
-<div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>칸마다 바꾸기</td><td>arr.map((h) =&gt; …)</td><td>개수가 같은 새 배열. React에서 목록을 그릴 때</td></tr>
-<tr><td>골라 남기기</td><td>arr.filter((h) =&gt; 조건)</td><td>조건이 참인 칸만. React에서 삭제할 때</td></tr>
-</tbody></table></div>
-
-<h3 id="s6-6">6-6. async · await · fetch</h3>
+<h3 id="s6-3">6-3. async · await · fetch</h3>
 <p>서버에 데이터를 요청하고, 응답이 오면 화면에 넣습니다. [불러오기]를 눌러 보세요.</p>
 
 <div class="demo" data-name="게시글 JSON 받아 오기 (인터넷 필요)" style="--h: 899px; --frame-h: 300px;">
@@ -1466,7 +1059,7 @@
 <tr><td>실패 대비</td><td>try { … } catch (error) { … }</td><td>오류가 나면 catch로 건너뜁니다</td></tr>
 </tbody></table></div>
 
-<h3 id="s6-7">6-7. import · export</h3>
+<h3 id="s6-4">6-4. import · export</h3>
 <p>한 파일에서 내보낸(export) 것을 다른 파일에서 가져와(import) 씁니다. 여기서는 실행하지 않고 코드만 봅니다.</p>
 <p class="note"><b>profile.js</b> — 내보내는 쪽</p>
 <pre class="rule"><code>export function greet(who) {
@@ -1487,22 +1080,13 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
 <tr><td>기본 내보내기</td><td>export default</td><td>파일마다 하나. 가져올 때 이름은 마음대로</td></tr>
 </tbody></table></div>
 
-<h3 id="s6-8">6-8. 정리표 — React에서 다시 만날 모습</h3>
-<p>가운데는 오늘 쓴 모습, 오른쪽은 React에서 보게 될 모습입니다. 외우지 않아도 됩니다.</p>
-<div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td><a href="#s2-3">함수 넘기기 2-3</a></td><td>addEventListener("click", sayHi)</td><td>onClick={sayHi} (O) · onClick={sayHi()} (X)</td></tr>
-<tr><td><a href="#s6-3">구조 분해 6-3</a></td><td>const { name } = me</td><td>const [dark, setDark] = useState(false)</td></tr>
-<tr><td><a href="#s6-5">map 6-5</a></td><td>list.map((h) =&gt; `#${h}`)</td><td>{list.map((h) =&gt; &lt;li key={h}&gt;{h}&lt;/li&gt;)}</td></tr>
-<tr><td><a href="#s6-7">import 6-7</a></td><td>import { greet } from "./profile.js"</td><td>import { useState } from "react"</td></tr>
-</tbody></table></div>
-
 <h2 id="s7">7. 실습: 자기소개 페이지에 반응 넣기</h2>
 <p>자기소개 카드에 JS를 붙여 아래 <b>목표 화면</b>처럼 반응하게 만들어 봅니다. 정답 코드는 적어 두지 않았습니다. 각 구역에 적힌 <b>참고 절</b>을 열어 보고 직접 찾아 보세요. 세 부 모두 <a href="#s3-1">3-1</a>의 선택 → 이벤트 → 변경 모양입니다.</p>
 
 <h3 id="s7-1">목표 화면 · 시작 코드</h3>
 <p>버튼, 입력칸, 취미 칸을 눌러 보세요.</p>
 
-<div class="demo stack resizable" data-name="목표 화면 — 눌러 보세요" style="--h: 560px;" data-width-controls data-preview-only>
+<div class="demo stack resizable" data-name="목표 화면 — 눌러 보세요" style="--h: 660px;" data-width-controls data-preview-only>
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
@@ -1555,6 +1139,14 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
     .card.dark .profile p { color: #9ca3af; }
     .card.dark .hobbies li { background: #374151; }
 
+    /* 3일차 추가 · 4부 (Advanced) 취미 개수 */
+    .count { margin: 18px 0 -10px; font-size: 14px; color: #6b7280; }
+    .card.dark .count { color: #9ca3af; }
+
+    /* 3일차 추가 · 5부 (Advanced) 날씨 */
+    .weather-row { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; font-size: 14px; color: #6b7280; }
+    .card.dark .weather-row { color: #9ca3af; }
+
     @media (max-width: 520px) {
       .card { padding: 18px; }
       .profile { flex-direction: column; text-align: center; }
@@ -1575,6 +1167,8 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
         &lt;p&gt;컴퓨터인공지능학부 · 테니스와 머신러닝&lt;/p&gt;
       &lt;/div&gt;
     &lt;/div&gt;
+    &lt;!-- 3일차 추가 · 4부 (Advanced) --&gt;
+    &lt;p class="count"&gt;취미 4개&lt;/p&gt;
     &lt;ul class="hobbies"&gt;
       &lt;li&gt;테니스&lt;/li&gt;&lt;li&gt;음악 감상&lt;/li&gt;&lt;li&gt;산책&lt;/li&gt;&lt;li&gt;사진&lt;/li&gt;
     &lt;/ul&gt;
@@ -1582,6 +1176,11 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
     &lt;div class="add-row"&gt;
       &lt;input type="text" id="hobby-input" placeholder="새 취미"&gt;
       &lt;button type="button" id="add-btn"&gt;추가&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;!-- 3일차 추가 · 5부 (Advanced) --&gt;
+    &lt;div class="weather-row"&gt;
+      &lt;button type="button" id="weather-btn"&gt;오늘 날씨&lt;/button&gt;
+      &lt;span id="weather"&gt;전주 날씨를 불러와 보세요&lt;/span&gt;
     &lt;/div&gt;
     &lt;a class="site" href="https://huggingface.co" target="_blank"&gt;관심 있는 사이트&lt;/a&gt;
   &lt;/div&gt;
@@ -1593,6 +1192,7 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
     const hobbies = document.querySelector(".hobbies");
     const input = document.querySelector("#hobby-input");
     const addBtn = document.querySelector("#add-btn");
+    const count = document.querySelector(".count");
 
     // 1부 · #mode-btn → .card에 dark 켜고 끄기
     modeBtn.addEventListener("click", () =&gt; {
@@ -1601,19 +1201,53 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
     });
 
     // 2부 · #add-btn → .hobbies 끝에 새 li
-    addBtn.addEventListener("click", () =&gt; {
+    function addHobby() {
       const text = input.value.trim();
       if (text === "") return;
       const li = document.createElement("li");
       li.textContent = text;
-      li.addEventListener("click", () =&gt; li.remove());
+      li.addEventListener("click", () =&gt; {
+        li.remove();
+        updateCount();
+      });
       hobbies.append(li);
       input.value = "";
-    });
+      updateCount();
+    }
+    addBtn.addEventListener("click", addHobby);
 
     // 3부 · 취미 li를 누르면 지우기
     document.querySelectorAll(".hobbies li").forEach((li) =&gt; {
-      li.addEventListener("click", () =&gt; li.remove());
+      li.addEventListener("click", () =&gt; {
+        li.remove();
+        updateCount();
+      });
+    });
+
+    // 4부 (Advanced)
+    input.addEventListener("keydown", (event) =&gt; {
+      if (event.isComposing) return;  // 한글 조합 중 Enter는 건너뜀
+      if (event.key === "Enter") addHobby();
+    });
+
+    function updateCount() {
+      const n = document.querySelectorAll(".hobbies li").length;
+      count.textContent = `취미 ${n}개`;
+    }
+
+    // 5부 (Advanced) · 날씨 API
+    const weatherBtn = document.querySelector("#weather-btn");
+    const weather = document.querySelector("#weather");
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=35.85&amp;longitude=127.13&amp;current=temperature_2m";
+    weatherBtn.addEventListener("click", async () =&gt; {
+      weather.textContent = "불러오는 중…";
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        weather.textContent = `전주 지금 ${data.current.temperature_2m}°C`;
+      } catch (error) {
+        weather.textContent = "불러오지 못했습니다";
+      }
     });
   &lt;/script&gt;
 &lt;/body&gt;
@@ -1622,7 +1256,7 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
 
 <p>아래 시작 코드를 복사해 새 파일 <code>about-me-js.html</code>로 저장하고 Live Server로 엽니다. HTML과 CSS는 다 들어 있으니 맨 아래 <code>&lt;script&gt;</code> 안만 채우면 됩니다.</p>
 
-<div class="demo stack resizable" data-name="시작 코드 — 복사해서 about-me-js.html로 저장" style="--h: 560px;">
+<div class="demo stack resizable" data-name="시작 코드 — 복사해서 about-me-js.html로 저장" style="--h: 660px;">
 <textarea class="src">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
@@ -1675,6 +1309,14 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
     .card.dark .profile p { color: #9ca3af; }
     .card.dark .hobbies li { background: #374151; }
 
+    /* 3일차 추가 · 4부 (Advanced) 취미 개수 */
+    .count { margin: 18px 0 -10px; font-size: 14px; color: #6b7280; }
+    .card.dark .count { color: #9ca3af; }
+
+    /* 3일차 추가 · 5부 (Advanced) 날씨 */
+    .weather-row { display: flex; align-items: center; gap: 10px; margin-bottom: 22px; font-size: 14px; color: #6b7280; }
+    .card.dark .weather-row { color: #9ca3af; }
+
     @media (max-width: 520px) {
       .card { padding: 18px; }
       .profile { flex-direction: column; text-align: center; }
@@ -1695,6 +1337,8 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
         &lt;p&gt;컴퓨터인공지능학부 · 테니스와 머신러닝&lt;/p&gt;
       &lt;/div&gt;
     &lt;/div&gt;
+    &lt;!-- 3일차 추가 · 4부 (Advanced) --&gt;
+    &lt;p class="count"&gt;취미 4개&lt;/p&gt;
     &lt;ul class="hobbies"&gt;
       &lt;li&gt;테니스&lt;/li&gt;&lt;li&gt;음악 감상&lt;/li&gt;&lt;li&gt;산책&lt;/li&gt;&lt;li&gt;사진&lt;/li&gt;
     &lt;/ul&gt;
@@ -1702,6 +1346,11 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
     &lt;div class="add-row"&gt;
       &lt;input type="text" id="hobby-input" placeholder="새 취미"&gt;
       &lt;button type="button" id="add-btn"&gt;추가&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;!-- 3일차 추가 · 5부 (Advanced) --&gt;
+    &lt;div class="weather-row"&gt;
+      &lt;button type="button" id="weather-btn"&gt;오늘 날씨&lt;/button&gt;
+      &lt;span id="weather"&gt;전주 날씨를 불러와 보세요&lt;/span&gt;
     &lt;/div&gt;
     &lt;a class="site" href="https://huggingface.co" target="_blank"&gt;관심 있는 사이트&lt;/a&gt;
   &lt;/div&gt;
@@ -1711,6 +1360,8 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
     // 1부 · #mode-btn → .card에 dark 켜고 끄기
     // 2부 · #add-btn → .hobbies 끝에 새 li
     // 3부 · 취미 li를 누르면 지우기
+    // 4부 (Advanced) · Enter로도 추가, 추가 · 삭제할 때마다 취미 개수 다시 세기
+    // 5부 (Advanced) · #weather-btn → 날씨 API에서 전주 기온을 받아 #weather에 쓰기
   &lt;/script&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
@@ -1725,7 +1376,7 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
 <h3 id="s7-2">1부 · 버튼으로 어둡게 보기 켜고 끄기</h3>
 <p>'어둡게 보기' 버튼(<code>#mode-btn</code>)을 누를 때마다 카드(<code>.card</code>)에 <code>dark</code> 클래스를 붙였다 뗐다 합니다.</p>
 <p>버튼 글자도 상태에 맞게 '어둡게 보기' ↔ '밝게 보기'로 바꿉니다.</p>
-<p class="note">참고: <a href="#s3-1">3-1 선택 → 이벤트 → 변경</a> · <a href="#s4-2">4-2 요소 찾기</a> · <a href="#s4-4">4-4 classList</a> · <a href="#s1-3">1-3 비교와 조건</a><br>
+<p class="note">참고: <a href="#s3-1">3-1 선택 → 이벤트 → 변경</a> · <a href="#s4-2">4-2 요소 찾기</a> · <a href="#s4-4">4-4 classList</a> · <a href="#s1-1">1-1 비교 · 조건</a><br>
 막히는 지점:</p>
 <ul class="plain">
   <li>classList에는 점 없이 씁니다. <code>toggle(".dark")</code>는 오류는 안 나지만 색이 안 바뀝니다.</li>
@@ -1735,7 +1386,7 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
 <h3 id="s7-3">2부 · 취미 추가하기</h3>
 <p>'추가' 버튼(<code>#add-btn</code>)을 누르면 입력칸(<code>#hobby-input</code>)의 글자로 <code>li</code>를 만들어 <code>.hobbies</code> 끝에 붙이고, 입력칸을 비웁니다.</p>
 <p>빈칸이면 아무것도 붙이지 않습니다. <code>if (값 === "") return;</code>이나 <code>if (값 !== "") { … }</code> 중 편한 쪽을 쓰세요.</p>
-<p class="note">참고: <a href="#s5-1">5-1 추가</a> · <a href="#s4-3">4-3 글자와 값</a> · <a href="#s1-3">1-3 비교와 조건</a> · <a href="#s2-1">2-1 return</a> · <a href="#s3-4">3-4 trim</a><br>
+<p class="note">참고: <a href="#s5-1">5-1 추가 · 삭제</a> · <a href="#s4-3">4-3 글자와 값</a> · <a href="#s1-1">1-1 비교 · 조건</a> · <a href="#s2-1">2-1 함수(return)</a> · <a href="#s3-2">3-2 trim</a><br>
 막히는 지점:</p>
 <ul class="plain">
   <li>입력값은 클릭 함수 안에서 읽습니다. 바깥에서 읽으면 늘 빈 값입니다.</li>
@@ -1746,7 +1397,7 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
 <h3 id="s7-4">3부 · 누르면 지워지는 취미</h3>
 <p>취미 칸을 누르면 그 취미가 지워지게 합니다. 원래 있던 네 개부터 해 봅니다.</p>
 <p>2부에서 추가한 취미도 지워지게 합니다.</p>
-<p class="note">참고: <a href="#s4-2">4-2 querySelectorAll · forEach</a> · <a href="#s5-2-more">5-2 '새 공지도 지워지게'</a> · <a href="#s2-3">2-3 함수를 넘기기</a><br>
+<p class="note">참고: <a href="#s4-2">4-2 querySelectorAll · forEach</a> · <a href="#s5-fix">5-1 아래 '새 공지도 지워지게'</a> · <a href="#s2-1">2-1 함수 넘기기</a><br>
 막히는 지점:</p>
 <ul class="plain">
   <li>querySelectorAll 목록에 addEventListener를 바로 붙이면 <code>is not a function</code> 오류가 납니다. forEach로 하나씩 붙이세요.</li>
@@ -1761,6 +1412,52 @@ console.log(intro());          // 저는 홍길동입니다</code></pre>
   <li>콘솔에 빨간 줄이 없습니다.</li>
 </ul>
 <p class="note">AI에게 물을 때는 요소 이름과 동작을 함께 적습니다. 예: "#mode-btn을 누르면 .card에 dark 클래스를 켜고 끄는 코드를 써 줘."</p>
+
+<h3 id="s7-5">4부 (Advanced) · Enter로 추가하고 취미 개수 세기</h3>
+<p>여기부터는 <b>추가 사항</b>입니다. 1~3부 완료 확인을 받은 뒤 더 해 보고 싶으면 이어서 하세요.</p>
+<p>입력칸에서 Enter를 쳐도 추가되게 합니다. 2부 코드를 <code>addHobby()</code> 함수로 묶어 버튼 클릭과 Enter 두 곳에서 부릅니다.</p>
+<p>취미 위의 "취미 4개"가 추가하거나 지울 때마다 바뀌게 합니다. 개수를 다시 쓰는 코드도 함수(<code>updateCount()</code>)로 묶어 필요한 곳에서 부릅니다.</p>
+<p class="note">참고: <a href="#s2-1">2-1 함수 넘기기</a> · <a href="#s3-2">3-2 event.key</a> · <a href="#s4-2">4-2 querySelectorAll</a> · <a href="#s1-1">1-1 .length</a><br>
+막히는 지점:</p>
+<ul class="plain">
+  <li><code>addEventListener("click", addHobby())</code>처럼 괄호를 붙이면 그 자리에서 한 번 실행되고, 클릭해도 반응이 없습니다.</li>
+  <li>한글을 치고 Enter를 누르면 두 번 추가될 수 있습니다. keydown 함수 첫 줄에 <code>if (event.isComposing) return;</code>을 넣으세요.</li>
+  <li>개수는 지운 직후에도 다시 세야 합니다(3부의 <code>remove()</code> 다음 줄).</li>
+</ul>
+
+<h3 id="s7-6">5부 (Advanced) · 날씨 API로 지금 기온 보여 주기</h3>
+<p>[오늘 날씨]를 누르면 날씨 API에서 전주의 지금 기온을 받아 옆에 "전주 지금 16.8°C"처럼 씁니다. 받는 동안에는 "불러오는 중…", 실패하면 "불러오지 못했습니다"를 씁니다.</p>
+<pre class="rule"><code>https://api.open-meteo.com/v1/forecast?latitude=35.85&amp;longitude=127.13&amp;current=temperature_2m</code></pre>
+<p>순서는 네 단계입니다. <b>먼저 3단계까지만 쓰고 콘솔에서 데이터 모양을 본 뒤</b> 4단계로 꺼냅니다.</p>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>1. 요청</td><td>const res = await fetch(url);</td><td>주소로 요청하고 응답이 올 때까지 기다림</td></tr>
+<tr><td>2. JSON → 객체</td><td>const data = await res.json();</td><td>받은 글자를 JS 객체로 바꿈</td></tr>
+<tr><td>3. 모양 보기</td><td>console.log(data);</td><td>콘솔에서 ▶를 눌러 펼쳐 봄</td></tr>
+<tr><td>4. 꺼내기</td><td>data.current.temperature_2m</td><td>점(.)으로 한 단계씩 안으로 들어감</td></tr>
+</tbody></table></div>
+<p>콘솔에 찍히는 데이터는 이런 모양입니다(줄임). <code>{ }</code> 안에 또 <code>{ }</code>가 있는 객체입니다. 이 주소를 브라우저 주소창에 열어도 같은 내용이 보입니다.</p>
+<pre class="rule"><code>{
+  "latitude": 35.85,
+  "longitude": 127.125,
+  "current_units": { "temperature_2m": "°C", … },
+  "current": {
+    "time": "2026-10-01T09:15",
+    "temperature_2m": 16.8
+  }
+}</code></pre>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>위도</td><td>data.latitude</td><td>35.85</td></tr>
+<tr><td>지금 날씨 묶음</td><td>data.current</td><td>{ time, interval, temperature_2m } 객체</td></tr>
+<tr><td>지금 기온</td><td>data.current.temperature_2m</td><td>16.8 (숫자)</td></tr>
+<tr><td>기온 단위</td><td>data.current_units.temperature_2m</td><td>"°C"</td></tr>
+</tbody></table></div>
+<p class="note">1-1의 <code>me.name</code>과 같은 규칙입니다. 한 단계 안에 있으면 점을 한 번 더 붙입니다.</p>
+<p class="note">참고: <a href="#s6-3">6-3 async · await · fetch</a> · <a href="#s1-1">1-1 객체에서 꺼내기</a><br>
+막히는 지점:</p>
+<ul class="plain">
+  <li><code>await</code>는 <code>async</code> 함수 안에서만 씁니다. 화살표 함수면 <code>async () =&gt; { … }</code>입니다.</li>
+  <li><code>undefined</code>나 <code>[object Object]</code>가 보이면 꺼내는 경로가 틀린 것입니다. <code>console.log(data)</code>로 모양부터 보세요.</li>
+</ul>
 
 <figure class="shot" id="s7-photo">
   <img src="assets/tennis-ball-square.jpg" alt="실습에 쓸 테니스 코트 사진" width="440" height="440" loading="lazy">
