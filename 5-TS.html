@@ -193,51 +193,54 @@
 <p class="subtitle">초급프로젝트 TA SESSION · 1~7장에서 TypeScript 문법을 보고, 8장에서 4주차 할 일 목록을 내 컴퓨터에서 TS로 옮깁니다. TS 예제는 오른쪽에 <b>타입 검사</b>(실행 전에 찾은 오류)와 <b>콘솔</b>(실행 결과)이 함께 나옵니다.</p>
 
 <h2 id="s1">1. TypeScript — 실행 전에 검사하는 JS</h2>
-<p>TypeScript(TS)는 JS에 <b>타입</b>을 적을 수 있게 한 언어입니다. 코드를 실행하기 전에 검사해서, 이름이나 타입을 잘못 쓴 실수를 미리 빨간 줄로 알려 줍니다.</p>
+<p>TypeScript(TS)는 JS에 <b>타입</b>을 적을 수 있게 한 언어입니다. 코드를 실행하기 전에 검사해서, 타입이 맞지 않는 곳을 미리 빨간 줄로 알려 줍니다.</p>
 
-<h3 id="s1-1">1-1. 먼저 보기 — 같은 실수, JS와 TS</h3>
-<p>입력칸 글자로 공지를 하나 더 붙이려는 코드입니다. JS로 실행하면 오류 없이 <b>빈 칸</b>만 생깁니다. 오른쪽 아래 <b>타입 검사</b>에는 실행하기 전에 TS가 찾은 오류가 나옵니다.</p>
+<h3 id="s1-1">1-1. 먼저 보기 — 타입이 없을 때와 있을 때</h3>
+<p>같은 덧셈 함수를 타입 없이, 그리고 타입을 붙여 씁니다. 오른쪽 <b>타입 검사</b>에는 TS가 실행 전에 찾은 빨간 줄이 나옵니다.</p>
 
-<div class="demo" data-name="실행은 오류 없이 빈 칸 · 타입 검사는 실행 전에 빨간 줄" style="--h: 144px; --frame-h: 130px;">
-<textarea class="src" data-lang="ts">const input = document.querySelector("#notice-input");
-const list = document.querySelector("#notices");
+<div class="demo" data-name="타입을 안 주면 · 타입을 주면" data-console="only" style="--h: 280px;">
+<textarea class="src" data-lang="ts">// ① 타입을 안 주면: a, b가 무엇인지 몰라 빨간 줄
+function add(a, b) {
+  return a + b;
+}
 
-const li = document.createElement("li");
-li.textContnet = input.value;
-list.append(li);</textarea><textarea class="run">&lt;!DOCTYPE html&gt;
+// ② 타입을 주면: 숫자 자리에 글자를 넣은 곳에 빨간 줄
+function addNum(a: number, b: number) {
+  return a + b;
+}
+
+console.log(add(1, 2));       // 3
+console.log(add("1", 2));     // 12 — 글자 "1"에 2가 이어 붙음
+console.log(addNum("1", 2));  // 12 — 빨간 줄이지만 JS로는 실행됨</textarea><textarea class="run">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;title&gt;같은 실수, JS와 TS&lt;/title&gt;
-  &lt;style&gt;
-    body { font-family: sans-serif; margin: 16px; }
-    li { margin: 6px 0; padding: 8px; background: #f2f2f2; min-height: 1.2em; }
-  &lt;/style&gt;
+&lt;meta charset="UTF-8"&gt;
+&lt;title&gt;s1-add.ts&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
-  &lt;input type="text" id="notice-input" value="장학금 신청 안내"&gt;
-  &lt;ul id="notices"&gt;
-    &lt;li&gt;수강신청 안내&lt;/li&gt;
-  &lt;/ul&gt;
-  &lt;script&gt;
-const input = document.querySelector("#notice-input");
-const list = document.querySelector("#notices");
-const li = document.createElement("li");
-li.textContnet = input.value;
-list.append(li);
+&lt;script&gt;
+// ① 타입을 안 주면: a, b가 무엇인지 몰라 빨간 줄
+function add(a, b) {
+    return a + b;
+}
+// ② 타입을 주면: 숫자 자리에 글자를 넣은 곳에 빨간 줄
+function addNum(a, b) {
+    return a + b;
+}
+console.log(add(1, 2)); // 3
+console.log(add("1", 2)); // 12 — 글자 "1"에 2가 이어 붙음
+console.log(addNum("1", 2)); // 12 — 빨간 줄이지만 JS로는 실행됨
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 5, "col": 4, "code": "TS2551", "msg": "'textContnet' 속성이 'HTMLLIElement' 형식에 없습니다. 'textContent'을(를) 사용하시겠습니까?", "en": "Property 'textContnet' does not exist on type 'HTMLLIElement'. Did you mean 'textContent'?"}, {"line": 5, "col": 18, "code": "TS18047", "msg": "'input'은(는) 'null'일 수 있습니다.", "en": "'input' is possibly 'null'."}, {"line": 5, "col": 24, "code": "TS2339", "msg": "'Element' 형식에 'value' 속성이 없습니다.", "en": "Property 'value' does not exist on type 'Element'."}, {"line": 6, "col": 1, "code": "TS18047", "msg": "'list'은(는) 'null'일 수 있습니다.", "en": "'list' is possibly 'null'."}], "play": "https://www.typescriptlang.org/ko/play/?#code/MYewdgzgLgBAlmADgV1gXhgExMZBbAUzCgDoBHZAgJwE8BlAgGwOChCoAoAiAYjBChxgBALQIUULgEoA3AChQkWIzjQYGbLkLFylWg2at23PgKEEI0+QvBqV6rDnxFSwKgQCGUAgFFm2qG4VKzkVEm8ADygAYXAoMAJ0eCRUEgA3D0ZKeRVoEg9ERCJMDhVZOSA"}</textarea>
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 2, "col": 14, "code": "TS7006", "msg": "'a' 매개 변수에는 암시적으로 'any' 형식이 포함됩니다.", "en": "Parameter 'a' implicitly has an 'any' type."}, {"line": 2, "col": 17, "code": "TS7006", "msg": "'b' 매개 변수에는 암시적으로 'any' 형식이 포함됩니다.", "en": "Parameter 'b' implicitly has an 'any' type."}, {"line": 13, "col": 20, "code": "TS2345", "msg": "'string' 형식의 인수는 'number' 형식의 매개 변수에 할당될 수 없습니다.", "en": "Argument of type 'string' is not assignable to parameter of type 'number'."}], "play": "https://www.typescriptlang.org/ko/play/?#code/PTAEgMSVAGFxQ8cEXHSAlR0gficC5dAuUBDANKAI0AAa0QFm7Bx0cA9xwAcnRAGrsB920QCz7AQGtEBBJgKADMBXAHYBjAC4BLAPYCcAExkAKPIQCUoAN5dQoAE4BTEX23TsoANSEA3FwC+XLiFCBDEmjxUmUIGohwAnjoL4BrOwAXR0EAAOq9AH07QQGJGwAFx0EBnmqC2Tl5BUUljOQA5PgBbRSwBXIJdbXwCAqKS1Q0tPQMjHDNLGzshKQBnCQAbXQA6LokAc0U5eQBGfAAmZWULLXmtBwBmLjaBTp7+oZGFACIx3amZuYWHMcnQQBQCEJ993aDJkkAXccAW0dBATN7AGXHVju6+geG2CyuXkdyOs0WYHOVxY7A4T2ogBnO0AAKQAyoAdDsAKU2gQAnQ4BI1cAFC1cIA"}</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>잡아 줌</td><td>li.textContnet</td><td>없는 이름 — "textContent을(를) 사용하시겠습니까?"</td></tr>
-<tr><td>잡아 줌</td><td>input.value</td><td>Element에는 value가 없음 → 5장에서 고침</td></tr>
-<tr><td>미리 알려 줌</td><td>querySelector(…) 결과</td><td>"null일 수 있습니다" → 선택자 오타에 대비하게 함</td></tr>
-<tr><td>못 잡음</td><td>classList.toggle(".done")</td><td>글자는 무엇이든 들어갈 수 있어서</td></tr>
-<tr><td>못 잡음</td><td>클릭 함수 바깥에서 input.value 읽기</td><td>순서 · 로직의 실수</td></tr>
+<tr><td>타입을 안 줌</td><td>function add(a, b)</td><td>a, b가 무엇인지 몰라 빨간 줄 (implicitly has an 'any' type)</td></tr>
+<tr><td>타입을 줌</td><td>function addNum(a: number, b: number)</td><td>숫자 자리에 "1"을 넣으면 빨간 줄</td></tr>
+<tr><td>JS로 실행하면</td><td>add("1", 2)</td><td>오류 없이 12 — 글자 "1"에 2가 이어 붙음</td></tr>
 </tbody></table></div>
-<p class="note">TS는 <b>이름과 타입</b>의 실수를 잡습니다. 순서나 로직의 실수는 여전히 콘솔로 찾아야 합니다.</p>
+<p class="note">입력칸의 값(input.value)은 늘 글자입니다. 이런 실수를 TS는 실행하기 전에 빨간 줄로 알려 줍니다.</p>
 
 <h3 id="s1-2">1-2. 실행 흐름 — .ts → .js</h3>
 <p>브라우저는 TS를 바로 실행하지 못합니다. TS 컴파일러(tsc)가 검사한 뒤 타입을 지운 JS로 바꾸고, 브라우저는 그 JS를 실행합니다.</p>
