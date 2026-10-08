@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="초급프로젝트 TA SESSION — 취미 추가 · 삭제로 HTML · CSS · JS가 이어지는 흐름을 다시 보고, TypeScript를 맛본 뒤 할 일 목록(TODO LIST)을 만듭니다.">
+<title>4. HTML · CSS · JS 복습 및 TODO LIST 만들기 — 초급프로젝트 TA SESSION</title>
+<link rel="stylesheet" href="session.css">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1f2328; --muted: #6b7280; --line: #e5e7eb;
+    --code-bg: #f6f6f4; --accent: #2563eb; --pane: #fafafa;
+    --tag: #b91c1c; --attr: #7c3aed; --str: #15803d; --cmt: #9ca3af; --kw: #1d4ed8;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  nav.toc {
+    position: sticky; top: 0; height: 100vh; overflow: auto;
+    border-right: 1px solid var(--line); padding: 20px 16px; font-size: 13px;
+  }
+  nav.toc h1 { font-size: 22px; margin: 0 0 12px; }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 2px 0; }
+  nav.toc li ol { padding-left: 14px; }
+  nav.toc a { color: var(--fg); text-decoration: none; display: block; padding: 3px 6px; border-radius: 4px; }
+  nav.toc a:hover { background: var(--code-bg); }
+  nav.toc a.sub { color: var(--muted); }
+  main { padding: 32px 48px 120px; max-width: 1400px; }
+  h1.title { font-size: 40px; margin: 0 0 8px; }
+  .subtitle { color: var(--muted); margin: 0 0 40px; }
+  h2 { font-size: 24px; margin: 56px 0 16px; padding-top: 8px; }
+  h3 { font-size: 18px; margin: 32px 0 10px; }
+  h4 { font-size: 15px; margin: 22px 0 8px; color: #374151; }
+  p.note { color: var(--muted); font-size: 14px; margin: 8px 0 16px; }
+
+  /* 정리 표 */
+  table.ref { border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  table.ref td { border: 1px solid var(--line); padding: 5px 12px; vertical-align: top; }
+  table.ref td:first-child { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
+
+  /* 코드 + 실행 결과 */
+  .demo { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 16px 0 28px; background: var(--bg); }
+  .demo .bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--pane); font-size: 13px; }
+  .demo .bar .name { font-weight: 600; margin-right: auto; }
+  .demo .bar button { font: inherit; font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
+  .demo .bar button:hover { border-color: var(--accent); color: var(--accent); }
+  .demo .panes { display: grid; grid-template-columns: 1fr 1fr; }
+  .demo .panes > div { min-width: 0; }
+  .demo .code { background: var(--code-bg); border-right: 1px solid var(--line); }
+  .demo .code pre { margin: 0; padding: 14px 16px; overflow: auto; max-height: var(--h, 460px); font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
+  .demo .result { display: flex; flex-direction: column; }
+  .demo .result .label { font-size: 12px; color: var(--muted); padding: 6px 12px; border-bottom: 1px dashed var(--line); }
+  .demo iframe { border: 0; width: 100%; height: var(--frame-h, var(--h, 460px)); background: #fff; flex: 0 0 auto; }
+  .demo .panes:has(> .result:only-child) { grid-template-columns: 1fr; }
+  .demo.tall { --h: 640px; }
+  .demo.short { --h: 260px; }
+  .demo.stack .panes { grid-template-columns: 1fr; }
+  .demo.stack iframe { flex: 0 0 auto; height: max(760px, 85vh); }
+  .demo.stack .code { border-right: 0; border-top: 1px solid var(--line); }
+  .demo.stack .code pre { max-height: 520px; }
+  .demo.stack details > summary { cursor: pointer; padding: 10px 14px; font-size: 13px; color: var(--muted); background: var(--pane); user-select: none; }
+  .demo.stack details > summary:hover { color: var(--accent); }
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    main { padding: 24px 20px 80px; }
+    .demo .panes { grid-template-columns: 1fr; }
+    .demo .code { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+  /* 문법 색 */
+  .t { color: var(--tag); } .a { color: var(--attr); } .s { color: var(--str); } .c { color: var(--cmt); font-style: italic; } .k { color: var(--kw); } .n { color: var(--attr); }
+  textarea.src, textarea.run, textarea.tsc { display: none; }
+
+  /* 다이어그램 */
+  .diagram { margin: 12px 0 8px; max-width: 720px; }
+  .diagram svg { width: 100%; height: auto; }
+</style>
+<style>
+  main { min-width: 0; }
+  .demo .bar { flex-wrap: wrap; }
+  .demo .bar button:hover { border-color: #333; color: #333; }
+  .demo .bar button[aria-pressed="true"] { background: #ececec; border-color: #888; }
+  .demo .bar .name { flex: 1 0 180px; }
+  .demo.resizable iframe { flex: 0 0 auto; width: 100%; max-width: 100%; height: var(--frame-h, var(--h, 360px)); align-self: flex-start; }
+  .demo.resizable .result { background: #f0f0f0; }
+  .demo.resizable .result .label { background: #fff; }
+  .ref-wrap { overflow-x: auto; }
+  table.ref.cols3 td:first-child { font-family: inherit; font-size: 14px; color: var(--muted); background: transparent; white-space: nowrap; }
+  table.ref.cols3 td:nth-child(2) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
+  pre.rule { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 14px; margin: 8px 0 12px; overflow-x: auto; }
+  figure.shot { margin: 12px 0 16px; }
+  figure.shot img { display: block; width: min(100%, 220px); height: auto; border-radius: 12px; border: 1px solid var(--line); }
+  figure.shot figcaption { margin-top: 6px; font-size: 13px; color: var(--muted); }
+  kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; background: var(--code-bg); }
+  ul.plain { padding-left: 18px; margin: 6px 0 14px; }
+  ul.plain li { margin: 3px 0; }
+  ul.plain code, p code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  main > p a, main > details a { color: inherit; }
+  details.extra { margin: 12px 0 24px; }
+  details.extra > summary { cursor: pointer; }
+  /* JS: 콘솔 패널 · ▶ 실행(data-manual) */
+  .demo .console { flex: 1 1 auto; border-top: 1px solid var(--line); background: #fff; }
+  .demo .console .lines { max-height: var(--console-h, 320px); overflow: auto; font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .demo .console .line { display: flex; gap: 12px; min-height: calc(1.55em + 6px); padding: 3px 12px; border-bottom: 1px solid #f0f0f0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .demo .console .line .where { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .demo .console .line.warn { background: #fffbeb; color: #92400e; border-bottom-color: #fde68a; }
+  .demo .console .line.error { background: #fef2f2; color: #b91c1c; border-bottom-color: #fecaca; }
+  .demo .console .empty { padding: 6px 12px; font-size: 12px; color: var(--cmt); }
+  .demo.console-only .console { border-top: 0; }
+  .demo.console-only .console .lines { max-height: var(--console-h, var(--h, 460px)); }
+  .demo .run-gate { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: var(--frame-h, var(--h, 460px)); background: var(--pane); font-size: 13px; color: var(--muted); }
+  .demo.stack .run-gate { height: max(760px, 85vh); }
+  .demo.stack.resizable .run-gate { height: var(--frame-h, var(--h, 360px)); }
+  .demo .run-gate button { font: inherit; padding: 6px 16px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--fg); cursor: pointer; }
+  .demo .run-gate button:hover { border-color: #333; color: #333; }
+  .demo .run-gate[hidden] { display: none; }
+  @media print {
+    .layout { display: block; }
+    nav.toc, .demo .bar button { display: none; }
+    main { padding: 0; max-width: none; }
+    .demo .code pre { max-height: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+    h2, h3 { break-after: avoid; }
+    .demo .console .lines { max-height: none; overflow: visible; }
+    .demo .run-gate { height: auto; padding: 12px; }
+    .demo .run-gate button { display: none; }
+  }
+  /* TS 데모: 타입 검사 상자 · 오류 줄 빨간 물결 */
+  .demo .console.tsc { flex: 0 0 auto; border-top: 1px solid var(--line); }
+  .demo .console.tsc .label { font-size: 12px; color: var(--muted); padding: 6px 12px; border-bottom: 1px dashed var(--line); }
+  .demo .console.tsc .line.ok { background: #f0fdf4; color: #15803d; }
+  .demo .console.tsc .line .body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .demo .console.tsc .line .body code { color: #7f1d1d; background: transparent; padding: 0; font-weight: 600; }
+  .demo.console-only .console.tsc + .console { border-top: 1px solid var(--line); }
+  .demo .console.tsc .line .body .en { color: #9a6b6b; font-size: 11.5px; }
+  .demo .code .ts-bad { text-decoration: underline wavy #dc2626; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="자료 목차">
+  <a class="session-brand" href="index.html">초급프로젝트<br>TA SESSION</a>
+  <div class="session-nav">
+    <a href="0-web-flow.html">0. 웹 개발 흐름</a>
+    <a href="1-HTML.html">1. HTML</a>
+    <a href="2-CSS.html">2. CSS</a>
+    <a href="3-JS.html">3. JavaScript</a>
+    <a href="4-review.html" aria-current="page">4. HTML · CSS · JS 복습</a>
+    <a href="5-TS.html">5. TypeScript</a>
+  </div>
+  <h1>4. HTML · CSS · JS 복습 및 TODO LIST 만들기</h1>
+  <ol>
+    <li><a href="#s0">0. 지금까지 다시 보기</a><ol>
+      <li><a class="sub" href="#s0-1">먼저 보기</a></li>
+      <li><a class="sub" href="#s0-2">복습 흐름</a></li>
+    </ol></li>
+    <li><a href="#s1">1. TypeScript 맛보기</a><ol>
+      <li><a class="sub" href="#s1-1">먼저 보기</a></li>
+      <li><a class="sub" href="#s1-2">실행 흐름</a></li>
+    </ol></li>
+    <li><a href="#s2">2. 실습: 할 일 목록</a><ol>
+      <li><a class="sub" href="#s2-1">목표 화면 · 시작 코드</a></li>
+      <li><a class="sub" href="#s2-2">1부 · HTML</a></li>
+      <li><a class="sub" href="#s2-3">2부 · 할 일 추가 (JS)</a></li>
+      <li><a class="sub" href="#s2-4">3부 · 끝낸 일 표시 (JS)</a></li>
+      <li><a class="sub" href="#s2-5">4부 (Advanced) · TS로 옮기기</a></li>
+      <li><a class="sub" href="#s2-6">완료 확인</a></li>
+    </ol></li>
+  </ol>
+</nav>
+<main>
+<h1 class="title">4. HTML · CSS · JS 복습 및 TODO LIST 만들기</h1>
+<p class="subtitle">초급프로젝트 TA SESSION · 0장에서 HTML · CSS · JS가 어떻게 이어지는지 다시 보고, 1장에서 TypeScript를 맛본 뒤, 2장에서 할 일 목록을 만듭니다. TS 예제는 오른쪽에 <b>타입 검사</b>(실행 전에 찾은 오류)와 <b>콘솔</b>(실행 결과)이 함께 나옵니다.</p>
+
+<h2 id="s0">0. 지금까지 — 한 장으로 다시 보기</h2>
+<p>3주 동안 배운 HTML · CSS · JS가 한 화면에서 어떻게 이어지는지, 3주차 실습의 취미 추가 · 삭제로 다시 봅니다.</p>
+
+<h3 id="s0-1">0-1. 먼저 보기 — 취미 추가 · 삭제의 흐름</h3>
+<div class="diagram">
+<svg viewBox="0 0 720 766" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, sans-serif" role="img" aria-label="3주차 취미 추가 · 삭제의 흐름. HTML에서 id가 hobby-input인 입력칸, id가 add-btn인 버튼, class가 hobbies인 목록을 만든다. JS가 querySelector로 셋을 찾고, 버튼에 click event listener를 붙인다. 누르면 li를 만들어 입력칸 글자를 넣고 목록 끝에 붙인다. 새 li에도 CSS의 .hobbies li 모양이 적용된다. 새 li에 click event listener를 붙여 누르면 지운다. 화면에서는 취미가 목록 끝에 붙고, 누르면 지워진다.">
+  <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#9ca3af"/></marker></defs>
+  <rect x="1" y="1" width="718" height="66" rx="10" fill="#fff" stroke="#d1d5db"/>
+  <rect x="14" y="17" width="58" height="26" rx="13" fill="#fde4d0"/>
+  <text x="43" y="35" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">HTML</text>
+  <text x="88" y="26" font-size="15" font-weight="700" fill="#111827">입력칸 · 버튼 · 목록을 만든다</text>
+  <text x="88" y="48" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre">&lt;input id=&quot;<tspan fill="#2563eb" font-weight="700">hobby-input</tspan>&quot;&gt;  &lt;button id=&quot;<tspan fill="#0d9488" font-weight="700">add-btn</tspan>&quot;&gt;추가&lt;/button&gt;  &lt;ul class=&quot;<tspan fill="#7c3aed" font-weight="700">hobbies</tspan>&quot;&gt;</text>
+  <line x1="43" y1="68" x2="43" y2="89" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ar)"/>
+  <rect x="1" y="93" width="718" height="106" rx="10" fill="#fff" stroke="#d1d5db"/>
+  <rect x="14" y="109" width="58" height="26" rx="13" fill="#fef3c7"/>
+  <text x="43" y="127" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">JS</text>
+  <text x="88" y="118" font-size="15" font-weight="700" fill="#111827">① 입력칸 · 버튼 · 목록을 찾는다</text>
+  <text x="88" y="140" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre">const <tspan fill="#2563eb" font-weight="700">input</tspan> = document.querySelector(&quot;#<tspan fill="#2563eb" font-weight="700">hobby-input</tspan>&quot;);</text>
+  <text x="88" y="160" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre">const <tspan fill="#0d9488" font-weight="700">addBtn</tspan> = document.querySelector(&quot;#<tspan fill="#0d9488" font-weight="700">add-btn</tspan>&quot;);</text>
+  <text x="88" y="180" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre">const <tspan fill="#7c3aed" font-weight="700">hobbies</tspan> = document.querySelector(&quot;.<tspan fill="#7c3aed" font-weight="700">hobbies</tspan>&quot;);</text>
+  <line x1="43" y1="200" x2="43" y2="221" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ar)"/>
+  <rect x="1" y="225" width="718" height="66" rx="10" fill="#fff" stroke="#d1d5db"/>
+  <rect x="14" y="241" width="58" height="26" rx="13" fill="#fef3c7"/>
+  <text x="43" y="259" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">JS</text>
+  <text x="88" y="250" font-size="15" font-weight="700" fill="#111827">② 버튼에 click event listener를 붙인다</text>
+  <text x="88" y="272" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre"><tspan fill="#0d9488" font-weight="700">addBtn</tspan>.addEventListener(&quot;click&quot;, () =&gt; { … });</text>
+  <line x1="43" y1="292" x2="43" y2="313" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ar)"/>
+  <rect x="1" y="317" width="718" height="106" rx="10" fill="#fff" stroke="#d1d5db"/>
+  <rect x="14" y="333" width="58" height="26" rx="13" fill="#fef3c7"/>
+  <text x="43" y="351" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">JS</text>
+  <text x="88" y="342" font-size="15" font-weight="700" fill="#111827">③ li를 만들어 글자를 넣고 목록 끝에 붙인다</text>
+  <text x="88" y="364" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre">const li = document.createElement(&quot;li&quot;);</text>
+  <text x="88" y="384" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre">li.textContent = <tspan fill="#2563eb" font-weight="700">input</tspan>.value;</text>
+  <text x="88" y="404" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre"><tspan fill="#7c3aed" font-weight="700">hobbies</tspan>.append(li);</text>
+  <line x1="43" y1="424" x2="43" y2="445" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ar)"/>
+  <rect x="1" y="449" width="718" height="66" rx="10" fill="#fff" stroke="#d1d5db"/>
+  <rect x="14" y="465" width="58" height="26" rx="13" fill="#dbeafe"/>
+  <text x="43" y="483" text-anchor="middle" font-size="13" font-weight="700" fill="#1e40af">CSS</text>
+  <text x="88" y="474" font-size="15" font-weight="700" fill="#111827">새 li에도 .hobbies li 모양이 적용된다</text>
+  <text x="88" y="496" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre">.<tspan fill="#7c3aed" font-weight="700">hobbies</tspan> li { padding: 12px 20px; background: #eee; }</text>
+  <line x1="43" y1="516" x2="43" y2="537" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ar)"/>
+  <rect x="1" y="541" width="718" height="106" rx="10" fill="#fff" stroke="#d1d5db"/>
+  <rect x="14" y="557" width="58" height="26" rx="13" fill="#fef3c7"/>
+  <text x="43" y="575" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">JS</text>
+  <text x="88" y="566" font-size="15" font-weight="700" fill="#111827">④ 새 li에 click event listener를 붙여, 누르면 지운다</text>
+  <text x="88" y="588" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre">li.addEventListener(&quot;click&quot;, () =&gt; {</text>
+  <text x="88" y="608" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre">  li.remove();</text>
+  <text x="88" y="628" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#6b7280" style="white-space:pre">});</text>
+  <line x1="43" y1="648" x2="43" y2="669" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ar)"/>
+  <rect x="1" y="673" width="718" height="90" rx="10" fill="#fff" stroke="#d1d5db"/>
+  <rect x="14" y="689" width="58" height="26" rx="13" fill="#e5e7eb"/>
+  <text x="43" y="707" text-anchor="middle" font-size="13" font-weight="700" fill="#374151">화면</text>
+  <text x="88" y="698" font-size="15" font-weight="700" fill="#111827">취미가 목록 끝에 붙고, 누르면 지워진다</text>
+  <rect x="88" y="718" width="53" height="26" rx="6" fill="#eee" stroke="#d1d5db"/>
+  <text x="114" y="736" text-anchor="middle" font-size="12" fill="#111827">테니스</text>
+  <rect x="147" y="718" width="40" height="26" rx="6" fill="#eee" stroke="#d1d5db"/>
+  <text x="167" y="736" text-anchor="middle" font-size="12" fill="#111827">산책</text>
+  <text x="221" y="714" text-anchor="middle" font-size="11" fill="#6b7280">추가</text>
+  <line x1="199" y1="731" x2="243" y2="731" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ar)"/>
+  <rect x="253" y="718" width="53" height="26" rx="6" fill="#eee" stroke="#d1d5db"/>
+  <text x="280" y="736" text-anchor="middle" font-size="12" fill="#111827">테니스</text>
+  <rect x="312" y="718" width="40" height="26" rx="6" fill="#eee" stroke="#d1d5db"/>
+  <text x="332" y="736" text-anchor="middle" font-size="12" fill="#111827">산책</text>
+  <rect x="358" y="718" width="40" height="26" rx="6" fill="#eee" stroke="#2563eb"/>
+  <text x="378" y="736" text-anchor="middle" font-size="12" fill="#111827">사진</text>
+  <text x="432" y="714" text-anchor="middle" font-size="11" fill="#6b7280">사진 누르면</text>
+  <line x1="410" y1="731" x2="454" y2="731" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#ar)"/>
+  <rect x="464" y="718" width="53" height="26" rx="6" fill="#eee" stroke="#d1d5db"/>
+  <text x="490" y="736" text-anchor="middle" font-size="12" fill="#111827">테니스</text>
+  <rect x="523" y="718" width="40" height="26" rx="6" fill="#eee" stroke="#d1d5db"/>
+  <text x="543" y="736" text-anchor="middle" font-size="12" fill="#111827">산책</text>
+</svg>
+</div>
+<pre class="rule"><code>HTML에서 이름(id · class)을 주고 → JS가 찾아 event listener를 붙이고 → li를 만들어 붙이거나 지운다 → CSS가 모양을 입힌다</code></pre>
+
+<p>그림의 전체 코드입니다. 취미를 추가하고, 눌러서 지워 보세요.</p>
+
+<div class="demo" data-name="취미 추가 · 삭제 — 전체 코드" style="--h: 998px; --frame-h: 200px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;취미 추가 · 삭제&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 20px; }
+    .hobbies { display: flex; flex-wrap: wrap; gap: 10px; padding: 0; list-style: none; }
+    .hobbies li { padding: 12px 20px; background: #eee; border-radius: 6px; cursor: pointer; }
+    .add-row { display: flex; gap: 8px; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;ul class="hobbies"&gt;
+    &lt;li&gt;테니스&lt;/li&gt;
+    &lt;li&gt;산책&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;div class="add-row"&gt;
+    &lt;input type="text" id="hobby-input" placeholder="새 취미"&gt;
+    &lt;button type="button" id="add-btn"&gt;추가&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;script&gt;
+    // ① 찾기
+    const input = document.querySelector("#hobby-input");
+    const addBtn = document.querySelector("#add-btn");
+    const hobbies = document.querySelector(".hobbies");
+
+    // ② 버튼에 click event listener
+    addBtn.addEventListener("click", () =&gt; {
+      // ③ li를 만들어 글자를 넣고 목록 끝에 붙이기
+      const li = document.createElement("li");
+      li.textContent = input.value;
+      // ④ 새 li에 click event listener → 누르면 지우기
+      li.addEventListener("click", () =&gt; {
+        li.remove();
+      });
+      hobbies.append(li);
+      input.value = "";
+    });
+
+    // 원래 있던 li도 누르면 지우기
+    document.querySelectorAll(".hobbies li").forEach((li) =&gt; {
+      li.addEventListener("click", () =&gt; {
+        li.remove();
+      });
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<h3 id="s0-2">0-2. 복습 흐름 — 할 일 목록에 필요한 것</h3>
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>1. 태그에 이름 주기</td><td>&lt;div class=&quot;todo&quot;&gt; · &lt;input id=&quot;todo-input&quot;&gt;</td><td><a href="1-HTML.html#s4">HTML 4장</a></td></tr>
+<tr><td>2. 이름으로 꾸미기</td><td>.todo { … } · .todo-list li.done { … }</td><td><a href="2-CSS.html#s1-1">CSS 1-1</a></td></tr>
+<tr><td>3. 요소 찾기</td><td>document.querySelector(&quot;#add-btn&quot;)</td><td><a href="3-JS.html#s4-2">JS 4-2</a></td></tr>
+<tr><td>4. event listener 붙이기</td><td>button.addEventListener(&quot;click&quot;, () =&gt; { … })</td><td><a href="3-JS.html#s3-1">JS 3-1</a></td></tr>
+<tr><td>5. 입력값 읽기</td><td>input.value.trim()</td><td><a href="3-JS.html#s4-3">JS 4-3</a></td></tr>
+<tr><td>6. 새 요소 붙이기</td><td>createElement(&quot;li&quot;) → textContent → append</td><td><a href="3-JS.html#s5-1">JS 5-1</a></td></tr>
+<tr><td>7. 클래스 켜고 끄기</td><td>li.classList.toggle(&quot;done&quot;)</td><td><a href="3-JS.html#s4-4">JS 4-4</a></td></tr>
+</tbody></table></div>
+
+<h2 id="s1">1. TypeScript 맛보기 — 실행 전에 검사하는 JS</h2>
+<p>TypeScript(TS)는 JS에 <b>타입</b>을 적을 수 있게 한 언어입니다. 코드를 실행하기 전에 검사해서, 이름이나 타입을 잘못 쓴 실수를 미리 빨간 줄로 알려 줍니다. 자세한 문법은 5주차에 봅니다.</p>
+
+<h3 id="s1-1">1-1. 먼저 보기 — 같은 실수, JS와 TS</h3>
+<p>입력칸 글자로 공지를 하나 더 붙이려는 코드입니다. JS로 실행하면 오류 없이 <b>빈 칸</b>만 생깁니다. 오른쪽 아래 <b>타입 검사</b>에는 실행하기 전에 TS가 찾은 오류가 나옵니다.</p>
+
+<div class="demo" data-name="실행은 오류 없이 빈 칸 · 타입 검사는 실행 전에 빨간 줄" style="--h: 144px; --frame-h: 130px;">
+<textarea class="src" data-lang="ts">const input = document.querySelector("#notice-input");
+const list = document.querySelector("#notices");
+
+const li = document.createElement("li");
+li.textContnet = input.value;
+list.append(li);</textarea><textarea class="run">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;title&gt;같은 실수, JS와 TS&lt;/title&gt;
+  &lt;style&gt;
+    body { font-family: sans-serif; margin: 16px; }
+    li { margin: 6px 0; padding: 8px; background: #f2f2f2; min-height: 1.2em; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;input type="text" id="notice-input" value="장학금 신청 안내"&gt;
+  &lt;ul id="notices"&gt;
+    &lt;li&gt;수강신청 안내&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;script&gt;
+const input = document.querySelector("#notice-input");
+const list = document.querySelector("#notices");
+const li = document.createElement("li");
+li.textContnet = input.value;
+list.append(li);
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 5, "col": 4, "code": "TS2551", "msg": "'textContnet' 속성이 'HTMLLIElement' 형식에 없습니다. 'textContent'을(를) 사용하시겠습니까?", "en": "Property 'textContnet' does not exist on type 'HTMLLIElement'. Did you mean 'textContent'?"}, {"line": 5, "col": 18, "code": "TS18047", "msg": "'input'은(는) 'null'일 수 있습니다.", "en": "'input' is possibly 'null'."}, {"line": 5, "col": 24, "code": "TS2339", "msg": "'Element' 형식에 'value' 속성이 없습니다.", "en": "Property 'value' does not exist on type 'Element'."}, {"line": 6, "col": 1, "code": "TS18047", "msg": "'list'은(는) 'null'일 수 있습니다.", "en": "'list' is possibly 'null'."}], "play": "https://www.typescriptlang.org/ko/play/?#code/MYewdgzgLgBAlmADgV1gXhgExMZBbAUzCgDoBHZAgJwE8BlAgGwOChCoAoAiAYjBChxgBALQIUULgEoA3AChQkWIzjQYGbLkLFylWg2at23PgKEEI0+QvBqV6rDnxFSwKgQCGUAgFFm2qG4VKzkVEm8ADygAYXAoMAJ0eCRUEgA3D0ZKeRVoEg9ERCJMDhVZOSA"}</textarea>
+</div>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>잡아 줌</td><td>li.textContnet</td><td>없는 이름 — "textContent을(를) 사용하시겠습니까?"</td></tr>
+<tr><td>잡아 줌</td><td>input.value</td><td>Element에는 value가 없음 → 실습 4부에서 고침</td></tr>
+<tr><td>미리 알려 줌</td><td>querySelector(…) 결과</td><td>"null일 수 있습니다" → 선택자 오타에 대비하게 함</td></tr>
+<tr><td>못 잡음</td><td>classList.toggle(".done")</td><td>글자는 무엇이든 들어갈 수 있어서</td></tr>
+<tr><td>못 잡음</td><td>클릭 함수 바깥에서 input.value 읽기</td><td>순서 · 로직의 실수</td></tr>
+</tbody></table></div>
+<p class="note">TS는 <b>이름과 타입</b>의 실수를 잡습니다. 순서나 로직의 실수는 여전히 콘솔로 찾아야 합니다.</p>
+
+<h3 id="s1-2">1-2. 실행 흐름 — .ts → .js</h3>
+<p>브라우저는 TS를 바로 실행하지 못합니다. TS 컴파일러(tsc)가 검사한 뒤 타입을 지운 JS로 바꾸고, 브라우저는 그 JS를 실행합니다.</p>
+<pre class="rule"><code>app.ts  →  tsc: 타입 검사 + 타입 지우기  →  app.js  →  브라우저에서 실행
+           (틀리면 빨간 줄)</code></pre>
+<p>오늘은 설치 없이 <a href="https://www.typescriptlang.org/ko/play" target="_blank" rel="noopener noreferrer">TS Playground ↗</a>를 씁니다. 이 페이지 TS 예제의 <b>[Playground에서 열기 ↗]</b>를 누르면 그 코드가 채워진 채로 열립니다. 내 컴퓨터에 설치하는 것은 5주차에 합니다.</p>
+<div class="ref-wrap"><table class="ref"><tbody>
+<tr><td>왼쪽</td><td>TS 코드. 빨간 줄에 마우스를 올리면 오류 메시지</td></tr>
+<tr><td>오른쪽 .JS 탭</td><td>타입을 지운 JS — 브라우저가 실제로 실행하는 코드</td></tr>
+<tr><td>Run → Logs 탭</td><td>실행해서 console.log 결과 보기</td></tr>
+<tr><td>Errors 탭</td><td>오류 목록. 영어로 나옴 — 이 페이지 타입 검사 칸의 회색 영어 줄과 같은 문장</td></tr>
+</tbody></table></div>
+
+<h2 id="s2">2. 실습: 할 일 목록</h2>
+<p>시작 코드에 HTML과 JS를 채워 목표 화면을 만듭니다. 1~3부까지 하면 완료입니다.</p>
+
+<h3 id="s2-1">2-1. 목표 화면 · 시작 코드</h3>
+
+<div class="demo stack resizable" data-name="목표 화면 — 눌러 보세요" style="--h: 400px;" data-preview-only>
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;오늘 할 일&lt;/title&gt;
+  &lt;style&gt;
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; margin: 0; padding: 20px; background: #f3f4f6; }
+
+    .todo {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 16px;
+    }
+    .todo h1 { margin: 0 0 16px; font-size: 24px; }
+
+    .add-row { display: flex; gap: 8px; margin-bottom: 16px; }
+    .add-row input { flex: 1; min-width: 0; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font: inherit; }
+    .add-row button { padding: 8px 14px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; font: inherit; cursor: pointer; }
+
+    .todo-list { list-style: none; padding: 0; margin: 0; }
+    .todo-list li { padding: 12px 16px; margin: 8px 0; background: #f3f4f6; border-radius: 8px; cursor: pointer; }
+    /* li에 done 클래스가 붙으면 줄 긋기 */
+    .todo-list li.done { text-decoration: line-through; color: #9ca3af; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="todo"&gt;
+    &lt;h1&gt;오늘 할 일&lt;/h1&gt;
+    &lt;div class="add-row"&gt;
+      &lt;input type="text" id="todo-input" placeholder="할 일을 적어 보세요"&gt;
+      &lt;button type="button" id="add-btn"&gt;추가&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;ul class="todo-list"&gt;
+      &lt;li&gt;도서관 책 반납&lt;/li&gt;
+      &lt;li class="done"&gt;TA 세션 참석&lt;/li&gt;
+      &lt;li&gt;확률과통계 과제&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    const input = document.querySelector("#todo-input");
+    const addBtn = document.querySelector("#add-btn");
+    const list = document.querySelector(".todo-list");
+
+    // 2부 · #add-btn → .todo-list 끝에 새 li
+    addBtn.addEventListener("click", () =&gt; {
+      const text = input.value.trim();
+      if (text === "") return;
+      const li = document.createElement("li");
+      li.textContent = text;
+      li.addEventListener("click", () =&gt; {
+        li.classList.toggle("done");
+      });
+      list.append(li);
+      input.value = "";
+    });
+
+    // 3부 · li를 누르면 done 켜고 끄기
+    document.querySelectorAll(".todo-list li").forEach((li) =&gt; {
+      li.addEventListener("click", () =&gt; {
+        li.classList.toggle("done");
+      });
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<p>시작 코드를 복사해 <code>todo.html</code>로 저장하고 Live Server로 엽니다.</p>
+
+<div class="demo stack resizable" data-name="시작 코드 — 복사해서 todo.html로 저장" style="--h: 60px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;오늘 할 일&lt;/title&gt;
+  &lt;style&gt;
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; margin: 0; padding: 20px; background: #f3f4f6; }
+
+    .todo {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 16px;
+    }
+    .todo h1 { margin: 0 0 16px; font-size: 24px; }
+
+    .add-row { display: flex; gap: 8px; margin-bottom: 16px; }
+    .add-row input { flex: 1; min-width: 0; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font: inherit; }
+    .add-row button { padding: 8px 14px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; font: inherit; cursor: pointer; }
+
+    .todo-list { list-style: none; padding: 0; margin: 0; }
+    .todo-list li { padding: 12px 16px; margin: 8px 0; background: #f3f4f6; border-radius: 8px; cursor: pointer; }
+    /* li에 done 클래스가 붙으면 줄 긋기 */
+    .todo-list li.done { text-decoration: line-through; color: #9ca3af; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- 1부 · 여기에 HTML --&gt;
+
+  &lt;script&gt;
+    // 2부 · #add-btn → .todo-list 끝에 새 li
+    // 3부 · li를 누르면 done 켜고 끄기
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+
+<h3 id="s2-2">1부 · HTML</h3>
+<ol>
+  <li><code>class="todo"</code>인 div를 만든다.</li>
+  <li>그 안에 h1 "오늘 할 일"을 넣는다.</li>
+  <li><code>class="add-row"</code>인 div를 만들고, 그 안에 <code>id="todo-input"</code>인 input과 <code>id="add-btn"</code>인 button을 넣는다.</li>
+  <li><code>class="todo-list"</code>인 ul을 만들고 li 세 개를 넣는다.</li>
+  <li>끝낸 일 li에는 <code>class="done"</code>을 준다.</li>
+</ol>
+
+<h3 id="s2-3">2부 · 할 일 추가 (JS)</h3>
+<ol>
+  <li>input, button, ul을 querySelector로 찾는다.</li>
+  <li>button에 click event listener를 붙인다.</li>
+  <li>그 안에서 input 값을 읽는다. 빈칸이면 return.</li>
+  <li>li를 만들어 글자를 넣고 <code>.todo-list</code> 끝에 붙인다.</li>
+  <li>input을 비운다.</li>
+</ol>
+
+<h3 id="s2-4">3부 · 끝낸 일 표시 (JS)</h3>
+<ol>
+  <li>원래 있는 li마다 click event listener를 붙인다.</li>
+  <li>누르면 li의 <code>done</code> 클래스를 켜고 끈다.</li>
+  <li>2부에서 새로 만든 li에도 같은 event listener를 붙인다.</li>
+</ol>
+
+<h3 id="s2-5">4부 (Advanced) · TS로 옮기기</h3>
+<ol>
+  <li>script 안 코드를 <a href="https://www.typescriptlang.org/ko/play" target="_blank" rel="noopener noreferrer">TS Playground</a>에 붙여 넣는다.</li>
+  <li>빨간 줄을 고친다. input을 찾는 줄에는 <code>&lt;HTMLInputElement&gt;</code>, 요소를 찾는 줄 끝에는 <code>!</code>를 붙인다.</li>
+  <li>오른쪽 .JS 탭의 코드를 내 script에 붙여 넣고 동작을 확인한다.</li>
+</ol>
+
+<h3 id="s2-6">완료 확인</h3>
+<ul class="plain">
+  <li>목표 화면과 같은 모양</li>
+  <li>추가하면 목록 끝에 붙고 입력칸이 비워짐 · 빈칸이면 안 붙음</li>
+  <li>원래 할 일과 새 할 일 모두 눌러서 줄 긋기 · 되돌리기</li>
+  <li>콘솔에 빨간 줄 없음</li>
+</ul>
+<p>[추가] 버튼을 눌렀을 때 일어나는 일을 내 코드로 설명하면 먼저 나가도 됩니다.</p>
+
+<footer class="session-footer"><a href="3-JS.html">← 이전 · 3. JavaScript</a><a href="5-TS.html">다음 · 5. TypeScript →</a></footer>
+</main>
+</div>
+<noscript><p>코드와 실행 결과를 보려면 브라우저에서 JavaScript를 켜 주세요.</p></noscript>
+
+<script>
+(function () {
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // ---- 간단한 문법 강조 ----
+  function hlHtml(src) {
+    let out = "", i = 0;
+    const re = /<!-{2}[\s\S]*?-{2}>|<\/?[a-zA-Z][^>]*>|<!DOCTYPE[^>]*>/g;
+    let m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const tok = m[0];
+      if (tok.startsWith("<!-")) out += `<span class="c">${esc(tok)}</span>`;
+      else out += hlTag(tok);
+      i = m.index + tok.length;
+      // <style>, <script> 내부는 별도 처리
+      const low = tok.toLowerCase();
+      if (/^<(style|script)\b/.test(low)) {
+        const close = low.startsWith("<style") ? "</style>" : "<\/script>";
+        const end = src.toLowerCase().indexOf(close, i);
+        if (end !== -1) {
+          out += hlCode(src.slice(i, end), !low.startsWith("<style"));
+          i = end; re.lastIndex = end;
+        }
+      }
+    }
+    out += esc(src.slice(i));
+    return out;
+  }
+  function hlTag(tok) {
+    // <name attr="v" attr2 /> 를 한 번에 토큰화
+    const m = /^(<\/?)([A-Za-z!][\w-]*)([\s\S]*?)(\/?>)$/.exec(tok);
+    if (!m) return esc(tok);
+    const attrs = m[3].replace(/([\w:-]+)(\s*=\s*)("[^"]*"|'[^']*'|[^\s>]+)|([\w:-]+)/g, (a, n, eq, v, bare) =>
+      bare ? `<span class="a">${esc(bare)}</span>` : `<span class="a">${esc(n)}</span>${eq}<span class="s">${esc(v)}</span>`);
+    return `${esc(m[1])}<span class="t">${esc(m[2])}</span>${attrs}${esc(m[4])}`;
+  }
+  function hlCode(src, js = true, tsMode = false) {
+    // JS / CSS / JSX / TS 공용: 주석, 문자열, 키워드, 숫자(JS만). TS는 타입 키워드도 강조
+    const re = tsMode
+      ? /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b(const|let|var|function|return|if|else|for|of|in|while|break|continue|switch|case|async|await|class|this|try|catch|finally|throw|import|export|from|default|new|typeof|true|false|null|undefined|interface|type|extends|implements|public|private|protected|readonly|abstract|as|enum|constructor|super|number|string|boolean|any|unknown|void|never)\b|\b\d+(?:\.\d+)?\b/g
+      : /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b(const|let|var|function|return|if|else|for|of|in|while|break|continue|switch|case|async|await|class|this|try|catch|finally|throw|import|export|from|default|new|typeof|true|false|null|undefined)\b|\b\d+(?:\.\d+)?\b/g;
+    let out = "", i = 0, m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const t = m[0];
+      const before = src[m.index - 1] || "", after = src[m.index + t.length] || "";
+      if (t.startsWith("//") || t.startsWith("/*")) out += `<span class="c">${esc(t)}</span>`;
+      else if (/^["'`]/.test(t)) out += `<span class="s">${esc(t)}</span>`;
+      else if (/^\d/.test(t)) out += js && before !== "#" ? `<span class="n">${esc(t)}</span>` : esc(t); // CSS 안의 숫자는 그대로
+      else if (/[.#$-]/.test(before) || after === "-") out += esc(t); // promise.catch · ease-in · break-after 는 키워드가 아님
+      else out += `<span class="k">${esc(t)}</span>`;
+      i = m.index + t.length;
+    }
+    return out + esc(src.slice(i));
+  }
+
+  // ---- 콘솔 패널: 실행용 문서에만 넣는 스크립트 (iframe 안에서 실행) ----
+  // 줄 번호가 원본 코드와 같도록 한 줄로 합쳐 <head> 바로 뒤에 넣는다. 그래서 이 함수 안에는 // 주석을 쓰지 않고 문장마다 ;를 붙인다.
+  function consoleBridge(run) {
+    const post = (level, text, line) => {
+      try { parent.postMessage({ jsDemoConsole: run, level: level, text: text, line: line || 0 }, "*"); } catch (e) { }
+    };
+    const voidTags = /^(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)$/;
+    const ctorName = (v) => { try { const p = Object.getPrototypeOf(v); return (p && p.constructor && p.constructor.name) || ""; } catch (e) { return ""; } };
+    const openTag = (el) => {
+      let s = "<" + el.tagName.toLowerCase();
+      for (let i = 0; i < el.attributes.length && i < 4; i++) {
+        const a = el.attributes[i];
+        const v = a.value.length > 40 ? a.value.slice(0, 40) + "…" : a.value;
+        s += " " + a.name + (a.value === "" ? "" : "=\"" + v + "\"");
+      }
+      return s + ">";
+    };
+    const fnText = (f) => {
+      let code = "";
+      try { code = Function.prototype.toString.call(f); } catch (e) { }
+      if (/^class[\s{]/.test(code)) return "class " + f.name;
+      const m = /^[^(=]*\(([^()]*)\)/.exec(code) || /^(?:async\s+)?([\w$]+)\s*=>/.exec(code);
+      return "ƒ " + f.name + "(" + (m ? m[1].replace(/\s+/g, " ").trim() : "") + ")";
+    };
+    const fmt = (v, d, seen) => {
+      const t = typeof v;
+      if (v === null) return "null";
+      if (t === "undefined") return "undefined";
+      if (t === "string") return d === 0 ? v : JSON.stringify(v);
+      if (t === "number") return Object.is(v, -0) ? "-0" : String(v);
+      if (t === "bigint") return v + "n";
+      if (t === "boolean" || t === "symbol") return String(v);
+      if (t === "function") return fnText(v);
+      try {
+        if (v === window) return "Window";
+        if (v instanceof Node) {
+          if (v.nodeType === 9) return "#document";
+          if (v.nodeType === 3) return JSON.stringify(v.nodeValue);
+          if (v.nodeType !== 1) return v.nodeName;
+          const tag = v.tagName.toLowerCase();
+          if (d > 0 || voidTags.test(tag)) return openTag(v);
+          const text = v.textContent.trim().replace(/\s+/g, " ");
+          return openTag(v) + (v.children.length || text.length > 40 ? "…" : text) + "</" + tag + ">";
+        }
+        if (v instanceof Error) return v.name + ": " + v.message;
+        if (v instanceof Date || v instanceof RegExp) return String(v);
+        if (v instanceof Promise) return "Promise {…}";
+        const name = ctorName(v);
+        const deep = d >= 3 || seen.indexOf(v) !== -1;
+        seen = seen.concat([v]);
+        if (Array.isArray(v) || v instanceof NodeList || v instanceof HTMLCollection) {
+          const head = Array.isArray(v) ? "" : name + "(" + v.length + ") ";
+          if (deep) return head + "[…]";
+          const items = [];
+          for (let i = 0; i < v.length && i < 100; i++) items.push(i in v ? fmt(v[i], d + 1, seen) : "empty");
+          if (v.length > 100) items.push("…");
+          return head + "[" + items.join(", ") + "]";
+        }
+        if (v instanceof Map || v instanceof Set) {
+          if (deep) return name + "(" + v.size + ") {…}";
+          const items = [];
+          v.forEach((val, key) => { if (items.length < 50) items.push(v instanceof Map ? fmt(key, d + 1, seen) + " => " + fmt(val, d + 1, seen) : fmt(val, d + 1, seen)); });
+          return name + "(" + v.size + ") {" + items.join(", ") + "}";
+        }
+        if (v instanceof Event) {
+          const items = ["type: " + JSON.stringify(v.type)];
+          if (v.target) items.push("target: " + fmt(v.target, 1, seen));
+          if ("key" in v) items.push("key: " + JSON.stringify(v.key));
+          return name + " {" + items.join(", ") + "}";
+        }
+        const head = name && name !== "Object" ? name + " " : "";
+        if (deep) return head + "{…}";
+        const keys = Object.keys(v);
+        const items = keys.slice(0, 30).map((k) => (/^[A-Za-z_$][\w$]*$/.test(k) ? k : JSON.stringify(k)) + ": " + fmt(v[k], d + 1, seen));
+        if (keys.length > 30) items.push("…");
+        return head + "{" + items.join(", ") + "}";
+      } catch (e) {
+        try { return String(v); } catch (e2) { return "?"; }
+      }
+    };
+    const join = (args) => {
+      args = Array.prototype.slice.call(args);
+      if (typeof args[0] === "string" && args.length > 1 && /%[sdifoOc]/.test(args[0])) {
+        const rest = args.slice(1);
+        const first = args[0].replace(/%([sdifoOc%])/g, (all, f) => {
+          if (f === "%") return "%";
+          if (!rest.length) return all;
+          const a = rest.shift();
+          if (f === "c") return "";
+          if (f === "s") return typeof a === "string" ? a : fmt(a, 1, []);
+          if (f === "d" || f === "i") return String(parseInt(a, 10));
+          if (f === "f") return String(parseFloat(a));
+          return fmt(a, 1, []);
+        });
+        args = [first].concat(rest);
+      }
+      return args.map((a) => fmt(a, 0, [])).join(" ");
+    };
+    const levels = { log: "log", info: "info", debug: "log", dir: "log", table: "log", warn: "warn", error: "error" };
+    Object.keys(levels).forEach((method) => {
+      const original = console[method];
+      console[method] = function () {
+        try { post(levels[method], join(arguments)); } catch (e) { }
+        if (original) return original.apply(console, arguments);
+      };
+    });
+    const originalClear = console.clear;
+    console.clear = function () {
+      post("clear", "");
+      if (originalClear) originalClear.apply(console, arguments);
+    };
+    window.addEventListener("error", (e) => {
+      const err = e.error;
+      post("error", err && err.name ? "Uncaught " + err.name + ": " + err.message : String(e.message || "Error"), e.lineno);
+    });
+    window.addEventListener("unhandledrejection", (e) => {
+      const r = e.reason;
+      post("error", "Uncaught (in promise) " + (r instanceof Error ? r.name + ": " + r.message : fmt(r, 1, [])));
+    });
+  }
+  const bridgeCode = consoleBridge.toString().replace(/\s*\n\s*/g, " ");
+
+  // 실행용 문서 = 원본 + <head> 바로 뒤에 한 줄짜리 콘솔 스크립트. 화면의 코드 · 복사 · 새 창 열기는 원본(src) 그대로.
+  function runDoc(src, run) {
+    const tag = `<script>(${bridgeCode})(${run});<\/script>`;
+    const m = /<head(?:\s[^>]*)?>/i.exec(src) || /<html(?:\s[^>]*)?>/i.exec(src) || /<!DOCTYPE[^>]*>/i.exec(src);
+    if (!m) return tag + src;
+    const at = m.index + m[0].length;
+    return src.slice(0, at) + tag + src.slice(at);
+  }
+
+  // iframe → 부모 메시지를 어느 데모가 보냈는지 event.source로 구분한다. 다시 실행 전의 늦은 메시지는 run 번호로 버린다.
+  let runSeq = 0;
+  const frames = [];
+  window.addEventListener("message", (event) => {
+    const data = event.data;
+    if (!data || typeof data !== "object" || typeof data.jsDemoConsole !== "number") return;
+    const entry = frames.find((f) => f.iframe.contentWindow === event.source);
+    if (entry && data.jsDemoConsole === entry.run) entry.write(data);
+  });
+
+  async function copySource(src) {
+    try {
+      await navigator.clipboard.writeText(src);
+    } catch (_) {
+      const field = document.createElement("textarea");
+      field.value = src;
+      field.style.cssText = "position:fixed;left:-10000px;top:0";
+      document.body.append(field);
+      field.select();
+      const copied = document.execCommand("copy");
+      field.remove();
+      if (!copied) throw new Error("Copy failed");
+    }
+  }
+
+  const firstRuns = [];
+  document.querySelectorAll(".demo").forEach((demo) => {
+    const src = demo.querySelector("textarea.src").value;
+    // TS 데모: 화면 · 복사는 TS(src), 실행은 변환된 JS 문서(run), 타입 검사 결과는 빌드 때 tsc로 받은 것(tsc)
+    const isTs = !!demo.querySelector("textarea.run");
+    const runSrc = isTs ? demo.querySelector("textarea.run").value : src;
+    const tsc = isTs ? JSON.parse(demo.querySelector("textarea.tsc").value) : null;
+    if (isTs) demo.classList.add("ts");
+    const name = demo.dataset.name;
+    const previewOnly = demo.hasAttribute("data-preview-only");
+    const manual = demo.hasAttribute("data-manual");
+    const showConsole = demo.hasAttribute("data-console") || (!previewOnly && runSrc.includes("console."));
+    // data-console="only": 화면(iframe)은 숨기고 콘솔 칸만 보여 준다 (결과가 콘솔에만 나오는 기초 문법 예제용)
+    const consoleOnly = demo.dataset.console === "only";
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.innerHTML = `<span class="name">${esc(name)}</span>`;
+    if (!previewOnly) {
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="copy" aria-live="polite">복사</button>
+        <button type="button" data-act="reload">다시 실행</button>
+        ${isTs ? `<button type="button" data-act="play">Playground에서 열기 ↗</button>` : `<button type="button" data-act="open">새 창에서 열기</button>`}`);
+    }
+    if (demo.hasAttribute("data-width-controls")) {
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="narrow" aria-pressed="false">좁게 (360px)</button>
+        <button type="button" data-act="mid" aria-pressed="false">중간 (760px)</button>
+        <button type="button" data-act="wide" aria-pressed="true">넓게 (전체)</button>`);
+    }
+    const panes = document.createElement("div");
+    panes.className = "panes";
+    const result = document.createElement("div");
+    result.className = "result";
+    const label = document.createElement("div");
+    label.className = "label";
+    label.textContent = previewOnly ? "화면 예시" : "실행 결과";
+    const iframe = document.createElement("iframe");
+    iframe.title = name + " 실행 결과";
+    // allow-same-origin은 넣지 않는다: 스크립트 + 같은 출처면 예제가 이 페이지를 건드리거나 sandbox를 풀 수 있다.
+    iframe.setAttribute("sandbox", "allow-scripts allow-modals allow-forms allow-popups allow-popups-to-escape-sandbox");
+    result.append(label, iframe);
+    if (consoleOnly) { demo.classList.add("console-only"); label.hidden = true; iframe.hidden = true; }
+    const srcLines = src.split("\n");
+    if (isTs) {
+      const box = document.createElement("div");
+      box.className = "console tsc";
+      box.innerHTML = `<div class="label">타입 검사 — 실행 전에 TS가 찾은 오류</div><div class="lines" role="list"></div>`;
+      const tl = box.querySelector(".lines");
+      if (!tsc.diags.length) {
+        tl.innerHTML = `<div class="line ok">오류 없음 ✓</div>`;
+      } else {
+        tsc.diags.forEach((d) => {
+          const line = document.createElement("div");
+          line.className = "line error";
+          const code = document.createElement("code");
+          code.textContent = (srcLines[d.line - 1] || "").trim();
+          const msg = document.createElement("span");
+          msg.textContent = d.msg;
+          const en = document.createElement("span");
+          en.className = "en";
+          en.textContent = d.en || "";
+          const where = document.createElement("span");
+          where.className = "where";
+          where.textContent = `${d.line}번째 줄`;
+          const body = document.createElement("div");
+          body.className = "body";
+          body.append(code, msg);
+          if (d.en) body.append(en);
+          line.append(body, where);
+          tl.append(line);
+        });
+      }
+      result.append(box);
+    }
+
+    // 콘솔 패널: 코드에 console.이 있거나 data-console일 때 표시. 패널이 없던 예제도 에러가 나면 열린다.
+    const entry = { iframe, run: 0, write: null };
+    let lines = null;
+    const clearConsole = () => {
+      if (lines) lines.innerHTML = `<div class="empty">(아직 출력 없음)</div>`;
+    };
+    const openConsole = () => {
+      if (lines) return;
+      const box = document.createElement("div");
+      box.className = "console";
+      box.innerHTML = `<div class="label">콘솔</div><div class="lines" role="log" aria-label="${esc(name)} 콘솔 출력"></div>`;
+      lines = box.querySelector(".lines");
+      result.append(box);
+      clearConsole();
+    };
+    entry.write = (data) => {
+      if (data.level === "clear") return clearConsole();
+      if (!lines) {
+        if (data.level !== "error") return;
+        openConsole();
+      }
+      lines.querySelector(".empty")?.remove();
+      const line = document.createElement("div");
+      line.className = `line ${data.level}`;
+      line.textContent = String(data.text);
+      if (data.line && !isTs) {
+        const where = document.createElement("span");
+        where.className = "where";
+        where.textContent = `${data.line}번째 줄`;
+        line.append(where);
+      }
+      lines.append(line);
+      if (lines.childElementCount > 300) lines.firstElementChild.remove();
+      lines.scrollTop = lines.scrollHeight;
+    };
+    if (showConsole) openConsole();
+    frames.push(entry);
+
+    // data-manual: 처음에는 ▶ 실행 버튼만 보이고, 누를 때 실행 (alert · prompt가 페이지를 열자마자 뜨지 않게)
+    let gate = null;
+    const run = () => {
+      entry.run = ++runSeq;
+      clearConsole();
+      if (gate) gate.hidden = true;
+      iframe.hidden = consoleOnly;
+      iframe.srcdoc = runDoc(runSrc, entry.run);
+    };
+    if (manual) {
+      gate = document.createElement("div");
+      gate.className = "run-gate";
+      gate.innerHTML = `<button type="button">▶ 실행</button><span>${esc(demo.dataset.manual || "누르면 코드가 실행됩니다")}</span>`;
+      gate.querySelector("button").addEventListener("click", run);
+      iframe.hidden = true;
+      label.after(gate);
+    } else {
+      firstRuns.push(run);
+    }
+    if (previewOnly) {
+      panes.append(result);
+    } else {
+      const code = document.createElement("div");
+      code.className = "code";
+      if (isTs) {
+        const bad = new Set(tsc.diags.map((d) => d.line));
+        const html = hlCode(src, true, true).split("\n")
+          .map((l, i) => (bad.has(i + 1) ? `<span class="ts-bad">${l}</span>` : l)).join("\n");
+        code.innerHTML = `<pre>${html}</pre>`;
+      } else {
+        code.innerHTML = `<pre>${hlHtml(src)}</pre>`;
+      }
+      if (demo.classList.contains("stack")) {
+        const details = document.createElement("details");
+        details.innerHTML = "<summary>코드 보기 / 접기</summary>";
+        details.append(code);
+        panes.append(result, details);
+      } else {
+        panes.append(code, result);
+      }
+    }
+    demo.append(bar, panes);
+
+    bar.addEventListener("click", async (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      const act = button.dataset.act;
+      if (act === "copy") {
+        try {
+          await copySource(src);
+          button.textContent = "복사됨 ✓";
+        } catch (_) {
+          button.textContent = "코드를 선택해 복사하세요";
+        }
+        setTimeout(() => (button.textContent = "복사"), 1600);
+      } else if (act === "play") {
+        window.open(tsc.play, "_blank", "noopener,noreferrer");
+      } else if (act === "reload") {
+        run();
+      } else if (act === "open") {
+        // blob: 주소에서는 assets/ 같은 상대 경로가 깨지므로, 새 창용 문서에만 <base>를 넣는다 (복사는 원본 그대로)
+        const base = `<base href="${new URL(".", location.href).href}">`;
+        const opened = /<head[^>]*>/i.test(src) ? src.replace(/<head[^>]*>/i, (m) => m + base) : base + src;
+        const url = URL.createObjectURL(new Blob([opened], { type: "text/html;charset=utf-8" }));
+        window.open(url, "_blank", "noopener,noreferrer");
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      } else if (act === "narrow" || act === "mid" || act === "wide") {
+        iframe.style.width = act === "narrow" ? "360px" : act === "mid" ? "760px" : "100%";
+        bar.querySelectorAll("[aria-pressed]").forEach((control) => {
+          control.setAttribute("aria-pressed", String(control.dataset.act === act));
+        });
+      }
+    });
+  });
+  // 레이아웃을 한 번 계산한 뒤 실행해야 예제 안의 window.innerWidth가 처음부터 0이 아니다.
+  void document.body.offsetWidth;
+  firstRuns.forEach((run) => run());
+})();
+</script>
+</body>
+</html>
