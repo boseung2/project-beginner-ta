@@ -48,6 +48,7 @@
   .demo { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 16px 0 28px; background: var(--bg); }
   .demo .bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--pane); font-size: 13px; }
   .demo .bar .name { font-weight: 600; margin-right: auto; }
+  .demo .bar .file { font-size: 12px; color: var(--muted); background: transparent; }
   .demo .bar button { font: inherit; font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
   .demo .bar button:hover { border-color: var(--accent); color: var(--accent); }
   .demo .panes { display: grid; grid-template-columns: 1fr 1fr; }
@@ -156,8 +157,9 @@
   <h1>5. TypeScript</h1>
   <ol>
     <li><a href="#s1">1. TypeScript란</a><ol>
-      <li><a class="sub" href="#s1-1">먼저 보기</a></li>
-      <li><a class="sub" href="#s1-2">실행 흐름</a></li>
+      <li><a class="sub" href="#s1-1">TS 프로젝트 만들기</a></li>
+      <li><a class="sub" href="#s1-2">먼저 보기</a></li>
+      <li><a class="sub" href="#s1-3">실행 흐름</a></li>
     </ol></li>
     <li><a href="#s2">2. 기본 타입</a><ol>
       <li><a class="sub" href="#s2-1">타입 붙이기와 타입 추론</a></li>
@@ -180,7 +182,7 @@
       <li><a class="sub" href="#s7-1">제네릭 함수와 클래스</a></li>
     </ol></li>
     <li><a href="#s8">8. 실습: 할 일 목록을 TS로</a><ol>
-      <li><a class="sub" href="#s8-1">준비 · 완성된 폴더 모양</a></li>
+      <li><a class="sub" href="#s8-1">완성된 폴더 모양</a></li>
       <li><a class="sub" href="#s8-2">1부 · 프로젝트 만들기</a></li>
       <li><a class="sub" href="#s8-3">2부 · TS 파일로 옮기기</a></li>
       <li><a class="sub" href="#s8-4">3부 · 빨간 줄 고치고 실행하기</a></li>
@@ -195,12 +197,41 @@
 <h2 id="s1">1. TypeScript — 실행 전에 검사하는 JS</h2>
 <p>TypeScript(TS)는 JS에 <b>타입</b>을 적을 수 있게 한 언어입니다. 코드를 실행하기 전에 검사해서, 타입이 맞지 않는 곳을 미리 빨간 줄로 알려 줍니다.</p>
 
-<h3 id="s1-1">1-1. 먼저 보기 — 타입이 없을 때와 있을 때</h3>
+<h3 id="s1-1">1-1. TS 프로젝트 만들기 — 내 컴퓨터에서</h3>
+<p>TS를 쓰려면 먼저 내 컴퓨터에 <b>TS 프로젝트</b>(TS 도구가 설치된 폴더)를 만듭니다. 여기서 만드는 <code>ts-practice</code>에서 이 페이지의 예제를 모두 돌립니다.</p>
+<p>먼저 <a href="https://nodejs.org/ko" target="_blank" rel="noopener noreferrer">nodejs.org</a>에서 LTS 버전을 설치하고, VS Code 터미널(<kbd>Ctrl</kbd>+<kbd>`</kbd>)에서 <code>node -v</code>로 버전이 나오는지 확인합니다.</p>
+<ol>
+  <li><code>ts-practice</code> 폴더를 만들고 VS Code로 연다.</li>
+  <li>터미널에서 <code>npm init -y</code>를 실행한다. <code>package.json</code>이 생긴다.</li>
+  <li>터미널에서 <code>npm install typescript@5.9 --save-dev</code>를 실행한다. <code>node_modules</code> 폴더에 tsc(TS를 JS로 바꾸는 도구)가 설치된다.</li>
+  <li>폴더에 <code>tsconfig.json</code>을 만들고 아래 내용을 넣는다.</li>
+</ol>
+<pre class="rule"><code>{
+  "compilerOptions": {
+    "target": "ES2020",
+    "strict": true
+  }
+}</code></pre>
+<pre class="rule"><code>ts-practice/
+├─ package.json       ← npm init -y가 만듦
+├─ package-lock.json  ← npm install이 만듦
+├─ node_modules/      ← npm install이 만듦 (tsc가 여기 있음)
+└─ tsconfig.json      ← 직접 만듦</code></pre>
+
+<div class="ref-wrap"><table class="ref cols3"><tbody>
+<tr><td>프로젝트 이름 · 설치한 도구 목록</td><td>package.json</td><td>devDependencies에 typescript가 적힘. 직접 고칠 일은 없음</td></tr>
+<tr><td>설치한 도구의 실제 파일</td><td>node_modules/</td><td>지워도 npm install로 다시 생김. 남에게 줄 때는 빼고 줌</td></tr>
+<tr><td>tsc 설정</td><td>tsconfig.json</td><td>target: 어느 버전의 JS로 바꿀지 · strict: 엄격하게 검사</td></tr>
+<tr><td>코드를 쓰는 파일</td><td>.ts</td><td>직접 만듦. 빨간 줄은 여기서 고침</td></tr>
+<tr><td>tsc가 만든 결과</td><td>.js</td><td>고치지 않음. 고쳐도 다음 npx tsc 때 덮어씀</td></tr>
+</tbody></table></div>
+
+<h3 id="s1-2">1-2. 먼저 보기 — 타입이 없을 때와 있을 때</h3>
 <p>같은 덧셈 함수를 타입 없이, 그리고 타입을 붙여 씁니다. 오른쪽 <b>타입 검사</b>에는 TS가 실행 전에 찾은 빨간 줄이 나옵니다.</p>
 
 <div class="demo" data-name="타입을 안 주면 · 타입을 주면" data-console="only" style="--h: 280px;">
-<textarea class="src" data-lang="ts">// ① 타입을 안 주면: a, b가 무엇인지 몰라 빨간 줄
-function add(a, b) {
+<textarea class="src" data-lang="ts" data-file="chap1-add.ts">// ① 타입을 안 주면: a, b가 무엇인지 몰라 빨간 줄
+function plus(a, b) {
   return a + b;
 }
 
@@ -209,60 +240,67 @@ function addNum(a: number, b: number) {
   return a + b;
 }
 
-console.log(add(1, 2));       // 3
-console.log(add("1", 2));     // 12 — 글자 "1"에 2가 이어 붙음
+console.log(plus(1, 2));      // 3
+console.log(plus("1", 2));    // 12 — 글자 "1"에 2가 이어 붙음
 console.log(addNum("1", 2));  // 12 — 빨간 줄이지만 JS로는 실행됨</textarea><textarea class="run">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
 &lt;meta charset="UTF-8"&gt;
-&lt;title&gt;s1-add.ts&lt;/title&gt;
+&lt;title&gt;chap1-add.ts&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;script&gt;
 // ① 타입을 안 주면: a, b가 무엇인지 몰라 빨간 줄
-function add(a, b) {
+function plus(a, b) {
     return a + b;
 }
 // ② 타입을 주면: 숫자 자리에 글자를 넣은 곳에 빨간 줄
 function addNum(a, b) {
     return a + b;
 }
-console.log(add(1, 2)); // 3
-console.log(add("1", 2)); // 12 — 글자 "1"에 2가 이어 붙음
+console.log(plus(1, 2)); // 3
+console.log(plus("1", 2)); // 12 — 글자 "1"에 2가 이어 붙음
 console.log(addNum("1", 2)); // 12 — 빨간 줄이지만 JS로는 실행됨
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 2, "col": 14, "code": "TS7006", "msg": "'a' 매개 변수에는 암시적으로 'any' 형식이 포함됩니다.", "en": "Parameter 'a' implicitly has an 'any' type."}, {"line": 2, "col": 17, "code": "TS7006", "msg": "'b' 매개 변수에는 암시적으로 'any' 형식이 포함됩니다.", "en": "Parameter 'b' implicitly has an 'any' type."}, {"line": 13, "col": 20, "code": "TS2345", "msg": "'string' 형식의 인수는 'number' 형식의 매개 변수에 할당될 수 없습니다.", "en": "Argument of type 'string' is not assignable to parameter of type 'number'."}], "play": "https://www.typescriptlang.org/ko/play/?#code/PTAEgMSVAGFxQ8cEXHSAlR0gficC5dAuUBDANKAI0AAa0QFm7Bx0cA9xwAcnRAGrsB920QCz7AQGtEBBJgKADMBXAHYBjAC4BLAPYCcAExkAKPIQCUoAN5dQoAE4BTEX23TsoANSEA3FwC+XLiFCBDEmjxUmUIGohwAnjoL4BrOwAXR0EAAOq9AH07QQGJGwAFx0EBnmqC2Tl5BUUljOQA5PgBbRSwBXIJdbXwCAqKS1Q0tPQMjHDNLGzshKQBnCQAbXQA6LokAc0U5eQBGfAAmZWULLXmtBwBmLjaBTp7+oZGFACIx3amZuYWHMcnQQBQCEJ993aDJkkAXccAW0dBATN7AGXHVju6+geG2CyuXkdyOs0WYHOVxY7A4T2ogBnO0AAKQAyoAdDsAKU2gQAnQ4BI1cAFC1cIA"}</textarea>
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 2, "col": 15, "code": "TS7006", "msg": "'a' 매개 변수에는 암시적으로 'any' 형식이 포함됩니다.", "en": "Parameter 'a' implicitly has an 'any' type."}, {"line": 2, "col": 18, "code": "TS7006", "msg": "'b' 매개 변수에는 암시적으로 'any' 형식이 포함됩니다.", "en": "Parameter 'b' implicitly has an 'any' type."}, {"line": 13, "col": 20, "code": "TS2345", "msg": "'string' 형식의 인수는 'number' 형식의 매개 변수에 할당될 수 없습니다.", "en": "Argument of type 'string' is not assignable to parameter of type 'number'."}]}</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
-<tr><td>타입을 안 줌</td><td>function add(a, b)</td><td>a, b가 무엇인지 몰라 빨간 줄 (implicitly has an 'any' type)</td></tr>
+<tr><td>타입을 안 줌</td><td>function plus(a, b)</td><td>a, b가 무엇인지 몰라 빨간 줄 (implicitly has an 'any' type)</td></tr>
 <tr><td>타입을 줌</td><td>function addNum(a: number, b: number)</td><td>숫자 자리에 "1"을 넣으면 빨간 줄</td></tr>
-<tr><td>JS로 실행하면</td><td>add("1", 2)</td><td>오류 없이 12 — 글자 "1"에 2가 이어 붙음</td></tr>
+<tr><td>JS로 실행하면</td><td>plus("1", 2)</td><td>오류 없이 12 — 글자 "1"에 2가 이어 붙음</td></tr>
 </tbody></table></div>
 <p class="note">입력칸의 값(input.value)은 늘 글자입니다. 이런 실수를 TS는 실행하기 전에 빨간 줄로 알려 줍니다.</p>
 
-<h3 id="s1-2">1-2. 실행 흐름 — .ts → .js</h3>
-<p>브라우저는 TS를 바로 실행하지 못합니다. TS 컴파일러(tsc)가 검사한 뒤 타입을 지운 JS로 바꾸고, 브라우저는 그 JS를 실행합니다.</p>
-<pre class="rule"><code>app.ts  →  tsc: 타입 검사 + 타입 지우기  →  app.js  →  브라우저에서 실행
-           (틀리면 빨간 줄)</code></pre>
-<p>2~7장 예제는 <a href="https://www.typescriptlang.org/ko/play" target="_blank" rel="noopener noreferrer">TS Playground ↗</a>에서 바로 고쳐 볼 수 있습니다. 예제의 <b>[Playground에서 열기 ↗]</b>를 누르면 그 코드가 채워진 채로 열립니다. 8장 실습에서는 내 컴퓨터에 TS를 설치해 같은 흐름으로 돌립니다.</p>
-<div class="ref-wrap"><table class="ref"><tbody>
-<tr><td>왼쪽</td><td>TS 코드. 빨간 줄에 마우스를 올리면 오류 메시지</td></tr>
-<tr><td>오른쪽 .JS 탭</td><td>타입을 지운 JS — 브라우저가 실제로 실행하는 코드</td></tr>
-<tr><td>Run → Logs 탭</td><td>실행해서 console.log 결과 보기</td></tr>
-<tr><td>Errors 탭</td><td>오류 목록. 영어로 나옴 — 이 페이지 타입 검사 칸의 회색 영어 줄과 같은 문장</td></tr>
-</tbody></table></div>
+<p>이 예제를 <code>ts-practice</code>에서 직접 돌려 봅니다.</p>
+<ol>
+  <li><code>ts-practice</code>에 새 파일 <code>chap1-add.ts</code>를 만들고, 위 예제를 [복사]해 붙인다. VS Code에 빨간 줄이 보인다.</li>
+  <li>터미널에서 <code>npx tsc</code>를 실행한다. 오류 목록이 나오고 <code>chap1-add.js</code>가 생긴다.</li>
+  <li>터미널에서 <code>node chap1-add.js</code>를 실행한다. 3, 12, 12가 나온다.</li>
+</ol>
+<pre class="rule"><code>ts-practice/
+├─ …                  ← 1-1에서 만든 것
+├─ chap1-add.ts          ← 직접 만들고 예제를 붙여 넣음
+└─ chap1-add.js          ← npx tsc가 만듦</code></pre>
+
+<h3 id="s1-3">1-3. 실행 흐름 — .ts → .js</h3>
+<p>브라우저와 node는 TS를 바로 실행하지 못합니다. tsc가 검사한 뒤 타입을 지운 JS로 바꾸고, 그 JS를 실행합니다.</p>
+<pre class="rule"><code>chap1-add.ts  →  tsc: 타입 검사 + 타입 지우기  →  chap1-add.js  →  브라우저 · node에서 실행
+              (틀리면 빨간 줄)</code></pre>
+<p class="note"><code>npx tsc</code>는 폴더 안 .ts 파일을 모두 검사하고 바꿉니다. 오류가 있어도 .js는 만들어지므로 1-2처럼 빨간 줄이 있어도 실행은 됩니다. 터미널의 오류는 <code>chap1-add.ts:2:15</code>(파일:줄:칸)처럼 영어로 나옵니다 — 이 페이지 타입 검사 칸의 회색 영어 줄과 같은 문장입니다. <code>npx tsc -w</code>를 켜 두면 저장할 때마다 다시 바꿉니다(끄기: <kbd>Ctrl</kbd>+<kbd>C</kbd>).</p>
 
 <h2 id="s2">2. 기본 타입</h2>
 <p>변수 이름 뒤에 <code>: 타입</code>을 붙입니다. 이 장부터 예제 오른쪽에는 <b>타입 검사</b>와 <b>콘솔</b>이 함께 나옵니다. 일부러 틀린 줄은 맨 아래에 두었습니다.</p>
 <pre class="rule"><code>let 이름: 타입 = 값;
 예)  let age: number = 21;</code></pre>
+<p>예제는 1-1에서 만든 <code>ts-practice</code>에서 직접 돌려 봅니다. 예제 이름 옆의 파일 이름 그대로 저장하면 됩니다.</p>
+<pre class="rule"><code>[복사] → chap2-types.ts에 붙이기 → npx tsc → node chap2-types.js</code></pre>
 
 <h3 id="s2-1">2-1. 타입 붙이기와 타입 추론</h3>
 
 <div class="demo" data-name="기본 타입 · 배열 · 튜플 · 유니언 · 타입 추론" data-console="only" style="--h: 455px;">
-<textarea class="src" data-lang="ts">// 변수 이름 뒤에 : 타입
+<textarea class="src" data-lang="ts" data-file="chap2-types.ts">// 변수 이름 뒤에 : 타입
 let age: number = 21;
 let userName: string = "홍길동";
 let isStudent: boolean = true;
@@ -287,7 +325,7 @@ city = 42;</textarea><textarea class="run">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
 &lt;meta charset="UTF-8"&gt;
-&lt;title&gt;s2-types.ts&lt;/title&gt;
+&lt;title&gt;chap2-types.ts&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;script&gt;
@@ -310,7 +348,7 @@ scores.push("만점");
 city = 42;
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 20, "col": 1, "code": "TS2322", "msg": "'string' 형식은 'number' 형식에 할당할 수 없습니다.", "en": "Type 'string' is not assignable to type 'number'."}, {"line": 21, "col": 13, "code": "TS2345", "msg": "'string' 형식의 인수는 'number' 형식의 매개 변수에 할당될 수 없습니다.", "en": "Argument of type 'string' is not assignable to parameter of type 'number'."}, {"line": 22, "col": 1, "code": "TS2322", "msg": "'number' 형식은 'string' 형식에 할당할 수 없습니다.", "en": "Type 'number' is not assignable to type 'string'."}], "play": "https://www.typescriptlang.org/ko/play/?#code/PTAEgGewMIdQXccEM7SBKWwC6OgFykAMLhQ8YFABsBTAF1AEMBzQjAOwFcBbAI0ICdQBeUAJgEYBuAiVB0AzmwByZBtVCjirAJY0KnUACJAsmuAOOsCbzesFFSi0QGVidACaEaxDEwD2DomRpqFdQoNwhQgBh7AF9HQAHbQQBylwBhVgApADznQSEABMdBAHCHAHEHAABrQQFQJwBdVwBHJ-wCASiFSUQBjB1ZCUVpGFlYAbQBdNUaADgAGABpQAE4e0F5OzubDYQAHMkVWDEb5JRVe+mY2Vq5GrT11Xr4x3B8wQA0W0EBESdBADVXADIbQKMACccAJpsAO0ZKjUEVLOtX2AB85BWUqi4vG4AGZBB81OoAIIAWhBoIMB18gEAJwADk6BAFKjgB5xwAuXaBABkzgBlx0CAYkbAALjoEASDXYwA6HdkcoAFyduOFAgBTZwAGHa9hOVFMQAJ5QwAgE4AfiaRuEqNFEzkIADp8A4KFFKIRemJJNJVe8zBZrLYioJJdKiPLFVEKlUar0pjNeh9eryBQaDiqoYASocAPN1HJEW6qiWUTMQACyi6kAM52ABAn1M7HYKuAAWbiCIA"}</textarea>
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 20, "col": 1, "code": "TS2322", "msg": "'string' 형식은 'number' 형식에 할당할 수 없습니다.", "en": "Type 'string' is not assignable to type 'number'."}, {"line": 21, "col": 13, "code": "TS2345", "msg": "'string' 형식의 인수는 'number' 형식의 매개 변수에 할당될 수 없습니다.", "en": "Argument of type 'string' is not assignable to parameter of type 'number'."}, {"line": 22, "col": 1, "code": "TS2322", "msg": "'number' 형식은 'string' 형식에 할당할 수 없습니다.", "en": "Type 'number' is not assignable to type 'string'."}]}</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
@@ -321,13 +359,13 @@ city = 42;
 <tr><td>타입 추론</td><td>let city = "전주";</td><td>적지 않아도 처음 값으로 string이 됨</td></tr>
 <tr><td>없음</td><td>null · undefined</td><td>JS와 같은 값. 유니언으로 string | null처럼 씀</td></tr>
 </tbody></table></div>
-<p class="note">VS Code와 Playground에서 변수 위에 마우스를 올리면 추론된 타입이 보입니다. 처음 값을 넣는 변수는 타입을 적지 않는 경우가 많습니다.</p>
+<p class="note">VS Code에서 변수 위에 마우스를 올리면 추론된 타입이 보입니다. 처음 값을 넣는 변수는 타입을 적지 않는 경우가 많습니다.</p>
 
 <h3 id="s2-2">2-2. any · unknown · 그 밖의 타입</h3>
 <p>둘 다 "아무 값이나" 담지만, <code>unknown</code>은 확인한 뒤에만 쓸 수 있고 <code>any</code>는 검사를 아예 끕니다.</p>
 
 <div class="demo" data-name="unknown은 확인하고 쓰기 · any는 실행할 때 터짐" data-console="only" style="--h: 241px;">
-<textarea class="src" data-lang="ts">// unknown: 무엇인지 확인한 다음에만 쓸 수 있음
+<textarea class="src" data-lang="ts" data-file="chap2-any.ts">// unknown: 무엇인지 확인한 다음에만 쓸 수 있음
 let u: unknown = "hello";
 if (typeof u === "string") {
   console.log(u.toUpperCase());
@@ -341,7 +379,7 @@ a.toFixed(2);</textarea><textarea class="run">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
 &lt;meta charset="UTF-8"&gt;
-&lt;title&gt;s2-any.ts&lt;/title&gt;
+&lt;title&gt;chap2-any.ts&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;script&gt;
@@ -357,7 +395,7 @@ a = "문자열";
 a.toFixed(2);
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 6, "col": 1, "code": "TS18046", "msg": "'u'은(는) 'unknown' 형식입니다.", "en": "'u' is of type 'unknown'."}], "play": "https://www.typescriptlang.org/ko/play/?#code/PTAEFcDsGtIewO6QFykCzdhx0cB7jgBydIVTWtAdVdEBOmwGXHAF0cBnO0QD5HRAMIdEAjx8gKABsBTAFwlRRYiSKAC8oAEQALbp05xJAbnYBLAGagAFLwCeAB25xN4cWImSAzrwBOqyAHNJASlABvdqFABjOJEtwPAB0Cg5a4EG8cACq+oY2AMIAhpbcWs7OKgC+7BFRsfHJqekq7CCgSZC6qIABNYA1A4A+naCAKg2ggEmEoIAWfYAgNaCAIJOAAuOggGOjOLSAJ0OAkauAGquALl2ggAyLgAuTXHwVqJW64qAAjAAMKknbkoAc3YAJ44Avo8rsSZFwAGKqAB7cACZaAEyZ7EA"}</textarea>
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 6, "col": 1, "code": "TS18046", "msg": "'u'은(는) 'unknown' 형식입니다.", "en": "'u' is of type 'unknown'."}]}</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
@@ -376,7 +414,7 @@ const double = (n: number): number =&gt; n * 2;</code></pre>
 <h3 id="s3-1">3-1. 매개변수 · 반환 타입 · ? · 기본값 · 나머지</h3>
 
 <div class="demo" data-name="함수에 타입 붙이기" data-console="only" style="--h: 610px;">
-<textarea class="src" data-lang="ts">// 매개변수 뒤와 괄호 뒤에 타입
+<textarea class="src" data-lang="ts" data-file="chap3-func.ts">// 매개변수 뒤와 괄호 뒤에 타입
 function add(a: number, b: number): number {
   return a + b;
 }
@@ -409,7 +447,7 @@ add(1);</textarea><textarea class="run">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
 &lt;meta charset="UTF-8"&gt;
-&lt;title&gt;s3-func.ts&lt;/title&gt;
+&lt;title&gt;chap3-func.ts&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;script&gt;
@@ -440,7 +478,7 @@ add("1", 2);
 add(1);
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 29, "col": 5, "code": "TS2345", "msg": "'string' 형식의 인수는 'number' 형식의 매개 변수에 할당될 수 없습니다.", "en": "Argument of type 'string' is not assignable to parameter of type 'number'."}, {"line": 30, "col": 1, "code": "TS2554", "msg": "2개의 인수가 필요한데 1개를 가져왔습니다.", "en": "Expected 2 arguments, but got 1."}], "play": "https://www.typescriptlang.org/ko/play/?#code/PTAEhPOwcGsAZ7Awh1AlLYATHSBBawHGuMAujpADC4UPGAoAMwFcA7AYwBcBLAe3NAEMATVgCmYC5RzSAtgCMApgCcANKCG9+w8QEpZg0WNABvQqFBiR1UmKbNQAamkBuQgF9ClRgGdqoVvVJCANiNABeUB3LK8mJKfCriPgB8fKAAVKAATJaEIKAA-KC8gBKjoIAYjYAVNYAjzaCAFC1+gGOjgDzjgC5doBSsIsS05CKsCiQUNAxMAOa6ehwA7gAW9Km8jmJN3SETUxpaOnoGTAAGACTqw-Rp6QBEgAmDgBtNu1ZSgBg9gAA1gDNjgCljAIQrljbJYIAMdYAfPYBINaAA7aCAGQ2ADi7AAOTEBgsHaVDojFAAAd6AMOAAPQKqKQATx8CRCclU820un0hlASNicXRT0hnRh9kEHAAdIy5PZUeIANoAXRxYTUmgJS2JzPpulYpEoIg4XEolCk5AUkRY0tMfCkAAYFJSXqBADPNgBIOwA-E4AUptAn0ALuOgSo1ABu9ForCp0KY7no3Q4Ans3XG1Em5GmvBtdvxoDs5Hs9E89Odrvd001IbDEajXHYHAAjFJ4gopC43J4OAAWLOgXoifpFkv9XaAWTXABx1gE3m3YKDW2BzhkSRl0ceGIgDMRe7HHiUlT6qktIEaYzUj7zaTu0Aug2NpJsTi7VO7DPNldp5tAA"}</textarea>
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 29, "col": 5, "code": "TS2345", "msg": "'string' 형식의 인수는 'number' 형식의 매개 변수에 할당될 수 없습니다.", "en": "Argument of type 'string' is not assignable to parameter of type 'number'."}, {"line": 30, "col": 1, "code": "TS2554", "msg": "2개의 인수가 필요한데 1개를 가져왔습니다.", "en": "Expected 2 arguments, but got 1."}]}</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
@@ -457,7 +495,7 @@ add(1);
 <h3 id="s4-1">4-1. interface · type으로 모양 정하기</h3>
 
 <div class="demo" data-name="interface · ? · readonly · extends · type · &amp;" data-console="only" style="--h: 610px;">
-<textarea class="src" data-lang="ts">// interface: 객체의 모양 정하기
+<textarea class="src" data-lang="ts" data-file="chap4-object.ts">// interface: 객체의 모양 정하기
 interface User {
   readonly id: number;
   name: string;
@@ -490,7 +528,7 @@ const lee: User = { name: "이영희" };</textarea><textarea class="run">&lt;!DO
 &lt;html lang="ko"&gt;
 &lt;head&gt;
 &lt;meta charset="UTF-8"&gt;
-&lt;title&gt;s4-object.ts&lt;/title&gt;
+&lt;title&gt;chap4-object.ts&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;script&gt;
@@ -507,7 +545,7 @@ me.id = 99;
 const lee = { name: "이영희" };
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 29, "col": 4, "code": "TS2540", "msg": "읽기 전용 속성이므로 'id'에 할당할 수 없습니다.", "en": "Cannot assign to 'id' because it is a read-only property."}, {"line": 30, "col": 7, "code": "TS2739", "msg": "'{ name: string; }' 형식에 'User' 형식의 id, age 속성이 없습니다.", "en": "Type '{ name: string; }' is missing the following properties from type 'User': id, age"}], "play": "https://www.typescriptlang.org/ko/play/?#code/PTAEEsDsBcFMCcBmBDAxrAXKQuDWBaZwGuOiAVXYImjogqBOAaq4Ax1AUFHEmrKAKoDOCoA3raKPFjIAJgHtIAGwCeEYVkgBXALYAjBAG4+oSMiWZQ7aPCgBzTf2Qn9i1Rq3h2AZWgLhsGAH4sK0aIlDITQBfWlpUcUNQPSwOLgBeHlksAEYAGm1dfQAiQFk1wA46wE3mrPTLfQAmZNAgzVpEBUhUaHBxUAAHYxhY+AAKBU54GP6ASiwAN1FwYR4tcMh2P1gAOglRE26AAwASbj6ERZ09INAwbd34RdKgwA5B9aHg2naGLu69O9CQUFgADzhIYXYsIBYwcAjIOAEXHQIAVZsALqugQDIjYAI9boDAQKHQoGcrnc0E+P3c-zY-Wm-CUyAAVqIBgYjKZ7rNIgBrcBKLAYtwwUAJbhJUBldIHbKAATrAAUzgAwh4qgUpYMoABnSJPJlKygBe5wAXK4AGRcAHuOAV5rAAOTgFKmrJVTSPTr9bqMpRvWgfaBSVr6QADC4BQ8cAC6OgQAu44AQztAgEze93UdIAMlAgB0O0CAS1XABpzdFt9tAAAV4KJhApGhzEvysIYOmY2sZ0PJlGp4EbaLGWI5kP504nk6nscGucIHOF6tBC7YS9UwhFschWq1-CyqyxORloqAsoAagcAPzXix4F0DJGWy0DN9itmBS6XS0t0hbLVYbbb9wdLflHE8D-yLBcsAC0EuvS3Xm+gQUAC2O3Gp6RaTdMAJwAZodLYv4+hdOmXKZpO7qAIBjgA264a3ZAA"}</textarea>
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 29, "col": 4, "code": "TS2540", "msg": "읽기 전용 속성이므로 'id'에 할당할 수 없습니다.", "en": "Cannot assign to 'id' because it is a read-only property."}, {"line": 30, "col": 7, "code": "TS2739", "msg": "'{ name: string; }' 형식에 'User' 형식의 id, age 속성이 없습니다.", "en": "Type '{ name: string; }' is missing the following properties from type 'User': id, age"}]}</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
@@ -528,7 +566,7 @@ const lee = { name: "이영희" };
 <p><code>querySelector</code>는 맞는 요소가 없으면 <code>null</code>을 돌려줍니다. 또 <code>"#notice-input"</code>만 보고는 input인지 알 수 없어서 <code>Element</code>로 보고, <code>Element</code>에는 <code>value</code>가 없습니다.</p>
 
 <div class="demo" data-name="빨간 줄 두 개 → &lt;HTMLInputElement&gt;와 !로 고친 모양" style="--h: 300px; --frame-h: 150px;">
-<textarea class="src" data-lang="ts">// 그대로 쓰면: null일 수도 있고, Element에는 value가 없음
+<textarea class="src" data-lang="ts" data-file="chap5-dom.ts">// 그대로 쓰면: null일 수도 있고, Element에는 value가 없음
 const box = document.querySelector("#notice-input");
 console.log(box.value);
 
@@ -572,7 +610,7 @@ button.addEventListener("click", () =&gt; {
 });
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 3, "col": 13, "code": "TS18047", "msg": "'box'은(는) 'null'일 수 있습니다.", "en": "'box' is possibly 'null'."}, {"line": 3, "col": 17, "code": "TS2339", "msg": "'Element' 형식에 'value' 속성이 없습니다.", "en": "Property 'value' does not exist on type 'Element'."}], "play": "https://www.typescriptlang.org/ko/play/?#code/PTAEg-awAZsHQ7UB5HAuXQLlAOwK4BtOB9x0gMIcBHm0QCPHADmoBpQBRTAUwFs7UAXQBdHAUptADcBDTdHUAANaEBjo4BlxgFABjAPaoAzi1AAjWQA9QAXlAATWdPRNWAOgCOggE4BPAMp160lrMsAKAEQBiVLJYBLaToAWj9UAAd0FncASgBuGXkFWXoTTFkAc1c1dRM+ATo4yUkQUDJAHTnQQAquwETRlAAeQBbRwBLW0EAUscAYwcAPccAByYA+UABqUABCV0BaetJAE6bohMVlUIjlHX1DYxZzKzsHOicXOoAJABUAWQAZAElwyNpGZhZej29fAOCFyJjh+Lk51UjnVG0egMRjuGzoNnsjmclgOJ1OACE-vIbmsHl4fP5AkEVCxUB8vollJg-EpASsQaYLOCtlC9kczgBVU4klgou5op6YugKfFFFRI1AmXi6XTUbh3ZlKZjgjzSYnSADW7iormi2n6AG9JKBQN9ScSycC1iZpJY6LwWHQ2awPMSYvEdcSTJb1CwAMLyS2sQFvdZ5QQO0DEpRCsJhZi6VzEwoAX0KQA"}</textarea>
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 3, "col": 13, "code": "TS18047", "msg": "'box'은(는) 'null'일 수 있습니다.", "en": "'box' is possibly 'null'."}, {"line": 3, "col": 17, "code": "TS2339", "msg": "'Element' 형식에 'value' 속성이 없습니다.", "en": "Property 'value' does not exist on type 'Element'."}]}</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
@@ -582,12 +620,13 @@ button.addEventListener("click", () =&gt; {
 <tr><td>자주 쓰는 요소 타입</td><td>HTMLInputElement · HTMLButtonElement</td><td>input · button. ul은 HTMLUListElement, li는 HTMLLIElement</td></tr>
 <tr><td>태그로 찾거나 만들 때</td><td>querySelector("li") · createElement("li")</td><td>태그 이름이 있으면 타입을 알아서 앎</td></tr>
 </tbody></table></div>
+<p class="note">이 예제는 <code>ts-practice</code>에서 <code>npx tsc</code>까지만 해 봅니다. <code>node chap5-dom.js</code>로 실행하면 <code>document is not defined</code>가 나옵니다 — document는 브라우저에만 있기 때문입니다. 브라우저에서 돌리는 것은 8장 실습에서 합니다.</p>
 
 <h3 id="s5-2">5-2. 좁히기와 단언 — typeof · as</h3>
 <p>유니언 값은 <code>typeof</code>로 확인하면 if 안에서 타입이 하나로 좁혀집니다. <code>as</code>는 검사를 건너뛰고 "이 타입이라고 치자"고 말하는 것이라, 틀리면 빨간 줄 없이 실행할 때 터집니다.</p>
 
 <div class="demo" data-name="typeof로 좁히기 · as는 검사를 건너뜀" data-console="only" style="--h: 358px;">
-<textarea class="src" data-lang="ts">// typeof로 좁히기: if 안에서는 타입이 하나로 정해짐
+<textarea class="src" data-lang="ts" data-file="chap5-narrow.ts">// typeof로 좁히기: if 안에서는 타입이 하나로 정해짐
 function show(a: number | string): void {
   if (typeof a === "number") {
     console.log(a.toFixed(2));
@@ -607,7 +646,7 @@ risky("1.5");</textarea><textarea class="run">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
 &lt;meta charset="UTF-8"&gt;
-&lt;title&gt;s5-narrow.ts&lt;/title&gt;
+&lt;title&gt;chap5-narrow.ts&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;script&gt;
@@ -630,7 +669,7 @@ risky(1.5);
 risky("1.5");
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [], "play": "https://www.typescriptlang.org/ko/play/?#code/PTAEBcE8AcFMHsBmgdDtIQInAR64BjqBcoCWiogEqOALo4DiDgKU2iADC4KHjgLuOiAaq4BkNqgqBOAuq4AuTAUIgCuAOwDG4fPGGgAzgAt4AdwAUAQzzDBAWwBGsAE6gAPrPD78wgOYBKPADd4+ACagA3n1AEiyqHCShVUABeENAAIk1dAzDrNw9PUFEpGXgAG1gAOlT4SzUM8HgAMXwAD1gnZQAma2sAbniAX1BYVJlYOITE5LTM7NzVfPgAVWg4fQBhVTblGvrPBr4F+SVlAGYMgEYAFg2AVgBOOr5llTC5FuyY+r4QAJk8MKZ6BkAfdsADmtBADTnABPGw0EAUAlAgACawA1A4AfTtAgBcawAQjYAAdoEInEkmk5hkAGtIGoNNo9IYTDIzBYbPZHC53J4ksIUuksjllGo7qBIrjrINimUKtUjgtURjlBsMrsjrzMWEBbsrnwgA"}</textarea>
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": []}</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
@@ -646,7 +685,7 @@ risky("1.5");
 <h3 id="s6-1">6-1. class · extends · private · implements</h3>
 
 <div class="demo" data-name="클래스 · 상속 · 접근 제어자 · implements" data-console="only" style="--h: 785px;">
-<textarea class="src" data-lang="ts">class Person {
+<textarea class="src" data-lang="ts" data-file="chap6-class.ts">class Person {
   name: string;
   private age: number;
   constructor(name: string, age: number) {
@@ -688,7 +727,7 @@ console.log(dev.age);</textarea><textarea class="run">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
 &lt;meta charset="UTF-8"&gt;
-&lt;title&gt;s6-class.ts&lt;/title&gt;
+&lt;title&gt;chap6-class.ts&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;script&gt;
@@ -726,7 +765,7 @@ console.log(new Circle(2).area());
 console.log(dev.age);
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 39, "col": 17, "code": "TS2341", "msg": "'age' 속성은 private이며 'Person' 클래스 내에서만 액세스할 수 있습니다.", "en": "Property 'age' is private and only accessible within class 'Person'."}], "play": "https://www.typescriptlang.org/ko/play/?#code/MYGwhgzhAEAKCmAnCB7AdtA3gKGtNYAtvAFzQQAuiAlmgOYDcu0ADjQG5gXzRh2n4AroQBGSJnmDpKiQcAopEACgLEyM2nQA0vfmTTCxiAJRZmeCgAtqEAHSqeAXnxF4EvNCs3bfJ7rfMAL7MtFQoACZy8ErG6lSaZh7QiPAUgogYAAYAJJhedg6BOrn5PvyBgByDme7BwdgA9PXQgIMDgLGDZPAAHtxo4TAA1OSCLEjYoJAwACLw7PAgKCOI0F09fXBIqBg4ktJUcgrKDnE09Dq++oZIOiyCIiDUwOQA1tQgIMeaptseEMNIKq4zvxjDVmFJwpoYh96IkPCk0hloDk8tY7BAXm9AtAbNAAGaCNDVILYOpSNCUaDhGbQZxoeAAd2g01m80WSgARIBZNcAHHWATeb2ToAEwARh07IAKgBPEYAZWANBYFHZILG0hQIHgtnmdCUVPYtlCiAiURiKrJqA1WpQOr1tnBkOMKoaTWohBYGuIaAoEDIoSQuLAwHggA1x6CAX1HWoARceggAHJwAlC4AUpuggBcFwAZ7YASoewfsQAaD0BlljAI1hYBSYChQlE4hJY3AUGgAGFqIhQDxXe74J7vfnC8Xvua9vJFEobncHskLlWTFhgnhS-By7FK0ZYXh4ekMABZLiWWxGgnhJTbqy2WAASWgACpPKi91fr4KVXhaqryerNdqVAzG83W0pHz4Zamkwr4Wh+1q6jMZTwCqQA"}</textarea>
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 39, "col": 17, "code": "TS2341", "msg": "'age' 속성은 private이며 'Person' 클래스 내에서만 액세스할 수 있습니다.", "en": "Property 'age' is private and only accessible within class 'Person'."}]}</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
@@ -745,7 +784,7 @@ console.log(dev.age);
 <h3 id="s7-1">7-1. 제네릭 함수와 클래스</h3>
 
 <div class="demo" data-name="&lt;T&gt; — 쓸 때 정하는 타입" data-console="only" style="--h: 338px;">
-<textarea class="src" data-lang="ts">// &lt;T&gt;: 타입을 쓸 때 정하는 자리
+<textarea class="src" data-lang="ts" data-file="chap7-generic.ts">// &lt;T&gt;: 타입을 쓸 때 정하는 자리
 function first&lt;T&gt;(arr: T[]): T {
   return arr[0];
 }
@@ -764,7 +803,7 @@ b1.content = 456;</textarea><textarea class="run">&lt;!DOCTYPE html&gt;
 &lt;html lang="ko"&gt;
 &lt;head&gt;
 &lt;meta charset="UTF-8"&gt;
-&lt;title&gt;s7-generic.ts&lt;/title&gt;
+&lt;title&gt;chap7-generic.ts&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;script&gt;
@@ -786,7 +825,7 @@ console.log(b1.content, b2.content);
 b1.content = 456;
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 16, "col": 1, "code": "TS2322", "msg": "'number' 형식은 'string' 형식에 할당할 수 없습니다.", "en": "Type 'number' is not assignable to type 'string'."}], "play": "https://www.typescriptlang.org/ko/play/?#code/PTAEB4BUD4C5UAMLhQ8cCLjpAfI6QMq2kKgTgNVcBSm0QBPHAazoCgAzAVwDsBjAFwEsB7O0KlgJwGcmUaAAoAhjx7xIAbQC6ASimgA3hVCgeAUyY0encT2kAGWQG4KAXwoMOA0JwC8XXgOHSAjEYA0oAEzfQAGYTeXMbOjs+UCdufiY3ACJAGoHAH5qEnwTABh6EhTDbNgAbTQA6ArYAc2FOAGpQdx8+Us06cqYAC1CKawLRPiiAITYADyEVNVBwgR4aZjYeYQAHGgAjApYGCY4mZqYpeRUrK0mmUGX3aPtNAHdQQZGplhaRZLTO49PfC7pr2+Hhd18gTe+SKpQqwjOxXC2zoTB8y18UK2O06FEh0J2FwALABWABs5iAA"}</textarea>
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 16, "col": 1, "code": "TS2322", "msg": "'number' 형식은 'string' 형식에 할당할 수 없습니다.", "en": "Type 'number' is not assignable to type 'string'."}]}</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
@@ -797,50 +836,141 @@ b1.content = 456;
 <tr><td>Vue에서</td><td>ref&lt;number&gt;(0)</td><td>반응형 값의 타입</td></tr>
 </tbody></table></div>
 
-<h2 id="s8">8. 실습: 할 일 목록을 TS로 — 내 컴퓨터에서</h2>
-<p>4주차에 만든 <code>todo.html</code>의 JS를 TS로 옮기고, 내 컴퓨터에서 tsc로 변환해 실행합니다. 1~3부까지 하면 완료입니다.</p>
+<h2 id="s8">8. 실습: 할 일 목록을 TS로 — 새 프로젝트에서</h2>
+<p>4주차에 만든 <code>todo.html</code>의 JS를 TS로 옮깁니다. <code>ts-practice</code>와 따로 <b>새 프로젝트</b>를 1-1과 같은 순서로 만듭니다. 1~3부까지 하면 완료입니다.</p>
 
-<h3 id="s8-1">8-1. 준비 · 완성된 폴더 모양</h3>
-<ol>
-  <li><a href="https://nodejs.org/ko" target="_blank" rel="noopener noreferrer">nodejs.org</a>에서 LTS 버전을 설치한다.</li>
-  <li>VS Code 터미널(<kbd>Ctrl</kbd>+<kbd>`</kbd>)에서 <code>node -v</code>로 버전이 나오는지 확인한다.</li>
-  <li>4주차에 만든 <code>todo.html</code>을 준비한다.</li>
-</ol>
+<h3 id="s8-1">8-1. 완성된 폴더 모양</h3>
 <pre class="rule"><code>todo-ts/
-├─ package.json      ← npm init
-├─ tsconfig.json     ← 직접 만듦
-├─ todo.html         ← 4주차 파일
-├─ src/main.ts       ← script 안 코드를 옮김
-└─ dist/main.js      ← npx tsc가 만듦</code></pre>
+├─ package.json       ← npm init -y가 만듦
+├─ package-lock.json  ← npm install이 만듦
+├─ node_modules/      ← npm install이 만듦
+├─ tsconfig.json      ← 1-1과 같은 내용
+├─ todo.html          ← 4주차 파일
+├─ main.ts            ← script 안 코드를 옮김
+└─ main.js            ← npx tsc가 만듦</code></pre>
+<p class="note">ts-practice에 넣지 않는 이유: 한 프로젝트의 .ts 파일들은 이름을 같이 씁니다. 5-1 예제에도 <code>input</code> · <code>list</code>가 있어서, 같은 이름을 쓰면 "다시 선언할 수 없습니다" 빨간 줄이 납니다.</p>
 
 <h3 id="s8-2">1부 · 프로젝트 만들기</h3>
 <ol>
   <li><code>todo-ts</code> 폴더를 만들고 VS Code로 연다.</li>
-  <li>터미널에서 <code>npm init -y</code>를 실행한다.</li>
-  <li>터미널에서 <code>npm install typescript@5.9 --save-dev</code>를 실행한다.</li>
-  <li>폴더에 <code>tsconfig.json</code>을 만들고 아래 내용을 넣는다.</li>
+  <li><a href="#s1-1">1-1</a>의 2~4번을 그대로 한다: <code>npm init -y</code> → <code>npm install typescript@5.9 --save-dev</code> → <code>tsconfig.json</code> 만들기</li>
 </ol>
-<pre class="rule"><code>{
-  "compilerOptions": {
-    "target": "ES2020",
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "strict": true
-  }
-}</code></pre>
 
 <h3 id="s8-3">2부 · TS 파일로 옮기기</h3>
 <ol>
   <li><code>todo.html</code>을 <code>todo-ts</code> 폴더에 복사한다.</li>
-  <li><code>src</code> 폴더를 만들고 그 안에 <code>main.ts</code>를 만든다.</li>
-  <li><code>todo.html</code>의 script 안 코드를 <code>main.ts</code>로 옮긴다.</li>
-  <li><code>todo.html</code>의 script를 <code>&lt;script src="dist/main.js"&gt;&lt;/script&gt;</code>로 바꾼다.</li>
+  <li><code>main.ts</code>를 만들고 <code>todo.html</code>의 script 안 코드를 옮긴다.</li>
+  <li><code>todo.html</code>의 script를 <code>&lt;script src="main.js"&gt;&lt;/script&gt;</code>로 바꾼다. 자리(body 맨 끝)는 그대로 둔다.</li>
 </ol>
+
+<details class="extra">
+<summary>4주차 todo.html이 없다면 — 펼쳐서 복사하기</summary>
+<p>4주차 실습 1~4부를 마친 코드입니다. [복사]해 <code>todo-ts</code> 폴더에 <code>todo.html</code>로 저장하고 위 2번부터 하면 됩니다.</p>
+<div class="demo stack resizable" data-name="4주차 할 일 목록 — 복사해서 todo.html로 저장" style="--h: 430px;">
+<textarea class="src">&lt;!DOCTYPE html&gt;
+&lt;html lang="ko"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;오늘 할 일&lt;/title&gt;
+  &lt;style&gt;
+    * { box-sizing: border-box; }
+    body { font-family: sans-serif; margin: 0; padding: 20px; background: #f3f4f6; }
+
+    .todo {
+      max-width: 420px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #fff;
+      border: 1px solid #d1d5db;
+      border-radius: 16px;
+    }
+    .todo h1 { margin: 0 0 16px; font-size: 24px; }
+
+    .add-row { display: flex; gap: 8px; margin-bottom: 16px; }
+    .add-row input { flex: 1; min-width: 0; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font: inherit; }
+    .add-row button, .clap-row button { padding: 8px 14px; border: 1px solid #d1d5db; border-radius: 8px; background: #fff; font: inherit; cursor: pointer; }
+
+    .todo-list { list-style: none; padding: 0; margin: 0; }
+    .todo-list li { padding: 12px 16px; margin: 8px 0; background: #f3f4f6; border-radius: 8px; cursor: pointer; }
+    /* li에 done 클래스가 붙으면 줄 긋기 */
+    .todo-list li.done { text-decoration: line-through; color: #9ca3af; }
+
+    .clap-row { display: flex; gap: 8px; margin-top: 16px; }
+    .claps { margin: 12px 0 0; color: #6b7280; overflow-wrap: anywhere; }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="todo"&gt;
+    &lt;h1&gt;오늘 할 일&lt;/h1&gt;
+    &lt;div class="add-row"&gt;
+      &lt;input type="text" id="todo-input" placeholder="할 일을 적어 보세요"&gt;
+      &lt;button type="button" id="add-btn"&gt;추가&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;ul class="todo-list"&gt;
+      &lt;li&gt;도서관 책 반납&lt;/li&gt;
+      &lt;li class="done"&gt;TA 세션 참석&lt;/li&gt;
+      &lt;li&gt;확률과통계 과제&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;div class="clap-row"&gt;
+      &lt;button type="button" id="clap-btn"&gt;오늘 할 일을 끝냈어요 👏&lt;/button&gt;
+      &lt;button type="button" id="reset-btn"&gt;초기화&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;p class="claps"&gt;박수 &lt;span id="clap-count"&gt;0&lt;/span&gt;번 &lt;span id="clap-icons"&gt;&lt;/span&gt;&lt;/p&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    const input = document.querySelector("#todo-input");
+    const addBtn = document.querySelector("#add-btn");
+    const list = document.querySelector(".todo-list");
+    const clapBtn = document.querySelector("#clap-btn");
+    const resetBtn = document.querySelector("#reset-btn");
+    const clapCount = document.querySelector("#clap-count");
+    const clapIcons = document.querySelector("#clap-icons");
+
+    // li 하나에 이벤트 붙이기 (3부)
+    function setupItem(li) {
+      li.addEventListener("click", () =&gt; {
+        li.classList.toggle("done");
+      });
+    }
+
+    // 2부 · #add-btn → .todo-list 끝에 새 li
+    addBtn.addEventListener("click", () =&gt; {
+      const text = input.value.trim();
+      if (text === "") return;
+      const li = document.createElement("li");
+      li.textContent = text;
+      setupItem(li);
+      list.append(li);
+      input.value = "";
+    });
+
+    // 3부 · 원래 있는 li
+    document.querySelectorAll(".todo-list li").forEach(setupItem);
+
+    // 4부 · 박수 · 초기화
+    let count = 0;
+    clapBtn.addEventListener("click", () =&gt; {
+      count = count + 1;
+      clapCount.textContent = count;
+      clapIcons.textContent = clapIcons.textContent + "👏";
+    });
+    resetBtn.addEventListener("click", () =&gt; {
+      count = 0;
+      clapCount.textContent = 0;
+      clapIcons.textContent = "";
+    });
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</textarea>
+</div>
+</details>
 
 <h3 id="s8-4">3부 · 빨간 줄 고치고 실행하기</h3>
 <ol>
-  <li><code>main.ts</code>의 빨간 줄을 고친다. (<a href="#s5-1">5-1</a>: <code>&lt;HTMLInputElement&gt;</code> · <code>!</code>)</li>
-  <li>터미널에서 <code>npx tsc</code>를 실행한다. <code>dist/main.js</code>가 생긴다.</li>
+  <li><code>main.ts</code>의 빨간 줄을 고친다. (<a href="#s5-1">5-1</a>: <code>&lt;HTMLInputElement&gt;</code> · <code>!</code> / 함수 매개변수는 <a href="#s3-1">3장</a>처럼 타입을 적기 / 숫자를 <code>textContent</code>에 넣을 때는 <code>String(count)</code>)</li>
+  <li>터미널에서 <code>npx tsc</code>를 실행한다. <code>main.js</code>가 생긴다.</li>
   <li>Live Server로 <code>todo.html</code>을 열어 동작을 확인한다.</li>
   <li><code>npx tsc -w</code>를 켜 두면 저장할 때마다 다시 변환된다.</li>
 </ol>
@@ -848,7 +978,7 @@ b1.content = 456;
 <h3 id="s8-5">완료 확인</h3>
 <ul class="plain">
   <li><code>main.ts</code>에 빨간 줄 없음</li>
-  <li><code>npx tsc</code>로 <code>dist/main.js</code>가 만들어짐</li>
+  <li><code>npx tsc</code>로 <code>main.js</code>가 만들어짐</li>
   <li><code>todo.html</code>에서 추가 · 줄 긋기가 4주차와 똑같이 동작함</li>
   <li>콘솔에 빨간 줄 없음</li>
 </ul>
@@ -1079,6 +1209,7 @@ b1.content = 456;
     const isTs = !!demo.querySelector("textarea.run");
     const runSrc = isTs ? demo.querySelector("textarea.run").value : src;
     const tsc = isTs ? JSON.parse(demo.querySelector("textarea.tsc").value) : null;
+    const file = demo.querySelector("textarea.src").dataset.file;
     if (isTs) demo.classList.add("ts");
     const name = demo.dataset.name;
     const previewOnly = demo.hasAttribute("data-preview-only");
@@ -1088,11 +1219,11 @@ b1.content = 456;
     const consoleOnly = demo.dataset.console === "only";
     const bar = document.createElement("div");
     bar.className = "bar";
-    bar.innerHTML = `<span class="name">${esc(name)}</span>`;
+    bar.innerHTML = `<span class="name">${esc(name)}</span>${isTs && file ? `<code class="file">${esc(file)}</code>` : ""}`;
     if (!previewOnly) {
       bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="copy" aria-live="polite">복사</button>
         <button type="button" data-act="reload">다시 실행</button>
-        ${isTs ? `<button type="button" data-act="play">Playground에서 열기 ↗</button>` : `<button type="button" data-act="open">새 창에서 열기</button>`}`);
+        ${isTs ? "" : `<button type="button" data-act="open">새 창에서 열기</button>`}`);
     }
     if (demo.hasAttribute("data-width-controls")) {
       bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="narrow" aria-pressed="false">좁게 (360px)</button>
@@ -1238,8 +1369,6 @@ b1.content = 456;
           button.textContent = "코드를 선택해 복사하세요";
         }
         setTimeout(() => (button.textContent = "복사"), 1600);
-      } else if (act === "play") {
-        window.open(tsc.play, "_blank", "noopener,noreferrer");
       } else if (act === "reload") {
         run();
       } else if (act === "open") {

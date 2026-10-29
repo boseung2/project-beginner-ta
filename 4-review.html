@@ -48,6 +48,7 @@
   .demo { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 16px 0 28px; background: var(--bg); }
   .demo .bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--pane); font-size: 13px; }
   .demo .bar .name { font-weight: 600; margin-right: auto; }
+  .demo .bar .file { font-size: 12px; color: var(--muted); background: transparent; }
   .demo .bar button { font: inherit; font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
   .demo .bar button:hover { border-color: var(--accent); color: var(--accent); }
   .demo .panes { display: grid; grid-template-columns: 1fr 1fr; }
@@ -325,7 +326,7 @@
 <p>같은 덧셈 함수를 타입 없이, 그리고 타입을 붙여 씁니다. 오른쪽 <b>타입 검사</b>에는 TS가 실행 전에 찾은 빨간 줄이 나옵니다.</p>
 
 <div class="demo" data-name="타입을 안 주면 · 타입을 주면" data-console="only" style="--h: 280px;">
-<textarea class="src" data-lang="ts">// ① 타입을 안 주면: a, b가 무엇인지 몰라 빨간 줄
+<textarea class="src" data-lang="ts" data-file="chap1-add.ts">// ① 타입을 안 주면: a, b가 무엇인지 몰라 빨간 줄
 function add(a, b) {
   return a + b;
 }
@@ -341,7 +342,7 @@ console.log(addNum("1", 2));  // 12 — 빨간 줄이지만 JS로는 실행됨</
 &lt;html lang="ko"&gt;
 &lt;head&gt;
 &lt;meta charset="UTF-8"&gt;
-&lt;title&gt;s1-add.ts&lt;/title&gt;
+&lt;title&gt;chap1-add.ts&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
 &lt;script&gt;
@@ -358,7 +359,7 @@ console.log(add("1", 2)); // 12 — 글자 "1"에 2가 이어 붙음
 console.log(addNum("1", 2)); // 12 — 빨간 줄이지만 JS로는 실행됨
 &lt;/script&gt;
 &lt;/body&gt;
-&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 2, "col": 14, "code": "TS7006", "msg": "'a' 매개 변수에는 암시적으로 'any' 형식이 포함됩니다.", "en": "Parameter 'a' implicitly has an 'any' type."}, {"line": 2, "col": 17, "code": "TS7006", "msg": "'b' 매개 변수에는 암시적으로 'any' 형식이 포함됩니다.", "en": "Parameter 'b' implicitly has an 'any' type."}, {"line": 13, "col": 20, "code": "TS2345", "msg": "'string' 형식의 인수는 'number' 형식의 매개 변수에 할당될 수 없습니다.", "en": "Argument of type 'string' is not assignable to parameter of type 'number'."}], "play": "https://www.typescriptlang.org/ko/play/?#code/PTAEgMSVAGFxQ8cEXHSAlR0gficC5dAuUBDANKAI0AAa0QFm7Bx0cA9xwAcnRAGrsB920QCz7AQGtEBBJgKADMBXAHYBjAC4BLAPYCcAExkAKPIQCUoAN5dQoAE4BTEX23TsoANSEA3FwC+XLiFCBDEmjxUmUIGohwAnjoL4BrOwAXR0EAAOq9AH07QQGJGwAFx0EBnmqC2Tl5BUUljOQA5PgBbRSwBXIJdbXwCAqKS1Q0tPQMjHDNLGzshKQBnCQAbXQA6LokAc0U5eQBGfAAmZWULLXmtBwBmLjaBTp7+oZGFACIx3amZuYWHMcnQQBQCEJ993aDJkkAXccAW0dBATN7AGXHVju6+geG2CyuXkdyOs0WYHOVxY7A4T2ogBnO0AAKQAyoAdDsAKU2gQAnQ4BI1cAFC1cIA"}</textarea>
+&lt;/html&gt;</textarea><textarea class="tsc">{"diags": [{"line": 2, "col": 14, "code": "TS7006", "msg": "'a' 매개 변수에는 암시적으로 'any' 형식이 포함됩니다.", "en": "Parameter 'a' implicitly has an 'any' type."}, {"line": 2, "col": 17, "code": "TS7006", "msg": "'b' 매개 변수에는 암시적으로 'any' 형식이 포함됩니다.", "en": "Parameter 'b' implicitly has an 'any' type."}, {"line": 13, "col": 20, "code": "TS2345", "msg": "'string' 형식의 인수는 'number' 형식의 매개 변수에 할당될 수 없습니다.", "en": "Argument of type 'string' is not assignable to parameter of type 'number'."}]}</textarea>
 </div>
 
 <div class="ref-wrap"><table class="ref cols3"><tbody>
@@ -372,13 +373,7 @@ console.log(addNum("1", 2)); // 12 — 빨간 줄이지만 JS로는 실행됨
 <p>브라우저는 TS를 바로 실행하지 못합니다. TS 컴파일러(tsc)가 검사한 뒤 타입을 지운 JS로 바꾸고, 브라우저는 그 JS를 실행합니다.</p>
 <pre class="rule"><code>app.ts  →  tsc: 타입 검사 + 타입 지우기  →  app.js  →  브라우저에서 실행
            (틀리면 빨간 줄)</code></pre>
-<p><a href="https://www.typescriptlang.org/ko/play" target="_blank" rel="noopener noreferrer">TS Playground ↗</a>는 설치 없이 바로 TS를 쓸 수 있습니다. 1-1 예제의 <b>[Playground에서 열기 ↗]</b>를 눌러 타입을 지우거나 바꿔 보세요. 내 컴퓨터에 설치하는 것은 5주차에 합니다.</p>
-<div class="ref-wrap"><table class="ref"><tbody>
-<tr><td>왼쪽</td><td>TS 코드. 빨간 줄에 마우스를 올리면 오류 메시지</td></tr>
-<tr><td>오른쪽 .JS 탭</td><td>타입을 지운 JS — 브라우저가 실제로 실행하는 코드</td></tr>
-<tr><td>Run → Logs 탭</td><td>실행해서 console.log 결과 보기</td></tr>
-<tr><td>Errors 탭</td><td>오류 목록. 영어로 나옴 — 이 페이지 타입 검사 칸의 회색 영어 줄과 같은 문장</td></tr>
-</tbody></table></div>
+<p>내 컴퓨터에 TS 프로젝트를 만들어 이 흐름을 직접 돌리는 것은 <a href="5-TS.html#s1-1">5. TypeScript 1-1</a>에서 합니다.</p>
 
 <h2 id="s2">2. 실습: 할 일 목록</h2>
 <p>시작 코드에 HTML과 JS를 채워 목표 화면을 만듭니다. 1~4부까지 하면 완료이고, 5부는 Advanced입니다.</p>
@@ -832,6 +827,7 @@ console.log(addNum("1", 2)); // 12 — 빨간 줄이지만 JS로는 실행됨
     const isTs = !!demo.querySelector("textarea.run");
     const runSrc = isTs ? demo.querySelector("textarea.run").value : src;
     const tsc = isTs ? JSON.parse(demo.querySelector("textarea.tsc").value) : null;
+    const file = demo.querySelector("textarea.src").dataset.file;
     if (isTs) demo.classList.add("ts");
     const name = demo.dataset.name;
     const previewOnly = demo.hasAttribute("data-preview-only");
@@ -841,11 +837,11 @@ console.log(addNum("1", 2)); // 12 — 빨간 줄이지만 JS로는 실행됨
     const consoleOnly = demo.dataset.console === "only";
     const bar = document.createElement("div");
     bar.className = "bar";
-    bar.innerHTML = `<span class="name">${esc(name)}</span>`;
+    bar.innerHTML = `<span class="name">${esc(name)}</span>${isTs && file ? `<code class="file">${esc(file)}</code>` : ""}`;
     if (!previewOnly) {
       bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="copy" aria-live="polite">복사</button>
         <button type="button" data-act="reload">다시 실행</button>
-        ${isTs ? `<button type="button" data-act="play">Playground에서 열기 ↗</button>` : `<button type="button" data-act="open">새 창에서 열기</button>`}`);
+        ${isTs ? "" : `<button type="button" data-act="open">새 창에서 열기</button>`}`);
     }
     if (demo.hasAttribute("data-width-controls")) {
       bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="narrow" aria-pressed="false">좁게 (360px)</button>
@@ -991,8 +987,6 @@ console.log(addNum("1", 2)); // 12 — 빨간 줄이지만 JS로는 실행됨
           button.textContent = "코드를 선택해 복사하세요";
         }
         setTimeout(() => (button.textContent = "복사"), 1600);
-      } else if (act === "play") {
-        window.open(tsc.play, "_blank", "noopener,noreferrer");
       } else if (act === "reload") {
         run();
       } else if (act === "open") {
