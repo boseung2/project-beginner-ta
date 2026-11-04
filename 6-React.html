@@ -361,6 +361,7 @@ return (
 
 <h3 id="s3-1">🎯 Step 1에서 만들 것</h3>
 <p>회원가입 화면을 구성한다.<br>아직 검증(ex: 비밀번호 일치, 이메일 검사)은 하지 않는다.</p>
+<p class="note"><a href="#s7">7. 기본 템플릿</a>을 <code>src/App.tsx</code>에 붙여 넣고 시작한다.</p>
 
 <h4>🧩 포함해야 할 입력 요소</h4>
 <ul>
@@ -443,21 +444,25 @@ const isEmailValid = emailRegex.test(email);</textarea>
       &lt;form style={styles.form}&gt;
         &lt;input
           type="text"
+          placeholder="이메일을 입력하세요"
           style={styles.input}
         /&gt;
 
         &lt;input
           type="text"
+          placeholder="닉네임을 입력하세요"
           style={styles.input}
         /&gt;
 
         &lt;input
           type="password"
+          placeholder="비밀번호를 입력하세요"
           style={styles.input}
         /&gt;
 
         &lt;input
           type="password"
+          placeholder="비밀번호를 다시 입력하세요"
           style={styles.input}
         /&gt;
 
