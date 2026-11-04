@@ -8,6 +8,9 @@
 - [1. HTML](1-HTML.html): 코드와 브라우저 실행 결과를 함께 보며 기본 태그를 익힙니다.
 - [2. CSS](2-CSS.html): 선택자·박스 모델·배치·반응형·Flexbox·애니메이션을 실행해 보고, 자기소개 페이지를 꾸밉니다.
 - [3. JavaScript](3-JS.html): 기본 문법·함수·이벤트·DOM 다루기·React에서 자주 쓰는 문법을 실행해 보고, 자기소개 페이지를 반응하게 만듭니다.
+- [4. HTML · CSS · JS 복습 및 TODO LIST 만들기](4-review.html): 흐름을 복습하고 할 일 목록을 만듭니다.
+- [5. TypeScript](5-TS.html): TS 프로젝트를 만들고 기본 문법을 익힌 뒤, 할 일 목록을 TS로 옮깁니다.
+- [6. React](6-React.html): Vite로 React 프로젝트를 만들고, 기본 훅으로 회원가입 화면을 Step 1~4로 만듭니다.
 
 예시 이미지는 `assets/`, HTML만으로 만든 미리보기 문서는 `examples/`에 있습니다.
 

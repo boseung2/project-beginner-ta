@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="초급프로젝트 TA SESSION — Vite로 React 프로젝트를 만들고, useState · useEffect 같은 기본 훅으로 회원가입 화면을 단계별로 만듭니다.">
+<title>6. React — 초급프로젝트 TA SESSION</title>
+<link rel="stylesheet" href="session.css">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1f2328; --muted: #6b7280; --line: #e5e7eb;
+    --code-bg: #f6f6f4; --accent: #2563eb; --pane: #fafafa;
+    --tag: #b91c1c; --attr: #7c3aed; --str: #15803d; --cmt: #9ca3af; --kw: #1d4ed8;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  nav.toc {
+    position: sticky; top: 0; height: 100vh; overflow: auto;
+    border-right: 1px solid var(--line); padding: 20px 16px; font-size: 13px;
+  }
+  nav.toc h1 { font-size: 22px; margin: 0 0 12px; }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 2px 0; }
+  nav.toc li ol { padding-left: 14px; }
+  nav.toc a { color: var(--fg); text-decoration: none; display: block; padding: 3px 6px; border-radius: 4px; }
+  nav.toc a:hover { background: var(--code-bg); }
+  nav.toc a.sub { color: var(--muted); }
+  main { padding: 32px 48px 120px; max-width: 1400px; }
+  h1.title { font-size: 40px; margin: 0 0 8px; }
+  .subtitle { color: var(--muted); margin: 0 0 40px; }
+  h2 { font-size: 24px; margin: 56px 0 16px; padding-top: 8px; }
+  h3 { font-size: 18px; margin: 32px 0 10px; }
+  h4 { font-size: 15px; margin: 22px 0 8px; color: #374151; }
+  p.note { color: var(--muted); font-size: 14px; margin: 8px 0 16px; }
+
+  /* 정리 표 */
+  table.ref { border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  table.ref td { border: 1px solid var(--line); padding: 5px 12px; vertical-align: top; }
+  table.ref td:first-child { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
+
+  /* 코드 + 실행 결과 */
+  .demo { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 16px 0 28px; background: var(--bg); }
+  .demo .bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--pane); font-size: 13px; }
+  .demo .bar .name { font-weight: 600; margin-right: auto; }
+  .demo .bar .file { font-size: 12px; color: var(--muted); background: transparent; }
+  .demo .bar button { font: inherit; font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
+  .demo .bar button:hover { border-color: var(--accent); color: var(--accent); }
+  .demo .panes { display: grid; grid-template-columns: 1fr 1fr; }
+  .demo .panes > div { min-width: 0; }
+  .demo .code { background: var(--code-bg); border-right: 1px solid var(--line); }
+  .demo .code pre { margin: 0; padding: 14px 16px; overflow: auto; max-height: var(--h, 460px); font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
+  .demo .result { display: flex; flex-direction: column; }
+  .demo .result .label { font-size: 12px; color: var(--muted); padding: 6px 12px; border-bottom: 1px dashed var(--line); }
+  .demo iframe { border: 0; width: 100%; height: var(--frame-h, var(--h, 460px)); background: #fff; flex: 0 0 auto; }
+  .demo .panes:has(> .result:only-child) { grid-template-columns: 1fr; }
+  .demo.tall { --h: 640px; }
+  .demo.short { --h: 260px; }
+  .demo.stack .panes { grid-template-columns: 1fr; }
+  .demo.stack iframe { flex: 0 0 auto; height: max(760px, 85vh); }
+  .demo.stack .code { border-right: 0; border-top: 1px solid var(--line); }
+  .demo.stack .code pre { max-height: 520px; }
+  .demo.stack details > summary { cursor: pointer; padding: 10px 14px; font-size: 13px; color: var(--muted); background: var(--pane); user-select: none; }
+  .demo.stack details > summary:hover { color: var(--accent); }
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    main { padding: 24px 20px 80px; }
+    .demo .panes { grid-template-columns: 1fr; }
+    .demo .code { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+  /* 문법 색 */
+  .t { color: var(--tag); } .a { color: var(--attr); } .s { color: var(--str); } .c { color: var(--cmt); font-style: italic; } .k { color: var(--kw); } .n { color: var(--attr); }
+  textarea.src, textarea.run, textarea.tsc { display: none; }
+
+  /* 다이어그램 */
+  .diagram { margin: 12px 0 8px; max-width: 720px; }
+  .diagram svg { width: 100%; height: auto; }
+  .demo.code-only .code { border-right: 0; }
+  .demo.code-only .panes { grid-template-columns: 1fr; }
+</style>
+<style>
+  main { min-width: 0; }
+  .demo .bar { flex-wrap: wrap; }
+  .demo .bar button:hover { border-color: #333; color: #333; }
+  .demo .bar button[aria-pressed="true"] { background: #ececec; border-color: #888; }
+  .demo .bar .name { flex: 1 0 180px; }
+  .demo.resizable iframe { flex: 0 0 auto; width: 100%; max-width: 100%; height: var(--frame-h, var(--h, 360px)); align-self: flex-start; }
+  .demo.resizable .result { background: #f0f0f0; }
+  .demo.resizable .result .label { background: #fff; }
+  .ref-wrap { overflow-x: auto; }
+  table.ref.cols3 td:first-child { font-family: inherit; font-size: 14px; color: var(--muted); background: transparent; white-space: nowrap; }
+  table.ref.cols3 td:nth-child(2) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
+  pre.rule { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 14px; margin: 8px 0 12px; overflow-x: auto; }
+  figure.shot { margin: 12px 0 16px; }
+  figure.shot img { display: block; width: min(100%, 220px); height: auto; border-radius: 12px; border: 1px solid var(--line); }
+  figure.shot figcaption { margin-top: 6px; font-size: 13px; color: var(--muted); }
+  kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; background: var(--code-bg); }
+  ul.plain { padding-left: 18px; margin: 6px 0 14px; }
+  ul.plain li { margin: 3px 0; }
+  ul.plain code, p code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  main > p a, main > details a { color: inherit; }
+  details.extra { margin: 12px 0 24px; }
+  details.extra > summary { cursor: pointer; }
+  /* JS: 콘솔 패널 · ▶ 실행(data-manual) */
+  .demo .console { flex: 1 1 auto; border-top: 1px solid var(--line); background: #fff; }
+  .demo .console .lines { max-height: var(--console-h, 320px); overflow: auto; font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .demo .console .line { display: flex; gap: 12px; min-height: calc(1.55em + 6px); padding: 3px 12px; border-bottom: 1px solid #f0f0f0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .demo .console .line .where { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .demo .console .line.warn { background: #fffbeb; color: #92400e; border-bottom-color: #fde68a; }
+  .demo .console .line.error { background: #fef2f2; color: #b91c1c; border-bottom-color: #fecaca; }
+  .demo .console .empty { padding: 6px 12px; font-size: 12px; color: var(--cmt); }
+  .demo.console-only .console { border-top: 0; }
+  .demo.console-only .console .lines { max-height: var(--console-h, var(--h, 460px)); }
+  .demo .run-gate { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: var(--frame-h, var(--h, 460px)); background: var(--pane); font-size: 13px; color: var(--muted); }
+  .demo.stack .run-gate { height: max(760px, 85vh); }
+  .demo.stack.resizable .run-gate { height: var(--frame-h, var(--h, 360px)); }
+  .demo .run-gate button { font: inherit; padding: 6px 16px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--fg); cursor: pointer; }
+  .demo .run-gate button:hover { border-color: #333; color: #333; }
+  .demo .run-gate[hidden] { display: none; }
+  @media print {
+    .layout { display: block; }
+    nav.toc, .demo .bar button { display: none; }
+    main { padding: 0; max-width: none; }
+    .demo .code pre { max-height: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+    h2, h3 { break-after: avoid; }
+    .demo .console .lines { max-height: none; overflow: visible; }
+    .demo .run-gate { height: auto; padding: 12px; }
+    .demo .run-gate button { display: none; }
+  }
+  /* TS 데모: 타입 검사 상자 · 오류 줄 빨간 물결 */
+  .demo .console.tsc { flex: 0 0 auto; border-top: 1px solid var(--line); }
+  .demo .console.tsc .label { font-size: 12px; color: var(--muted); padding: 6px 12px; border-bottom: 1px dashed var(--line); }
+  .demo .console.tsc .line.ok { background: #f0fdf4; color: #15803d; }
+  .demo .console.tsc .line .body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .demo .console.tsc .line .body code { color: #7f1d1d; background: transparent; padding: 0; font-weight: 600; }
+  .demo.console-only .console.tsc + .console { border-top: 1px solid var(--line); }
+  .demo .console.tsc .line .body .en { color: #9a6b6b; font-size: 11.5px; }
+  .demo .code .ts-bad { text-decoration: underline wavy #dc2626; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="자료 목차">
+  <a class="session-brand" href="index.html">초급프로젝트<br>TA SESSION</a>
+  <div class="session-nav">
+    <a href="0-web-flow.html">0. 웹 개발 흐름</a>
+    <a href="1-HTML.html">1. HTML</a>
+    <a href="2-CSS.html">2. CSS</a>
+    <a href="3-JS.html">3. JavaScript</a>
+    <a href="4-review.html">4. HTML · CSS · JS 복습</a>
+    <a href="5-TS.html">5. TypeScript</a>
+    <a href="6-React.html" aria-current="page">6. React</a>
+  </div>
+  <h1>6. React</h1>
+  <ol>
+    <li><a href="#s0">0. 프로젝트 세팅</a></li>
+    <li><a href="#s1">1. 사전 학습</a><ol>
+      <li><a class="sub" href="#s1-1">input + useState</a></li>
+      <li><a class="sub" href="#s1-2">form + onSubmit</a></li>
+      <li><a class="sub" href="#s1-3">inline style</a></li>
+      <li><a class="sub" href="#s1-4">useEffect</a></li>
+      <li><a class="sub" href="#s1-5">setTimeout</a></li>
+      <li><a class="sub" href="#s1-6">useState(array)</a></li>
+    </ol></li>
+    <li><a href="#s2">2. 실습 단계 요약</a></li>
+    <li><a href="#s3">3. Step1</a><ol>
+      <li><a class="sub" href="#s3-1">Step 1에서 만들 것</a></li>
+    </ol></li>
+    <li><a href="#s4">4. Step2</a><ol>
+      <li><a class="sub" href="#s4-1">Step 2에서 추가되는 기능</a></li>
+    </ol></li>
+    <li><a href="#s5">5. Step3</a><ol>
+      <li><a class="sub" href="#s5-1">Step 3에서 추가되는 기능</a></li>
+    </ol></li>
+    <li><a href="#s6">6. Step4</a><ol>
+      <li><a class="sub" href="#s6-1">Step 4 완성 체크 리스트</a></li>
+    </ol></li>
+    <li><a href="#s7">7. 기본 템플릿</a></li>
+  </ol>
+</nav>
+<main>
+<h1 class="title">6. React</h1>
+<p class="subtitle">초급프로젝트 TA SESSION · React 프로젝트를 만들고, 기본 훅으로 회원가입 화면을 Step 1~4로 만듭니다.</p>
+
+<h2 id="s0">0. 프로젝트 세팅</h2>
+<p><a href="https://apidog.com/kr/blog/react-tutorial-a-beginners-guide-kr/" target="_blank" rel="noopener noreferrer">https://apidog.com/kr/blog/react-tutorial-a-beginners-guide-kr/</a></p>
+<pre class="rule"><code>npm create vite@latest my-first-react-app -- --template react-ts
+
+cd my-first-react-app
+
+npm install
+
+npm run dev</code></pre>
+<p class="note">Node가 없거나 오래된 버전이면 첫 줄에서 막힙니다. 5주차처럼 <code>node -v</code>로 확인하고, 20.19보다 낮으면 <a href="https://nodejs.org/ko" target="_blank" rel="noopener noreferrer">nodejs.org</a>에서 LTS를 다시 설치합니다.<br>
+첫 줄 실행 중 질문이 나오면: <b>Which linter to use?</b> → 그대로 <kbd>Enter</kbd> · <b>Install with npm and start now?</b> → <b>No</b> 고르고 아래 명령을 직접 칩니다.</p>
+<p><code>npm run dev</code> 후 터미널에 나온 <code>http://localhost:5173</code>을 브라우저로 엽니다. 실습 전에 두 파일을 바꿉니다.</p>
+<ol>
+  <li><code>src/index.css</code>의 내용을 모두 지우고 아래 내용만 넣는다. (Vite 기본 스타일이 화면 배치를 덮지 않게)</li>
+</ol>
+<pre class="rule"><code>body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: #213547;
+}</code></pre>
+<ol start="2">
+  <li><code>src/App.tsx</code>의 내용을 모두 지우고 <a href="#s7">7. 기본 템플릿</a>을 붙여 넣는다.</li>
+</ol>
+
+<h2 id="s1">1. 사전 학습</h2>
+
+<h3 id="s1-1">1-1. input + useState</h3>
+<div class="demo" data-code-only data-name="input + useState">
+<textarea class="src" data-lang="tsx" data-file="chap1-1-id.tsx">import { useState } from "react";
+
+function IdExample() {
+  // id 상태 생성 (초기값은 0)
+  const [id, setId] = useState(0);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;현재 ID 값: {id}&lt;/p&gt;
+
+      {/* 숫자를 입력하면 id 상태를 변경 */}
+      &lt;input
+        type="number"
+        placeholder="ID 숫자를 입력하세요"
+        value={id}
+        onChange={(e) =&gt; setId(Number(e.target.value))}
+      /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default IdExample;</textarea>
+</div>
+
+<h3 id="s1-2">1-2. form + onSubmit</h3>
+<div class="demo" data-code-only data-name="form + onSubmit">
+<textarea class="src" data-lang="tsx" data-file="chap1-2-form.tsx">import { useState } from "react";
+
+function FormExample() {
+  const [name, setName] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) =&gt; {
+    e.preventDefault();           // 새로고침 막기
+    alert(`안녕하세요, ${name}님!`);
+  };
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input
+        placeholder="이름을 입력하세요"
+        value={name}
+        onChange={(e) =&gt; setName(e.target.value)}
+      /&gt;
+      &lt;button type="submit"&gt;확인&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default FormExample;</textarea>
+</div>
+
+<h3 id="s1-3">1-3. inline style</h3>
+<div class="demo" data-code-only data-name="inline style">
+<textarea class="src" data-lang="tsx" data-file="chap1-3-style.tsx">function StyleExample() {
+  return (
+    &lt;div style={boxStyle}&gt;
+      인라인 스타일 박스
+    &lt;/div&gt;
+  );
+}
+
+const boxStyle = {
+  width: "200px",
+  height: "100px",
+  backgroundColor: "skyblue",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+};
+
+export default StyleExample;</textarea>
+</div>
+
+<h3 id="s1-4">1-4. useEffect</h3>
+<div class="demo" data-code-only data-name="useEffect">
+<textarea class="src" data-lang="tsx" data-file="chap1-4-effect.tsx">import { useState, useEffect } from "react";
+
+function FormExample() {
+  const [name, setName] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) =&gt; {
+    e.preventDefault();           // 새로고침 막기
+    alert(`안녕하세요, ${name}님!`);
+  };
+
+  useEffect(() =&gt; {
+      console.log("닉네임이 변경됨:", name);
+  }, [name])
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input
+        placeholder="이름을 입력하세요"
+        value={name}
+        onChange={(e) =&gt; setName(e.target.value)}
+      /&gt;
+      &lt;button type="submit"&gt;확인&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default FormExample;</textarea>
+</div>
+
+<h3 id="s1-5">1-5. setTimeout</h3>
+<div class="demo" data-code-only data-name="setTimeout">
+<textarea class="src" data-lang="tsx" data-file="chap1-5-timeout.tsx">setTimeout(() =&gt; {
+    alert("hello");
+}, 1000)</textarea>
+</div>
+
+<h3 id="s1-6">1-6. useState(array)</h3>
+<div class="demo" data-code-only data-name="useState(array)">
+<textarea class="src" data-lang="tsx" data-file="chap1-6-array.tsx">const [recommend, setRecommend] = useState([""]);
+
+useEffect(() =&gt; {
+    setRecommend([nickname + "_123", nickname + "_dev"]);
+}, [nickname]);
+
+return (
+    &lt;&gt;
+    {recommend.map((item, index) =&gt; (
+      &lt;p key={index}&gt;{item}&lt;/p&gt;
+    ))}
+    &lt;/&gt;
+)</textarea>
+</div>
+
+<h2 id="s2">2. 실습 단계 요약</h2>
+<div class="demo" data-app="examples/react-signup/index.html?step=4" data-name="회원가입 (Step 4)" style="--h: 560px;"></div>
+
+<div class="ref-wrap"><table class="ref"><thead>
+<tr><th>Step</th><th>기능</th><th>주요 개념</th><th>난이도</th></tr>
+</thead><tbody>
+<tr><td><b>Step 1</b></td><td>기본 입력 + submit</td><td>useState, form submit</td><td>⭐</td></tr>
+<tr><td><b>Step 2</b></td><td>비밀번호 일치 검증</td><td>조건부 style</td><td>⭐⭐</td></tr>
+<tr><td><b>Step 3</b></td><td>닉네임 추천</td><td>useEffect</td><td>⭐⭐</td></tr>
+<tr><td><b>Step 4 (도전)</b></td><td>이메일 regex + 닉네임 추천 3개</td><td>Regex, array useState</td><td>⭐⭐⭐</td></tr>
+</tbody></table></div>
+
+<h2 id="s3">3. Step1</h2>
+<div class="demo" data-app="examples/react-signup/index.html?step=1" data-name="회원가입 (Step 1)" style="--h: 420px;"></div>
+
+<h3 id="s3-1">🎯 Step 1에서 만들 것</h3>
+<p>회원가입 화면을 구성한다.<br>아직 검증(ex: 비밀번호 일치, 이메일 검사)은 하지 않는다.</p>
+
+<h4>🧩 포함해야 할 입력 요소</h4>
+<ul>
+  <li>이메일 입력창</li>
+  <li>닉네임 입력창</li>
+  <li>비밀번호 입력창</li>
+  <li>비밀번호 확인 입력창</li>
+</ul>
+
+<h4>🧩 제출 버튼</h4>
+<ul>
+  <li>"회원가입" 버튼 추가</li>
+  <li>버튼을 눌렀을 때 입력한 값이 alert로 출력되면 성공</li>
+</ul>
+
+<h2 id="s4">4. Step2</h2>
+<div class="demo" data-app="examples/react-signup/index.html?step=2" data-name="회원가입 (Step 2)" style="--h: 440px;"></div>
+
+<h3 id="s4-1">🎯 Step 2에서 추가되는 기능</h3>
+
+<h4>✔️ 1. 비밀번호 &amp; 비밀번호 확인 비교</h4>
+<ul>
+  <li>password 와 passwordConfirm이 <b>같은지 실시간 확인</b></li>
+  <li>조건에 따라 아래 문구를 화면에 표시:
+    <ul>
+      <li><b>초록색</b>: "비밀번호가 일치합니다."</li>
+      <li><b>빨간색</b>: "비밀번호가 일치하지 않습니다."</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>✔️ 2. 조건부 렌더링(Conditional Rendering)</h4>
+<ul>
+  <li>비밀번호 확인 입력칸에 값이 있을 때만 문구 표시</li>
+  <li>상태에 따라 style(color)을 다르게 적용</li>
+</ul>
+
+<h2 id="s5">5. Step3</h2>
+<div class="demo" data-app="examples/react-signup/index.html?step=3" data-name="회원가입 (Step 3)" style="--h: 460px;"></div>
+
+<h3 id="s5-1">🎯 Step 3에서 추가되는 기능</h3>
+
+<h4>✔️ 1. 닉네임 기반 자동 추천 닉네임</h4>
+<ul>
+  <li>닉네임을 입력하면 그 값을 이용해 아래처럼 추천 닉네임을 생성</li>
+  <li>예: nickname = "user" → 추천 닉네임: user_123</li>
+  <li><b style="color: #dc2626;">1초 후 nickname 추천</b></li>
+  <li>닉네임이 비어 있으면 추천 문구 숨김</li>
+</ul>
+
+<h4>✔️ 2. useEffect로 "닉네임 변경 → 추천 변경" 연결하기</h4>
+<ul>
+  <li>Step3에서는 useEffect를 사용해<br>"nickname 값이 바뀌면 suggestion 업데이트" 라는 흐름을 직접 연습</li>
+</ul>
+
+<h2 id="s6">6. Step4</h2>
+<div class="demo" data-app="examples/react-signup/index.html?step=4" data-name="회원가입 (Step 4)" style="--h: 560px;"></div>
+
+<h3 id="s6-1">📝 Step 4 완성 체크 리스트</h3>
+<ul>
+  <li>이메일 형식이 틀리면 "이메일 형식이 올바르지 않습니다." (빨간색) 표시</li>
+  <li>이메일 형식이 맞으면 "이메일 형식이 올바릅니다." (초록색) 표시</li>
+  <li>닉네임 입력 시 추천 닉네임이 3개 생성된다</li>
+  <li>추천 닉네임이 한 줄에 "추천 닉네임: a b c" 형태로 표시된다</li>
+  <li>Step3까지의 비밀번호 검증, 회원가입 alert 동작도 그대로 유지된다</li>
+</ul>
+
+<div class="demo" data-code-only data-name="정규표현식 예시">
+<textarea class="src" data-lang="tsx" data-file="chap6-regex.tsx">// 정규표현식 예시
+const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+const isEmailValid = emailRegex.test(email);</textarea>
+</div>
+
+<h2 id="s7">7. 기본 템플릿</h2>
+<div class="demo" data-code-only data-name="src/App.tsx에 붙여 넣기" style="--h: 640px;">
+<textarea class="src" data-lang="tsx" data-file="chap7-template.tsx">function App() {
+  return (
+    &lt;div style={styles.container}&gt;
+      &lt;h1&gt;회원가입 (Step 1)&lt;/h1&gt;
+      &lt;form style={styles.form}&gt;
+        &lt;input
+          type="text"
+          style={styles.input}
+        /&gt;
+
+        &lt;input
+          type="text"
+          style={styles.input}
+        /&gt;
+
+        &lt;input
+          type="password"
+          style={styles.input}
+        /&gt;
+
+        &lt;input
+          type="password"
+          style={styles.input}
+        /&gt;
+
+        &lt;button type="submit" style={styles.button}&gt;
+          회원가입
+        &lt;/button&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+  );
+}
+
+const styles = {
+  container: {
+    width: "100vw",
+    margin: "0 auto",
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column" as const,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  form: {
+    width: "400px",
+    display: "flex",
+    flexDirection: "column" as const,
+    alignItems: "center",
+  },
+  input: {
+    padding: "12px",
+    marginBottom: "8px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+    fontSize: "16px",
+    width: "100%",
+    boxSizing: "border-box" as const,
+  },
+  button: {
+    padding: "12px",
+    border: "none",
+    borderRadius: "6px",
+    color: "white",
+    fontSize: "16px",
+    cursor: "pointer",
+    backgroundColor: "#4CAF50",
+    transition: "0.2s",
+    width: "100%",
+  },
+};
+
+export default App;</textarea>
+</div>
+
+<footer class="session-footer"><a href="5-TS.html">← 이전 · 5. TypeScript</a><a href="index.html">전체 목차 →</a></footer>
+</main>
+</div>
+<noscript><p>코드와 완성 화면을 보려면 브라우저에서 JavaScript를 켜 주세요.</p></noscript>
+
+<script>
+(function () {
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // ---- 간단한 문법 강조 ----
+  function hlHtml(src) {
+    let out = "", i = 0;
+    const re = /<!-{2}[\s\S]*?-{2}>|<\/?[a-zA-Z][^>]*>|<!DOCTYPE[^>]*>/g;
+    let m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const tok = m[0];
+      if (tok.startsWith("<!-")) out += `<span class="c">${esc(tok)}</span>`;
+      else out += hlTag(tok);
+      i = m.index + tok.length;
+      // <style>, <script> 내부는 별도 처리
+      const low = tok.toLowerCase();
+      if (/^<(style|script)\b/.test(low)) {
+        const close = low.startsWith("<style") ? "</style>" : "<\/script>";
+        const end = src.toLowerCase().indexOf(close, i);
+        if (end !== -1) {
+          out += hlCode(src.slice(i, end), !low.startsWith("<style"));
+          i = end; re.lastIndex = end;
+        }
+      }
+    }
+    out += esc(src.slice(i));
+    return out;
+  }
+  function hlTag(tok) {
+    // <name attr="v" attr2 /> 를 한 번에 토큰화
+    const m = /^(<\/?)([A-Za-z!][\w-]*)([\s\S]*?)(\/?>)$/.exec(tok);
+    if (!m) return esc(tok);
+    const attrs = m[3].replace(/([\w:-]+)(\s*=\s*)("[^"]*"|'[^']*'|[^\s>]+)|([\w:-]+)/g, (a, n, eq, v, bare) =>
+      bare ? `<span class="a">${esc(bare)}</span>` : `<span class="a">${esc(n)}</span>${eq}<span class="s">${esc(v)}</span>`);
+    return `${esc(m[1])}<span class="t">${esc(m[2])}</span>${attrs}${esc(m[4])}`;
+  }
+  function hlCode(src, js = true, tsMode = false) {
+    // JS / CSS / JSX / TS 공용: 주석, 문자열, 키워드, 숫자(JS만). TS는 타입 키워드도 강조
+    const re = tsMode
+      ? /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b(const|let|var|function|return|if|else|for|of|in|while|break|continue|switch|case|async|await|class|this|try|catch|finally|throw|import|export|from|default|new|typeof|true|false|null|undefined|interface|type|extends|implements|public|private|protected|readonly|abstract|as|enum|constructor|super|number|string|boolean|any|unknown|void|never)\b|\b\d+(?:\.\d+)?\b/g
+      : /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b(const|let|var|function|return|if|else|for|of|in|while|break|continue|switch|case|async|await|class|this|try|catch|finally|throw|import|export|from|default|new|typeof|true|false|null|undefined)\b|\b\d+(?:\.\d+)?\b/g;
+    let out = "", i = 0, m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const t = m[0];
+      const before = src[m.index - 1] || "", after = src[m.index + t.length] || "";
+      if (t.startsWith("//") || t.startsWith("/*")) out += `<span class="c">${esc(t)}</span>`;
+      else if (/^["'`]/.test(t)) out += `<span class="s">${esc(t)}</span>`;
+      else if (/^\d/.test(t)) out += js && before !== "#" ? `<span class="n">${esc(t)}</span>` : esc(t); // CSS 안의 숫자는 그대로
+      else if (/[.#$-]/.test(before) || after === "-") out += esc(t); // promise.catch · ease-in · break-after 는 키워드가 아님
+      else out += `<span class="k">${esc(t)}</span>`;
+      i = m.index + t.length;
+    }
+    return out + esc(src.slice(i));
+  }
+
+  // TSX: 문자열 · 주석 · 키워드는 hlCode(TS), 그 밖의 글자 안에서 JSX 태그 이름만 강조
+  function hlTsx(src) {
+    return hlCode(src, true, true).split(/(<span[^>]*>[\s\S]*?<\/span>)/).map((part, i) =>
+      i % 2 ? part : part.replace(/(&lt;\/?)([A-Za-z][\w.]*)/g, '$1<span class="t">$2</span>')).join("");
+  }
+
+  // ---- 콘솔 패널: 실행용 문서에만 넣는 스크립트 (iframe 안에서 실행) ----
+  // 줄 번호가 원본 코드와 같도록 한 줄로 합쳐 <head> 바로 뒤에 넣는다. 그래서 이 함수 안에는 // 주석을 쓰지 않고 문장마다 ;를 붙인다.
+  function consoleBridge(run) {
+    const post = (level, text, line) => {
+      try { parent.postMessage({ jsDemoConsole: run, level: level, text: text, line: line || 0 }, "*"); } catch (e) { }
+    };
+    const voidTags = /^(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)$/;
+    const ctorName = (v) => { try { const p = Object.getPrototypeOf(v); return (p && p.constructor && p.constructor.name) || ""; } catch (e) { return ""; } };
+    const openTag = (el) => {
+      let s = "<" + el.tagName.toLowerCase();
+      for (let i = 0; i < el.attributes.length && i < 4; i++) {
+        const a = el.attributes[i];
+        const v = a.value.length > 40 ? a.value.slice(0, 40) + "…" : a.value;
+        s += " " + a.name + (a.value === "" ? "" : "=\"" + v + "\"");
+      }
+      return s + ">";
+    };
+    const fnText = (f) => {
+      let code = "";
+      try { code = Function.prototype.toString.call(f); } catch (e) { }
+      if (/^class[\s{]/.test(code)) return "class " + f.name;
+      const m = /^[^(=]*\(([^()]*)\)/.exec(code) || /^(?:async\s+)?([\w$]+)\s*=>/.exec(code);
+      return "ƒ " + f.name + "(" + (m ? m[1].replace(/\s+/g, " ").trim() : "") + ")";
+    };
+    const fmt = (v, d, seen) => {
+      const t = typeof v;
+      if (v === null) return "null";
+      if (t === "undefined") return "undefined";
+      if (t === "string") return d === 0 ? v : JSON.stringify(v);
+      if (t === "number") return Object.is(v, -0) ? "-0" : String(v);
+      if (t === "bigint") return v + "n";
+      if (t === "boolean" || t === "symbol") return String(v);
+      if (t === "function") return fnText(v);
+      try {
+        if (v === window) return "Window";
+        if (v instanceof Node) {
+          if (v.nodeType === 9) return "#document";
+          if (v.nodeType === 3) return JSON.stringify(v.nodeValue);
+          if (v.nodeType !== 1) return v.nodeName;
+          const tag = v.tagName.toLowerCase();
+          if (d > 0 || voidTags.test(tag)) return openTag(v);
+          const text = v.textContent.trim().replace(/\s+/g, " ");
+          return openTag(v) + (v.children.length || text.length > 40 ? "…" : text) + "</" + tag + ">";
+        }
+        if (v instanceof Error) return v.name + ": " + v.message;
+        if (v instanceof Date || v instanceof RegExp) return String(v);
+        if (v instanceof Promise) return "Promise {…}";
+        const name = ctorName(v);
+        const deep = d >= 3 || seen.indexOf(v) !== -1;
+        seen = seen.concat([v]);
+        if (Array.isArray(v) || v instanceof NodeList || v instanceof HTMLCollection) {
+          const head = Array.isArray(v) ? "" : name + "(" + v.length + ") ";
+          if (deep) return head + "[…]";
+          const items = [];
+          for (let i = 0; i < v.length && i < 100; i++) items.push(i in v ? fmt(v[i], d + 1, seen) : "empty");
+          if (v.length > 100) items.push("…");
+          return head + "[" + items.join(", ") + "]";
+        }
+        if (v instanceof Map || v instanceof Set) {
+          if (deep) return name + "(" + v.size + ") {…}";
+          const items = [];
+          v.forEach((val, key) => { if (items.length < 50) items.push(v instanceof Map ? fmt(key, d + 1, seen) + " => " + fmt(val, d + 1, seen) : fmt(val, d + 1, seen)); });
+          return name + "(" + v.size + ") {" + items.join(", ") + "}";
+        }
+        if (v instanceof Event) {
+          const items = ["type: " + JSON.stringify(v.type)];
+          if (v.target) items.push("target: " + fmt(v.target, 1, seen));
+          if ("key" in v) items.push("key: " + JSON.stringify(v.key));
+          return name + " {" + items.join(", ") + "}";
+        }
+        const head = name && name !== "Object" ? name + " " : "";
+        if (deep) return head + "{…}";
+        const keys = Object.keys(v);
+        const items = keys.slice(0, 30).map((k) => (/^[A-Za-z_$][\w$]*$/.test(k) ? k : JSON.stringify(k)) + ": " + fmt(v[k], d + 1, seen));
+        if (keys.length > 30) items.push("…");
+        return head + "{" + items.join(", ") + "}";
+      } catch (e) {
+        try { return String(v); } catch (e2) { return "?"; }
+      }
+    };
+    const join = (args) => {
+      args = Array.prototype.slice.call(args);
+      if (typeof args[0] === "string" && args.length > 1 && /%[sdifoOc]/.test(args[0])) {
+        const rest = args.slice(1);
+        const first = args[0].replace(/%([sdifoOc%])/g, (all, f) => {
+          if (f === "%") return "%";
+          if (!rest.length) return all;
+          const a = rest.shift();
+          if (f === "c") return "";
+          if (f === "s") return typeof a === "string" ? a : fmt(a, 1, []);
+          if (f === "d" || f === "i") return String(parseInt(a, 10));
+          if (f === "f") return String(parseFloat(a));
+          return fmt(a, 1, []);
+        });
+        args = [first].concat(rest);
+      }
+      return args.map((a) => fmt(a, 0, [])).join(" ");
+    };
+    const levels = { log: "log", info: "info", debug: "log", dir: "log", table: "log", warn: "warn", error: "error" };
+    Object.keys(levels).forEach((method) => {
+      const original = console[method];
+      console[method] = function () {
+        try { post(levels[method], join(arguments)); } catch (e) { }
+        if (original) return original.apply(console, arguments);
+      };
+    });
+    const originalClear = console.clear;
+    console.clear = function () {
+      post("clear", "");
+      if (originalClear) originalClear.apply(console, arguments);
+    };
+    window.addEventListener("error", (e) => {
+      const err = e.error;
+      post("error", err && err.name ? "Uncaught " + err.name + ": " + err.message : String(e.message || "Error"), e.lineno);
+    });
+    window.addEventListener("unhandledrejection", (e) => {
+      const r = e.reason;
+      post("error", "Uncaught (in promise) " + (r instanceof Error ? r.name + ": " + r.message : fmt(r, 1, [])));
+    });
+  }
+  const bridgeCode = consoleBridge.toString().replace(/\s*\n\s*/g, " ");
+
+  // 실행용 문서 = 원본 + <head> 바로 뒤에 한 줄짜리 콘솔 스크립트. 화면의 코드 · 복사 · 새 창 열기는 원본(src) 그대로.
+  function runDoc(src, run) {
+    const tag = `<script>(${bridgeCode})(${run});<\/script>`;
+    const m = /<head(?:\s[^>]*)?>/i.exec(src) || /<html(?:\s[^>]*)?>/i.exec(src) || /<!DOCTYPE[^>]*>/i.exec(src);
+    if (!m) return tag + src;
+    const at = m.index + m[0].length;
+    return src.slice(0, at) + tag + src.slice(at);
+  }
+
+  // iframe → 부모 메시지를 어느 데모가 보냈는지 event.source로 구분한다. 다시 실행 전의 늦은 메시지는 run 번호로 버린다.
+  let runSeq = 0;
+  const frames = [];
+  window.addEventListener("message", (event) => {
+    const data = event.data;
+    if (!data || typeof data !== "object" || typeof data.jsDemoConsole !== "number") return;
+    const entry = frames.find((f) => f.iframe.contentWindow === event.source);
+    if (entry && data.jsDemoConsole === entry.run) entry.write(data);
+  });
+
+  async function copySource(src) {
+    try {
+      await navigator.clipboard.writeText(src);
+    } catch (_) {
+      const field = document.createElement("textarea");
+      field.value = src;
+      field.style.cssText = "position:fixed;left:-10000px;top:0";
+      document.body.append(field);
+      field.select();
+      const copied = document.execCommand("copy");
+      field.remove();
+      if (!copied) throw new Error("Copy failed");
+    }
+  }
+
+  const firstRuns = [];
+  document.querySelectorAll(".demo").forEach((demo) => {
+    // ---- 6주차 React: 코드 블록(복사만) · 완성 화면(만들어 둔 앱을 iframe으로) ----
+    if (demo.hasAttribute("data-code-only") || demo.hasAttribute("data-app")) {
+      const name = demo.dataset.name;
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      const panes = document.createElement("div");
+      panes.className = "panes";
+      if (demo.hasAttribute("data-code-only")) {
+        const ta = demo.querySelector("textarea.src");
+        const src = ta.value;
+        bar.innerHTML = `<span class="name">${esc(name)}</span><button type="button" data-act="copy" aria-live="polite">복사</button>`;
+        const code = document.createElement("div");
+        code.className = "code";
+        code.innerHTML = `<pre>${hlTsx(src)}</pre>`;
+        panes.append(code);
+        demo.classList.add("code-only");
+        bar.querySelector("button").addEventListener("click", async (event) => {
+          const button = event.currentTarget;
+          try { await copySource(src); button.textContent = "복사됨 ✓"; }
+          catch (_) { button.textContent = "코드를 선택해 복사하세요"; }
+          setTimeout(() => (button.textContent = "복사"), 1600);
+        });
+      } else {
+        const url = demo.dataset.app;
+        bar.innerHTML = `<span class="name">${esc(name)}</span><button type="button" data-act="reload">처음부터</button><button type="button" data-act="open">새 창에서 열기</button>`;
+        const result = document.createElement("div");
+        result.className = "result";
+        result.innerHTML = `<div class="label">완성 화면 — 직접 입력해 보세요</div>`;
+        const iframe = document.createElement("iframe");
+        iframe.title = name;
+        iframe.loading = "lazy";
+        iframe.src = url;
+        result.append(iframe);
+        panes.append(result);
+        bar.addEventListener("click", (event) => {
+          const button = event.target.closest("button");
+          if (!button) return;
+          if (button.dataset.act === "reload") iframe.src = url;
+          else window.open(url, "_blank", "noopener,noreferrer");
+        });
+      }
+      demo.append(bar, panes);
+      return;
+    }
+    const src = demo.querySelector("textarea.src").value;
+    // TS 데모: 화면 · 복사는 TS(src), 실행은 변환된 JS 문서(run), 타입 검사 결과는 빌드 때 tsc로 받은 것(tsc)
+    const isTs = !!demo.querySelector("textarea.run");
+    const runSrc = isTs ? demo.querySelector("textarea.run").value : src;
+    const tsc = isTs ? JSON.parse(demo.querySelector("textarea.tsc").value) : null;
+    const file = demo.querySelector("textarea.src").dataset.file;
+    if (isTs) demo.classList.add("ts");
+    const name = demo.dataset.name;
+    const previewOnly = demo.hasAttribute("data-preview-only");
+    const manual = demo.hasAttribute("data-manual");
+    const showConsole = demo.hasAttribute("data-console") || (!previewOnly && runSrc.includes("console."));
+    // data-console="only": 화면(iframe)은 숨기고 콘솔 칸만 보여 준다 (결과가 콘솔에만 나오는 기초 문법 예제용)
+    const consoleOnly = demo.dataset.console === "only";
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.innerHTML = `<span class="name">${esc(name)}</span>${isTs && file ? `<code class="file">${esc(file)}</code>` : ""}`;
+    if (!previewOnly) {
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="copy" aria-live="polite">복사</button>
+        <button type="button" data-act="reload">다시 실행</button>
+        ${isTs ? "" : `<button type="button" data-act="open">새 창에서 열기</button>`}`);
+    }
+    if (demo.hasAttribute("data-width-controls")) {
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="narrow" aria-pressed="false">좁게 (360px)</button>
+        <button type="button" data-act="mid" aria-pressed="false">중간 (760px)</button>
+        <button type="button" data-act="wide" aria-pressed="true">넓게 (전체)</button>`);
+    }
+    const panes = document.createElement("div");
+    panes.className = "panes";
+    const result = document.createElement("div");
+    result.className = "result";
+    const label = document.createElement("div");
+    label.className = "label";
+    label.textContent = previewOnly ? "화면 예시" : "실행 결과";
+    const iframe = document.createElement("iframe");
+    iframe.title = name + " 실행 결과";
+    // allow-same-origin은 넣지 않는다: 스크립트 + 같은 출처면 예제가 이 페이지를 건드리거나 sandbox를 풀 수 있다.
+    iframe.setAttribute("sandbox", "allow-scripts allow-modals allow-forms allow-popups allow-popups-to-escape-sandbox");
+    result.append(label, iframe);
+    if (consoleOnly) { demo.classList.add("console-only"); label.hidden = true; iframe.hidden = true; }
+    const srcLines = src.split("\n");
+    if (isTs) {
+      const box = document.createElement("div");
+      box.className = "console tsc";
+      box.innerHTML = `<div class="label">타입 검사 — 실행 전에 TS가 찾은 오류</div><div class="lines" role="list"></div>`;
+      const tl = box.querySelector(".lines");
+      if (!tsc.diags.length) {
+        tl.innerHTML = `<div class="line ok">오류 없음 ✓</div>`;
+      } else {
+        tsc.diags.forEach((d) => {
+          const line = document.createElement("div");
+          line.className = "line error";
+          const code = document.createElement("code");
+          code.textContent = (srcLines[d.line - 1] || "").trim();
+          const msg = document.createElement("span");
+          msg.textContent = d.msg;
+          const en = document.createElement("span");
+          en.className = "en";
+          en.textContent = d.en || "";
+          const where = document.createElement("span");
+          where.className = "where";
+          where.textContent = `${d.line}번째 줄`;
+          const body = document.createElement("div");
+          body.className = "body";
+          body.append(code, msg);
+          if (d.en) body.append(en);
+          line.append(body, where);
+          tl.append(line);
+        });
+      }
+      result.append(box);
+    }
+
+    // 콘솔 패널: 코드에 console.이 있거나 data-console일 때 표시. 패널이 없던 예제도 에러가 나면 열린다.
+    const entry = { iframe, run: 0, write: null };
+    let lines = null;
+    const clearConsole = () => {
+      if (lines) lines.innerHTML = `<div class="empty">(아직 출력 없음)</div>`;
+    };
+    const openConsole = () => {
+      if (lines) return;
+      const box = document.createElement("div");
+      box.className = "console";
+      box.innerHTML = `<div class="label">콘솔</div><div class="lines" role="log" aria-label="${esc(name)} 콘솔 출력"></div>`;
+      lines = box.querySelector(".lines");
+      result.append(box);
+      clearConsole();
+    };
+    entry.write = (data) => {
+      if (data.level === "clear") return clearConsole();
+      if (!lines) {
+        if (data.level !== "error") return;
+        openConsole();
+      }
+      lines.querySelector(".empty")?.remove();
+      const line = document.createElement("div");
+      line.className = `line ${data.level}`;
+      line.textContent = String(data.text);
+      if (data.line && !isTs) {
+        const where = document.createElement("span");
+        where.className = "where";
+        where.textContent = `${data.line}번째 줄`;
+        line.append(where);
+      }
+      lines.append(line);
+      if (lines.childElementCount > 300) lines.firstElementChild.remove();
+      lines.scrollTop = lines.scrollHeight;
+    };
+    if (showConsole) openConsole();
+    frames.push(entry);
+
+    // data-manual: 처음에는 ▶ 실행 버튼만 보이고, 누를 때 실행 (alert · prompt가 페이지를 열자마자 뜨지 않게)
+    let gate = null;
+    const run = () => {
+      entry.run = ++runSeq;
+      clearConsole();
+      if (gate) gate.hidden = true;
+      iframe.hidden = consoleOnly;
+      iframe.srcdoc = runDoc(runSrc, entry.run);
+    };
+    if (manual) {
+      gate = document.createElement("div");
+      gate.className = "run-gate";
+      gate.innerHTML = `<button type="button">▶ 실행</button><span>${esc(demo.dataset.manual || "누르면 코드가 실행됩니다")}</span>`;
+      gate.querySelector("button").addEventListener("click", run);
+      iframe.hidden = true;
+      label.after(gate);
+    } else {
+      firstRuns.push(run);
+    }
+    if (previewOnly) {
+      panes.append(result);
+    } else {
+      const code = document.createElement("div");
+      code.className = "code";
+      if (isTs) {
+        const bad = new Set(tsc.diags.map((d) => d.line));
+        const html = hlCode(src, true, true).split("\n")
+          .map((l, i) => (bad.has(i + 1) ? `<span class="ts-bad">${l}</span>` : l)).join("\n");
+        code.innerHTML = `<pre>${html}</pre>`;
+      } else {
+        code.innerHTML = `<pre>${hlHtml(src)}</pre>`;
+      }
+      if (demo.classList.contains("stack")) {
+        const details = document.createElement("details");
+        details.innerHTML = "<summary>코드 보기 / 접기</summary>";
+        details.append(code);
+        panes.append(result, details);
+      } else {
+        panes.append(code, result);
+      }
+    }
+    demo.append(bar, panes);
+
+    bar.addEventListener("click", async (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      const act = button.dataset.act;
+      if (act === "copy") {
+        try {
+          await copySource(src);
+          button.textContent = "복사됨 ✓";
+        } catch (_) {
+          button.textContent = "코드를 선택해 복사하세요";
+        }
+        setTimeout(() => (button.textContent = "복사"), 1600);
+      } else if (act === "reload") {
+        run();
+      } else if (act === "open") {
+        // blob: 주소에서는 assets/ 같은 상대 경로가 깨지므로, 새 창용 문서에만 <base>를 넣는다 (복사는 원본 그대로)
+        const base = `<base href="${new URL(".", location.href).href}">`;
+        const opened = /<head[^>]*>/i.test(src) ? src.replace(/<head[^>]*>/i, (m) => m + base) : base + src;
+        const url = URL.createObjectURL(new Blob([opened], { type: "text/html;charset=utf-8" }));
+        window.open(url, "_blank", "noopener,noreferrer");
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      } else if (act === "narrow" || act === "mid" || act === "wide") {
+        iframe.style.width = act === "narrow" ? "360px" : act === "mid" ? "760px" : "100%";
+        bar.querySelectorAll("[aria-pressed]").forEach((control) => {
+          control.setAttribute("aria-pressed", String(control.dataset.act === act));
+        });
+      }
+    });
+  });
+  // 레이아웃을 한 번 계산한 뒤 실행해야 예제 안의 window.innerWidth가 처음부터 0이 아니다.
+  void document.body.offsetWidth;
+  firstRuns.forEach((run) => run());
+})();
+</script>
+</body>
+</html>
