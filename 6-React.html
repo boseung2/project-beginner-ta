@@ -167,6 +167,7 @@
       <li><a class="sub" href="#s1-4">useEffect</a></li>
       <li><a class="sub" href="#s1-5">setTimeout</a></li>
       <li><a class="sub" href="#s1-6">useState(array)</a></li>
+      <li><a class="sub" href="#s1-7">useState(object)</a></li>
     </ol></li>
     <li><a href="#s2">2. 실습 단계 요약</a></li>
     <li><a href="#s3">3. Step1</a><ol>
@@ -355,6 +356,40 @@ return (
     &lt;/&gt;
 )</textarea>
 </div>
+
+<h3 id="s1-7">1-7. useState(object)</h3>
+<div class="demo" data-code-only data-name="useState(object)">
+<textarea class="src" data-lang="tsx" data-file="chap1-7-object.tsx">import { useState } from "react";
+
+interface User {
+  email: string;
+  nickname: string;
+}
+
+function UserExample() {
+  // 입력값 여러 개를 객체 하나로 관리
+  const [user, setUser] = useState&lt;User&gt;({ email: "", nickname: "" });
+
+  return (
+    &lt;div&gt;
+      &lt;input
+        placeholder="이메일을 입력하세요"
+        value={user.email}
+        onChange={(e) =&gt; setUser({ ...user, email: e.target.value })}
+      /&gt;
+      &lt;input
+        placeholder="닉네임을 입력하세요"
+        value={user.nickname}
+        onChange={(e) =&gt; setUser({ ...user, nickname: e.target.value })}
+      /&gt;
+      &lt;p&gt;{user.nickname}님의 이메일: {user.email}&lt;/p&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default UserExample;</textarea>
+</div>
+<p class="note"><code>{ ...user, email: … }</code>: 기존 값을 복사하고 바꿀 칸만 덮어쓴다. <code>user.email = …</code>처럼 직접 바꾸면 화면이 바뀌지 않는다.</p>
 
 <h2 id="s2">2. 실습 단계 요약</h2>
 <div class="demo" data-app="examples/react-signup/index.html?step=4" data-name="회원가입 (Step 4)" style="--h: 560px;"></div>
