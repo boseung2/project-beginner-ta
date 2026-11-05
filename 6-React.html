@@ -190,6 +190,7 @@
 
 <h2 id="s0">0. 프로젝트 세팅</h2>
 <p><a href="https://apidog.com/kr/blog/react-tutorial-a-beginners-guide-kr/" target="_blank" rel="noopener noreferrer">https://apidog.com/kr/blog/react-tutorial-a-beginners-guide-kr/</a></p>
+<p>먼저 터미널에서 <code>node -v</code>로 버전을 확인합니다. (20.19 이상)</p>
 <pre class="rule"><code>npm create vite@latest my-first-react-app -- --template react-ts
 
 cd my-first-react-app
@@ -197,8 +198,7 @@ cd my-first-react-app
 npm install
 
 npm run dev</code></pre>
-<p class="note">Node가 없거나 오래된 버전이면 첫 줄에서 막힙니다. 5주차처럼 <code>node -v</code>로 확인하고, 20.19보다 낮으면 <a href="https://nodejs.org/ko" target="_blank" rel="noopener noreferrer">nodejs.org</a>에서 LTS를 다시 설치합니다.<br>
-첫 줄 실행 중 질문이 나오면: <b>Which linter to use?</b> → 그대로 <kbd>Enter</kbd> · <b>Install with npm and start now?</b> → <b>No</b> 고르고 아래 명령을 직접 칩니다.</p>
+<p class="note">첫 줄 실행 중 질문이 나오면: <b>Which linter to use?</b> → 그대로 <kbd>Enter</kbd> · <b>Install with npm and start now?</b> → <b>No</b> 고르고 아래 명령을 직접 칩니다.</p>
 <p><code>npm run dev</code> 후 터미널에 나온 <code>http://localhost:5173</code>을 브라우저로 엽니다. 실습 전에 두 파일을 바꿉니다.</p>
 <ol>
   <li><code>src/index.css</code>의 내용을 모두 지우고 아래 내용만 넣는다. (Vite 기본 스타일이 화면 배치를 덮지 않게)</li>
@@ -213,6 +213,17 @@ npm run dev</code></pre>
 </ol>
 
 <h2 id="s1">1. 사전 학습</h2>
+<p><b>훅(Hook)</b>은 컴포넌트에 기능을 붙여 주는 함수입니다. 이름이 <code>use</code>로 시작하고, 컴포넌트 함수 맨 위에서 부릅니다.</p>
+<div class="ref-wrap"><table class="ref"><thead>
+<tr><th>훅</th><th>하는 일</th><th>이럴 때 쓴다</th></tr>
+</thead><tbody>
+<tr><td>useState</td><td>값을 기억하고, 값이 바뀌면 화면을 다시 그린다</td><td>입력값 · 목록 · 켜짐/꺼짐처럼 <b>화면에 보이는 값이 바뀔 때</b></td></tr>
+<tr><td>useEffect</td><td>화면을 그린 뒤 따로 할 일을 실행한다</td><td><b>어떤 값이 바뀔 때마다 따라서 할 일</b>이 있을 때 (로그 찍기, 추천 만들기, 데이터 불러오기)</td></tr>
+</tbody></table></div>
+<ul>
+  <li>일반 변수(<code>let</code>)는 값을 바꿔도 화면이 그대로입니다. 화면에 보여야 하는 값은 useState로 만듭니다.</li>
+  <li>useEffect 끝의 <code>[name]</code>은 "name이 바뀔 때마다 실행", <code>[]</code>는 "처음 한 번만 실행"입니다.</li>
+</ul>
 
 <h3 id="s1-1">1-1. input + useState</h3>
 <div class="demo" data-code-only data-name="input + useState">
@@ -220,7 +231,7 @@ npm run dev</code></pre>
 
 function IdExample() {
   // id 상태 생성 (초기값은 0)
-  const [id, setId] = useState(0);
+  const [id, setId] = useState&lt;number&gt;(0);
 
   return (
     &lt;div&gt;
@@ -239,15 +250,16 @@ function IdExample() {
 
 export default IdExample;</textarea>
 </div>
+<p class="note"><code>useState&lt;number&gt;</code>: 이 state에 숫자만 넣는다는 뜻 (5주차 제네릭). <code>onChange={(e) =&gt; …}</code>의 <code>e</code>는 TS가 알아서 타입을 붙이므로 적지 않아도 됩니다.</p>
 
 <h3 id="s1-2">1-2. form + onSubmit</h3>
 <div class="demo" data-code-only data-name="form + onSubmit">
 <textarea class="src" data-lang="tsx" data-file="chap1-2-form.tsx">import { useState } from "react";
 
 function FormExample() {
-  const [name, setName] = useState("");
+  const [name, setName] = useState&lt;string&gt;("");
 
-  const handleSubmit = (e: React.FormEvent) =&gt; {
+  const handleSubmit = (e: React.FormEvent&lt;HTMLFormElement&gt;) =&gt; {
     e.preventDefault();           // 새로고침 막기
     alert(`안녕하세요, ${name}님!`);
   };
@@ -277,7 +289,7 @@ export default FormExample;</textarea>
   );
 }
 
-const boxStyle = {
+const boxStyle: React.CSSProperties = {
   width: "200px",
   height: "100px",
   backgroundColor: "skyblue",
@@ -294,9 +306,9 @@ export default StyleExample;</textarea>
 <textarea class="src" data-lang="tsx" data-file="chap1-4-effect.tsx">import { useState, useEffect } from "react";
 
 function FormExample() {
-  const [name, setName] = useState("");
+  const [name, setName] = useState&lt;string&gt;("");
 
-  const handleSubmit = (e: React.FormEvent) =&gt; {
+  const handleSubmit = (e: React.FormEvent&lt;HTMLFormElement&gt;) =&gt; {
     e.preventDefault();           // 새로고침 막기
     alert(`안녕하세요, ${name}님!`);
   };
@@ -329,7 +341,7 @@ export default FormExample;</textarea>
 
 <h3 id="s1-6">1-6. useState(array)</h3>
 <div class="demo" data-code-only data-name="useState(array)">
-<textarea class="src" data-lang="tsx" data-file="chap1-6-array.tsx">const [recommend, setRecommend] = useState([""]);
+<textarea class="src" data-lang="tsx" data-file="chap1-6-array.tsx">const [recommend, setRecommend] = useState&lt;string[]&gt;([]);
 
 useEffect(() =&gt; {
     setRecommend([nickname + "_123", nickname + "_dev"]);
@@ -474,20 +486,20 @@ const isEmailValid = emailRegex.test(email);</textarea>
   );
 }
 
-const styles = {
+const styles: Record&lt;string, React.CSSProperties&gt; = {
   container: {
     width: "100vw",
     margin: "0 auto",
     minHeight: "100vh",
     display: "flex",
-    flexDirection: "column" as const,
+    flexDirection: "column",
     justifyContent: "center",
     alignItems: "center",
   },
   form: {
     width: "400px",
     display: "flex",
-    flexDirection: "column" as const,
+    flexDirection: "column",
     alignItems: "center",
   },
   input: {
@@ -497,7 +509,7 @@ const styles = {
     border: "1px solid #ccc",
     fontSize: "16px",
     width: "100%",
-    boxSizing: "border-box" as const,
+    boxSizing: "border-box",
   },
   button: {
     padding: "12px",
