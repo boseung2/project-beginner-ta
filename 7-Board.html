@@ -211,9 +211,11 @@
       <li><a class="sub" href="#s2-1">컴포넌트 관계</a></li>
     </ol></li>
     <li><a href="#s3">3. Step1</a><ol>
+      <li><a class="sub" href="#s3-0">Step 1 시작 템플릿</a></li>
       <li><a class="sub" href="#s3-1">Step 1에서 만들 것</a></li>
     </ol></li>
     <li><a href="#s4">4. Step2</a><ol>
+      <li><a class="sub" href="#s4-0">Step 2 시작 템플릿</a></li>
       <li><a class="sub" href="#s4-1">Step 2에서 추가되는 기능</a></li>
     </ol></li>
     <li><a href="#s5">5. Step3</a><ol>
@@ -222,7 +224,6 @@
     <li><a href="#s6">6. Step4</a><ol>
       <li><a class="sub" href="#s6-1">Step 4 완성 체크 리스트</a></li>
     </ol></li>
-    <li><a href="#s7">7. 기본 템플릿</a></li>
   </ol>
 </nav>
 <main>
@@ -244,15 +245,12 @@ npm run dev</code></pre>
   <li><code>useState</code>, <code>PostList</code>처럼 다른 파일에 있는 이름은 입력하다가 자동완성 목록에서 고르면 맨 위에 import가 붙습니다.</li>
   <li>이미 빨간 줄이 생겼으면 그 위에 커서를 두고 <kbd>Cmd</kbd>+<kbd>.</kbd> (Windows <kbd>Ctrl</kbd>+<kbd>.</kbd>) → <b>Add import</b>를 고릅니다.</li>
 </ul>
-<p>실습 전에 파일을 준비합니다. 아래 순서대로 하면 됩니다.</p>
+<p>실습 전에 준비할 것은 두 가지입니다.</p>
 <ol>
   <li><code>public/posts.json</code> 파일을 만들고 아래 글 3개를 붙여 넣는다. (미리 저장해 둔 데이터)</li>
-  <li><code>src/types.ts</code> 파일을 만든다.</li>
-  <li><code>src</code> 안에 <code>components</code> 폴더를 만들고, 그 안에 <code>PostList.tsx</code> · <code>PostItem.tsx</code> · <code>PostFormModal.tsx</code> 파일을 만든다.</li>
-  <li><code>src/App.tsx</code>의 내용을 모두 지운다.</li>
-  <li>2~4의 파일 5개에 <a href="#s7">7. 기본 템플릿</a>의 코드를 [복사]해서 붙여 넣는다.</li>
-  <li><code>npm run dev</code> 화면에 "게시판" 제목과 "글 제목" 칸 2개가 보이면 준비 끝.</li>
+  <li><code>src</code> 안에 <code>components</code> 폴더를 만든다.</li>
 </ol>
+<p>나머지 파일은 각 Step 맨 앞의 <b>🧱 시작 템플릿</b>을 붙여 넣어 만듭니다. (<a href="#s3-0">Step 1</a>: types.ts · App.tsx · PostList.tsx · PostItem.tsx, <a href="#s4-0">Step 2</a>: PostFormModal.tsx)</p>
 <div class="demo" data-code-only data-name="public/posts.json">
 <textarea class="src" data-lang="tsx" data-file="posts.json">[
   {
@@ -816,97 +814,15 @@ export default SaveExample;</textarea>
 <h2 id="s3">3. Step1</h2>
 <div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=1" data-name="게시판 (Step 1)" style="--h: 460px;"></div>
 
-<h3 id="s3-1">🎯 Step 1에서 만들 것</h3>
-<p>저장된 글 목록 화면을 구성한다.<br>아직 글쓰기는 하지 않는다.</p>
-<p class="note"><a href="#s7">7. 기본 템플릿</a>에서 시작한다. 사전 학습: <a href="#s1-1">1-1</a> · <a href="#s1-2">1-2</a> · <a href="#s1-3">1-3</a> · <a href="#s1-4">1-4</a></p>
-<pre class="rule"><code>src/
-├─ types.ts
-├─ App.tsx               ✏️ posts 상태 · posts.json 불러오기 · PostList에 넘기기
-└─ components/
-   ├─ PostList.tsx       ✏️ posts를 props로 받아 map
-   ├─ PostItem.tsx       ✏️ post를 props로 받아 제목 · 작성자 · 내용 표시
-   └─ PostFormModal.tsx</code></pre>
-
-<h4>🧩 posts.json 불러오기</h4>
-<ul>
-  <li>App에 posts 상태 만들기 (<code>Post[]</code>)</li>
-  <li>useEffect + fetch로 <code>/posts.json</code>을 불러와 posts에 넣기</li>
-</ul>
-
-<h4>🧩 목록 표시</h4>
-<ul>
-  <li>App → PostList → PostItem으로 props 넘기기</li>
-  <li>글마다 제목 · 작성자 · 내용 표시</li>
-  <li>"전체 글 3개"처럼 글 개수 표시</li>
-</ul>
-
-<h2 id="s4">4. Step2</h2>
-<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=2" data-name="게시판 (Step 2)" style="--h: 520px;"></div>
-
-<h3 id="s4-1">🎯 Step 2에서 추가되는 기능</h3>
-<p class="note">사전 학습: <a href="#s1-5">1-5</a> · <a href="#s1-6">1-6</a></p>
-<pre class="rule"><code>src/
-├─ types.ts
-├─ App.tsx               ✏️ isModalOpen 상태 · 글쓰기 버튼 · 모달 그리기
-└─ components/
-   ├─ PostList.tsx
-   ├─ PostItem.tsx
-   └─ PostFormModal.tsx  ✏️ 입력값 상태 · 취소(onClose) · 등록</code></pre>
-
-<h4>✔️ 1. 글쓰기 모달 열고 닫기</h4>
-<ul>
-  <li>"글쓰기" 버튼을 누르면 모달이 열린다</li>
-  <li>"취소"를 누르면 닫힌다 (App이 넘겨 준 <code>onClose</code> 부르기)</li>
-</ul>
-
-<h4>✔️ 2. 입력 폼</h4>
-<ul>
-  <li>제목 · 작성자 · 내용을 객체 하나로 관리</li>
-  <li>빈 칸이 있으면 alert</li>
-  <li>"등록"을 누르면 입력한 값이 alert로 출력되고 모달이 닫히면 성공 (목록에 넣는 건 Step 3)</li>
-</ul>
-
-<h2 id="s5">5. Step3</h2>
-<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=3" data-name="게시판 (Step 3)" style="--h: 520px;"></div>
-
-<h3 id="s5-1">🎯 Step 3에서 추가되는 기능</h3>
-<p class="note">사전 학습: <a href="#s1-5">1-5</a> · <a href="#s1-7">1-7</a> · <a href="#s1-8">1-8</a></p>
-<pre class="rule"><code>src/
-├─ types.ts
-├─ App.tsx               ✏️ handleAdd 만들어 모달에 onAdd로 넘기기
-└─ components/
-   ├─ PostList.tsx
-   ├─ PostItem.tsx       ✏️ isOpen 상태 · 제목 누르면 내용 펼치기
-   └─ PostFormModal.tsx  ✏️ 새 글을 만들어 onAdd로 App에 보내기</code></pre>
-
-<h4>✔️ 1. 새 글을 목록에 추가</h4>
-<ul>
-  <li>"등록"을 누르면 새 글이 목록 <b>맨 위</b>에 추가된다 (id는 <code>Date.now()</code>)</li>
-  <li>전체 글 개수도 함께 늘어난다</li>
-</ul>
-
-<h4>✔️ 2. 제목 누르면 내용 펼치기</h4>
-<ul>
-  <li>처음에는 제목 · 작성자만 보이고, 제목을 누르면 내용이 보인다</li>
-  <li>글마다 따로 열리고 닫힌다 (PostItem 안의 useState)</li>
-</ul>
-
-<h2 id="s6">6. Step4</h2>
-<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=4" data-name="게시판 (Step 4)" style="--h: 520px;"></div>
-
-<h3 id="s6-1">📝 Step 4 완성 체크 리스트</h3>
-<p class="note">사전 학습: <a href="#s1-9">1-9</a> · 고치는 파일: <code>App.tsx</code>만</p>
-<ul>
-  <li>글을 쓰고 새로고침해도 내가 쓴 글이 남아 있다</li>
-  <li>localStorage에 저장된 글이 없으면 posts.json을 불러온다</li>
-  <li>Step3까지의 글쓰기, 내용 펼치기 동작도 그대로 유지된다</li>
-</ul>
-<p>다른 브라우저에서 열면 내 글이 보이지 않는다. 모두가 같은 글을 보려면 서버가 필요하다 → 8주차</p>
-
-<h2 id="s7">7. 기본 템플릿</h2>
-<p>화면 모양과 스타일만 들어 있는 시작 코드입니다. 파일 5개를 만들고 붙여 넣으면 아래처럼 보입니다. 기능(state · props · 이벤트)은 Step 1부터 직접 붙입니다.</p>
-<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=0" data-name="기본 템플릿 화면" style="--h: 360px;"></div>
-
+<h3 id="s3-0">🧱 시작 템플릿</h3>
+<p>화면 모양과 스타일만 들어 있는 시작 코드입니다. 기능(state · props · 이벤트)은 직접 붙입니다.</p>
+<ol>
+  <li><code>src/types.ts</code>, <code>src/components/PostList.tsx</code>, <code>src/components/PostItem.tsx</code> 파일을 만든다.</li>
+  <li><code>src/App.tsx</code>의 내용을 모두 지운다.</li>
+  <li>아래 코드 4개를 [복사]해서 각 파일에 붙여 넣는다.</li>
+  <li><code>npm run dev</code> 화면이 아래처럼 보이면 시작.</li>
+</ol>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=0" data-name="시작 템플릿 화면" data-label="시작 템플릿을 붙여 넣은 화면" style="--h: 360px;"></div>
 <div class="demo" data-code-only data-name="src/types.ts">
 <textarea class="src" data-lang="tsx" data-file="tpl-types.ts">// 게시글 하나의 모양
 export interface Post {
@@ -1044,6 +960,36 @@ const styles: Record&lt;string, React.CSSProperties&gt; = {
 
 export default PostItem;</textarea>
 </div>
+
+<h3 id="s3-1">🎯 Step 1에서 만들 것</h3>
+<p>저장된 글 목록 화면을 구성한다.<br>아직 글쓰기는 하지 않는다.</p>
+<p class="note">위의 시작 템플릿에서 시작한다. 사전 학습: <a href="#s1-1">1-1</a> · <a href="#s1-2">1-2</a> · <a href="#s1-3">1-3</a> · <a href="#s1-4">1-4</a></p>
+<pre class="rule"><code>src/
+├─ types.ts
+├─ App.tsx               ✏️ posts 상태 · posts.json 불러오기 · PostList에 넘기기
+└─ components/
+   ├─ PostList.tsx       ✏️ posts를 props로 받아 map
+   ├─ PostItem.tsx       ✏️ post를 props로 받아 제목 · 작성자 · 내용 표시
+   └─ PostFormModal.tsx</code></pre>
+
+<h4>🧩 posts.json 불러오기</h4>
+<ul>
+  <li>App에 posts 상태 만들기 (<code>Post[]</code>)</li>
+  <li>useEffect + fetch로 <code>/posts.json</code>을 불러와 posts에 넣기</li>
+</ul>
+
+<h4>🧩 목록 표시</h4>
+<ul>
+  <li>App → PostList → PostItem으로 props 넘기기</li>
+  <li>글마다 제목 · 작성자 · 내용 표시</li>
+  <li>"전체 글 3개"처럼 글 개수 표시</li>
+</ul>
+
+<h2 id="s4">4. Step2</h2>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=2" data-name="게시판 (Step 2)" style="--h: 520px;"></div>
+
+<h3 id="s4-0">🧱 시작 템플릿</h3>
+<p><code>src/components/PostFormModal.tsx</code> 파일을 만들고 아래 코드를 붙여 넣습니다. 모달 배경 · 입력칸 3개 · 취소 · 등록 버튼 모양만 있습니다. App.tsx에서 주석으로 막아 둔 모달 import와 모달 그리는 줄은 이번 Step에서 직접 풉니다.</p>
 <div class="demo" data-code-only data-name="src/components/PostFormModal.tsx" style="--h: 560px;">
 <textarea class="src" data-lang="tsx" data-file="tpl-PostFormModal.tsx">function PostFormModal() {
   return (
@@ -1131,6 +1077,66 @@ const styles: Record&lt;string, React.CSSProperties&gt; = {
 
 export default PostFormModal;</textarea>
 </div>
+
+<h3 id="s4-1">🎯 Step 2에서 추가되는 기능</h3>
+<p class="note">사전 학습: <a href="#s1-5">1-5</a> · <a href="#s1-6">1-6</a></p>
+<pre class="rule"><code>src/
+├─ types.ts
+├─ App.tsx               ✏️ isModalOpen 상태 · 글쓰기 버튼 · 모달 그리기
+└─ components/
+   ├─ PostList.tsx
+   ├─ PostItem.tsx
+   └─ PostFormModal.tsx  ✏️ 입력값 상태 · 취소(onClose) · 등록</code></pre>
+
+<h4>✔️ 1. 글쓰기 모달 열고 닫기</h4>
+<ul>
+  <li>"글쓰기" 버튼을 누르면 모달이 열린다</li>
+  <li>"취소"를 누르면 닫힌다 (App이 넘겨 준 <code>onClose</code> 부르기)</li>
+</ul>
+
+<h4>✔️ 2. 입력 폼</h4>
+<ul>
+  <li>제목 · 작성자 · 내용을 객체 하나로 관리</li>
+  <li>빈 칸이 있으면 alert</li>
+  <li>"등록"을 누르면 입력한 값이 alert로 출력되고 모달이 닫히면 성공 (목록에 넣는 건 Step 3)</li>
+</ul>
+
+<h2 id="s5">5. Step3</h2>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=3" data-name="게시판 (Step 3)" style="--h: 520px;"></div>
+
+<h3 id="s5-1">🎯 Step 3에서 추가되는 기능</h3>
+<p class="note">사전 학습: <a href="#s1-5">1-5</a> · <a href="#s1-7">1-7</a> · <a href="#s1-8">1-8</a></p>
+<pre class="rule"><code>src/
+├─ types.ts
+├─ App.tsx               ✏️ handleAdd 만들어 모달에 onAdd로 넘기기
+└─ components/
+   ├─ PostList.tsx
+   ├─ PostItem.tsx       ✏️ isOpen 상태 · 제목 누르면 내용 펼치기
+   └─ PostFormModal.tsx  ✏️ 새 글을 만들어 onAdd로 App에 보내기</code></pre>
+
+<h4>✔️ 1. 새 글을 목록에 추가</h4>
+<ul>
+  <li>"등록"을 누르면 새 글이 목록 <b>맨 위</b>에 추가된다 (id는 <code>Date.now()</code>)</li>
+  <li>전체 글 개수도 함께 늘어난다</li>
+</ul>
+
+<h4>✔️ 2. 제목 누르면 내용 펼치기</h4>
+<ul>
+  <li>처음에는 제목 · 작성자만 보이고, 제목을 누르면 내용이 보인다</li>
+  <li>글마다 따로 열리고 닫힌다 (PostItem 안의 useState)</li>
+</ul>
+
+<h2 id="s6">6. Step4</h2>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=4" data-name="게시판 (Step 4)" style="--h: 520px;"></div>
+
+<h3 id="s6-1">📝 Step 4 완성 체크 리스트</h3>
+<p class="note">사전 학습: <a href="#s1-9">1-9</a> · 고치는 파일: <code>App.tsx</code>만</p>
+<ul>
+  <li>글을 쓰고 새로고침해도 내가 쓴 글이 남아 있다</li>
+  <li>localStorage에 저장된 글이 없으면 posts.json을 불러온다</li>
+  <li>Step3까지의 글쓰기, 내용 펼치기 동작도 그대로 유지된다</li>
+</ul>
+<p>다른 브라우저에서 열면 내 글이 보이지 않는다. 모두가 같은 글을 보려면 서버가 필요하다 → 8주차</p>
 
 <footer class="session-footer"><a href="6-React.html">← 이전 · 6. React</a><a href="index.html">전체 목차 →</a></footer>
 </main>
