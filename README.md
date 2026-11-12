@@ -11,6 +11,7 @@
 - [4. HTML · CSS · JS 복습 및 TODO LIST 만들기](4-review.html): 흐름을 복습하고 할 일 목록을 만듭니다.
 - [5. TypeScript](5-TS.html): TS 프로젝트를 만들고 기본 문법을 익힌 뒤, 할 일 목록을 TS로 옮깁니다.
 - [6. React](6-React.html): Vite로 React 프로젝트를 만들고, 기본 훅으로 회원가입 화면을 Step 1~4로 만듭니다.
+- [7. React 게시판](7-Board.html): 컴포넌트를 파일로 나누고 props로 연결해, 저장된 글 목록과 글쓰기 모달이 있는 게시판을 Step 1~4로 만듭니다.
 
 예시 이미지는 `assets/`, HTML만으로 만든 미리보기 문서는 `examples/`에 있습니다.
 

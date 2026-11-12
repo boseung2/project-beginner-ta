@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "게시판에 오신 것을 환영합니다",
+    "author": "TA",
+    "content": "7주차에는 React로 게시판을 만듭니다."
+  },
+  {
+    "id": 2,
+    "title": "React 처음 써 봤어요",
+    "author": "민수",
+    "content": "useState로 값이 바뀌면 화면이 다시 그려지는 게 신기했어요."
+  },
+  {
+    "id": 3,
+    "title": "오늘 실습 질문 있어요",
+    "author": "지영",
+    "content": "map을 쓸 때 key는 왜 넣어야 하나요?"
+  }
+]

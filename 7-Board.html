@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="초급프로젝트 TA SESSION. React로 게시판을 만들고, 미리 저장해 둔 글을 불러와 목록을 보여 준 뒤 글쓰기로 글을 추가합니다.">
+<title>7. React 게시판 | 초급프로젝트 TA SESSION</title>
+<link rel="stylesheet" href="session.css">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1f2328; --muted: #6b7280; --line: #e5e7eb;
+    --code-bg: #f6f6f4; --accent: #2563eb; --pane: #fafafa;
+    --tag: #b91c1c; --attr: #7c3aed; --str: #15803d; --cmt: #9ca3af; --kw: #1d4ed8;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  nav.toc {
+    position: sticky; top: 0; height: 100vh; overflow: auto;
+    border-right: 1px solid var(--line); padding: 20px 16px; font-size: 13px;
+  }
+  nav.toc h1 { font-size: 22px; margin: 0 0 12px; }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 2px 0; }
+  nav.toc li ol { padding-left: 14px; }
+  nav.toc a { color: var(--fg); text-decoration: none; display: block; padding: 3px 6px; border-radius: 4px; }
+  nav.toc a:hover { background: var(--code-bg); }
+  nav.toc a.sub { color: var(--muted); }
+  main { padding: 32px 48px 120px; max-width: 1400px; }
+  h1.title { font-size: 40px; margin: 0 0 8px; }
+  .subtitle { color: var(--muted); margin: 0 0 40px; }
+  h2 { font-size: 24px; margin: 56px 0 16px; padding-top: 8px; }
+  h3 { font-size: 18px; margin: 32px 0 10px; }
+  h4 { font-size: 15px; margin: 22px 0 8px; color: #374151; }
+  p.note { color: var(--muted); font-size: 14px; margin: 8px 0 16px; }
+
+  /* 정리 표 */
+  table.ref { border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  table.ref td { border: 1px solid var(--line); padding: 5px 12px; vertical-align: top; }
+  table.ref td:first-child { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
+
+  /* 코드 + 실행 결과 */
+  .demo { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 16px 0 28px; background: var(--bg); }
+  .demo .bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--pane); font-size: 13px; }
+  .demo .bar .name { font-weight: 600; margin-right: auto; }
+  .demo .bar .file { font-size: 12px; color: var(--muted); background: transparent; }
+  .demo .bar button { font: inherit; font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
+  .demo .bar button:hover { border-color: var(--accent); color: var(--accent); }
+  .demo .panes { display: grid; grid-template-columns: 1fr 1fr; }
+  .demo .panes > div { min-width: 0; }
+  .demo .code { background: var(--code-bg); border-right: 1px solid var(--line); }
+  .demo .code pre { margin: 0; padding: 14px 16px; overflow: auto; max-height: var(--h, 460px); font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
+  .demo .result { display: flex; flex-direction: column; }
+  .demo .result .label { font-size: 12px; color: var(--muted); padding: 6px 12px; border-bottom: 1px dashed var(--line); }
+  .demo iframe { border: 0; width: 100%; height: var(--frame-h, var(--h, 460px)); background: #fff; flex: 0 0 auto; }
+  .demo .panes:has(> .result:only-child) { grid-template-columns: 1fr; }
+  .demo.tall { --h: 640px; }
+  .demo.short { --h: 260px; }
+  .demo.stack .panes { grid-template-columns: 1fr; }
+  .demo.stack iframe { flex: 0 0 auto; height: max(760px, 85vh); }
+  .demo.stack .code { border-right: 0; border-top: 1px solid var(--line); }
+  .demo.stack .code pre { max-height: 520px; }
+  .demo.stack details > summary { cursor: pointer; padding: 10px 14px; font-size: 13px; color: var(--muted); background: var(--pane); user-select: none; }
+  .demo.stack details > summary:hover { color: var(--accent); }
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    main { padding: 24px 20px 80px; }
+    .demo .panes { grid-template-columns: 1fr; }
+    .demo .code { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+  /* 문법 색 */
+  .t { color: var(--tag); } .a { color: var(--attr); } .s { color: var(--str); } .c { color: var(--cmt); font-style: italic; } .k { color: var(--kw); } .n { color: var(--attr); }
+  textarea.src, textarea.run, textarea.tsc { display: none; }
+
+  /* 다이어그램 */
+  .diagram { margin: 12px 0 8px; max-width: 720px; }
+  .diagram svg { width: 100%; height: auto; }
+  .demo.code-only .code { border-right: 0; }
+  .demo.code-only .panes { grid-template-columns: 1fr; }
+
+  /* 7주차: 컴포넌트 배치도 · 연결도 */
+  .cfig { --app: #6366f1; --app-bg: #eef2ff; --list: #059669; --list-bg: #ecfdf5; --item: #0891b2; --item-bg: #ecfeff; --modal: #d97706; --modal-bg: #fff7ed; }
+  .layout-fig { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; margin: 12px 0 8px; font-size: 14px; }
+  .cbox { position: relative; border: 2px solid; border-radius: 10px; padding: 26px 14px 12px; }
+  .cbox > .ctag { position: absolute; top: -11px; left: 10px; padding: 1px 8px; border-radius: 6px; color: #fff; font: 600 12px/1.6 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .cbox.app { border-color: var(--app); background: var(--app-bg); flex: 1 1 380px; max-width: 520px; }
+  .cbox.app > .ctag { background: var(--app); }
+  .cbox.list { border-color: var(--list); background: var(--list-bg); display: flex; flex-direction: column; gap: 16px; margin-top: 18px; }
+  .cbox.list > .ctag { background: var(--list); }
+  .cbox.item { border-color: var(--item); background: #fff; padding: 20px 12px 8px; display: flex; justify-content: space-between; gap: 8px; }
+  .cbox.item > .ctag { background: var(--item); }
+  .cbox.modal { border-color: var(--modal); background: var(--modal-bg); flex: 0 1 240px; display: flex; flex-direction: column; gap: 6px; }
+  .cbox.modal > .ctag { background: var(--modal); }
+  .cfig .row { display: flex; justify-content: space-between; align-items: center; }
+  .cfig .fake-btn { display: inline-block; padding: 2px 10px; border-radius: 6px; background: #4CAF50; color: #fff; font-size: 13px; }
+  .cfig .fake-btn.line { background: #fff; color: #333; border: 1px solid #ccc; }
+  .cfig .fake-input { background: #fff; border: 1px solid #ccc; border-radius: 6px; padding: 2px 8px; color: #999; font-size: 13px; }
+  .cfig .muted { color: var(--muted); font-size: 13px; }
+  .flow-wrap { overflow-x: auto; margin: 12px 0 8px; }
+  .flow { display: grid; grid-template-columns: repeat(5, auto); align-items: center; justify-content: start; gap: 10px 6px; font-size: 14px; min-width: max-content; }
+  .flow .file { border: 2px solid; border-radius: 10px; padding: 8px 14px; background: #fff; text-align: center; min-width: 150px; font: 600 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .flow .file small { display: block; font: 400 12px/1.5 system-ui, sans-serif; color: var(--muted); }
+  .flow .file.app { border-color: var(--app); background: var(--app-bg); grid-row: span 2; align-self: stretch; display: flex; flex-direction: column; justify-content: center; }
+  .flow .file.list { border-color: var(--list); background: var(--list-bg); }
+  .flow .file.item { border-color: var(--item); background: var(--item-bg); }
+  .flow .file.modal { border-color: var(--modal); background: var(--modal-bg); }
+  .flow .arrow { text-align: center; color: #374151; font-size: 13px; padding: 0 4px; white-space: nowrap; }
+  .flow .arrow code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: 12.5px; }
+  .flow .arrow::after { content: "──▶"; display: block; color: var(--muted); letter-spacing: -1px; }
+</style>
+<style>
+  main { min-width: 0; }
+  .demo .bar { flex-wrap: wrap; }
+  .demo .bar button:hover { border-color: #333; color: #333; }
+  .demo .bar button[aria-pressed="true"] { background: #ececec; border-color: #888; }
+  .demo .bar .name { flex: 1 0 180px; }
+  .demo.resizable iframe { flex: 0 0 auto; width: 100%; max-width: 100%; height: var(--frame-h, var(--h, 360px)); align-self: flex-start; }
+  .demo.resizable .result { background: #f0f0f0; }
+  .demo.resizable .result .label { background: #fff; }
+  .ref-wrap { overflow-x: auto; }
+  table.ref.cols3 td:first-child { font-family: inherit; font-size: 14px; color: var(--muted); background: transparent; white-space: nowrap; }
+  table.ref.cols3 td:nth-child(2) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
+  pre.rule { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 14px; margin: 8px 0 12px; overflow-x: auto; }
+  figure.shot { margin: 12px 0 16px; }
+  figure.shot img { display: block; width: min(100%, 220px); height: auto; border-radius: 12px; border: 1px solid var(--line); }
+  figure.shot figcaption { margin-top: 6px; font-size: 13px; color: var(--muted); }
+  kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; background: var(--code-bg); }
+  ul.plain { padding-left: 18px; margin: 6px 0 14px; }
+  ul.plain li { margin: 3px 0; }
+  ul.plain code, p code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  main > p a, main > details a { color: inherit; }
+  details.extra { margin: 12px 0 24px; }
+  details.extra > summary { cursor: pointer; }
+  /* JS: 콘솔 패널 · ▶ 실행(data-manual) */
+  .demo .console { flex: 1 1 auto; border-top: 1px solid var(--line); background: #fff; }
+  .demo .console .lines { max-height: var(--console-h, 320px); overflow: auto; font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .demo .console .line { display: flex; gap: 12px; min-height: calc(1.55em + 6px); padding: 3px 12px; border-bottom: 1px solid #f0f0f0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .demo .console .line .where { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .demo .console .line.warn { background: #fffbeb; color: #92400e; border-bottom-color: #fde68a; }
+  .demo .console .line.error { background: #fef2f2; color: #b91c1c; border-bottom-color: #fecaca; }
+  .demo .console .empty { padding: 6px 12px; font-size: 12px; color: var(--cmt); }
+  .demo.console-only .console { border-top: 0; }
+  .demo.console-only .console .lines { max-height: var(--console-h, var(--h, 460px)); }
+  .demo .run-gate { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: var(--frame-h, var(--h, 460px)); background: var(--pane); font-size: 13px; color: var(--muted); }
+  .demo.stack .run-gate { height: max(760px, 85vh); }
+  .demo.stack.resizable .run-gate { height: var(--frame-h, var(--h, 360px)); }
+  .demo .run-gate button { font: inherit; padding: 6px 16px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--fg); cursor: pointer; }
+  .demo .run-gate button:hover { border-color: #333; color: #333; }
+  .demo .run-gate[hidden] { display: none; }
+  @media print {
+    .layout { display: block; }
+    nav.toc, .demo .bar button { display: none; }
+    main { padding: 0; max-width: none; }
+    .demo .code pre { max-height: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+    h2, h3 { break-after: avoid; }
+    .demo .console .lines { max-height: none; overflow: visible; }
+    .demo .run-gate { height: auto; padding: 12px; }
+    .demo .run-gate button { display: none; }
+  }
+  /* TS 데모: 타입 검사 상자 · 오류 줄 빨간 물결 */
+  .demo .console.tsc { flex: 0 0 auto; border-top: 1px solid var(--line); }
+  .demo .console.tsc .label { font-size: 12px; color: var(--muted); padding: 6px 12px; border-bottom: 1px dashed var(--line); }
+  .demo .console.tsc .line.ok { background: #f0fdf4; color: #15803d; }
+  .demo .console.tsc .line .body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .demo .console.tsc .line .body code { color: #7f1d1d; background: transparent; padding: 0; font-weight: 600; }
+  .demo.console-only .console.tsc + .console { border-top: 1px solid var(--line); }
+  .demo .console.tsc .line .body .en { color: #9a6b6b; font-size: 11.5px; }
+  .demo .code .ts-bad { text-decoration: underline wavy #dc2626; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="자료 목차">
+  <a class="session-brand" href="index.html">초급프로젝트<br>TA SESSION</a>
+  <div class="session-nav">
+    <a href="0-web-flow.html">0. 웹 개발 흐름</a>
+    <a href="1-HTML.html">1. HTML</a>
+    <a href="2-CSS.html">2. CSS</a>
+    <a href="3-JS.html">3. JavaScript</a>
+    <a href="4-review.html">4. HTML · CSS · JS 복습</a>
+    <a href="5-TS.html">5. TypeScript</a>
+    <a href="6-React.html">6. React</a>
+    <a href="7-Board.html" aria-current="page">7. React 게시판</a>
+  </div>
+  <h1>7. React 게시판</h1>
+  <ol>
+    <li><a href="#s0">0. 프로젝트 세팅</a><ol>
+      <li><a class="sub" href="#s0-1">프로젝트 구조</a></li>
+      <li><a class="sub" href="#s0-2">컴포넌트 기본 구조</a></li>
+      <li><a class="sub" href="#s0-3">import와 export</a></li>
+      <li><a class="sub" href="#s0-4">컴포넌트 연결과 props</a></li>
+    </ol></li>
+    <li><a href="#s1">1. 사전 학습</a><ol>
+      <li><a class="sub" href="#s1-1">게시글 하나를 상태로</a></li>
+      <li><a class="sub" href="#s1-2">게시글 리스트를 상태로 + map</a></li>
+      <li><a class="sub" href="#s1-3">파일에서 리스트 불러오기 (useEffect + fetch)</a></li>
+      <li><a class="sub" href="#s1-4">컴포넌트로 나누기 + props</a></li>
+      <li><a class="sub" href="#s1-5">열고 닫기</a></li>
+      <li><a class="sub" href="#s1-6">입력 폼으로 새 글 만들기</a></li>
+      <li><a class="sub" href="#s1-7">리스트에 하나 추가하기</a></li>
+      <li><a class="sub" href="#s1-8">함수를 props로 넘기기 (자식 → 부모)</a></li>
+      <li><a class="sub" href="#s1-9">새로고침해도 남기기 (localStorage)</a></li>
+    </ol></li>
+    <li><a href="#s2">2. 실습 단계 요약</a><ol>
+      <li><a class="sub" href="#s2-1">컴포넌트 관계</a></li>
+    </ol></li>
+    <li><a href="#s3">3. Step1</a><ol>
+      <li><a class="sub" href="#s3-1">Step 1에서 만들 것</a></li>
+    </ol></li>
+    <li><a href="#s4">4. Step2</a><ol>
+      <li><a class="sub" href="#s4-1">Step 2에서 추가되는 기능</a></li>
+    </ol></li>
+    <li><a href="#s5">5. Step3</a><ol>
+      <li><a class="sub" href="#s5-1">Step 3에서 추가되는 기능</a></li>
+    </ol></li>
+    <li><a href="#s6">6. Step4</a><ol>
+      <li><a class="sub" href="#s6-1">Step 4 완성 체크 리스트</a></li>
+    </ol></li>
+    <li><a href="#s7">7. 기본 템플릿</a></li>
+  </ol>
+</nav>
+<main>
+<h1 class="title">7. React 게시판</h1>
+<p class="subtitle">초급프로젝트 TA SESSION · 미리 저장해 둔 글(posts.json)을 불러와 목록을 만들고, 글쓰기 폼으로 글을 추가합니다.</p>
+
+<h2 id="s0">0. 프로젝트 세팅</h2>
+<p>먼저 터미널에서 <code>node -v</code>로 버전을 확인합니다. (20.19 이상)</p>
+<pre class="rule"><code>npm create vite@latest my-board -- --template react-ts
+
+cd my-board
+
+npm install
+
+npm run dev</code></pre>
+<p class="note">첫 줄 실행 중 질문이 나오면: <b>Which linter to use?</b> → 그대로 <kbd>Enter</kbd> · <b>Install with npm and start now?</b> → <b>No</b> 고르고 아래 명령을 직접 칩니다.</p>
+<p><b>VS Code 자동 import</b>: VS Code에서는 <code>my-board</code> 폴더를 엽니다. (파일 → 폴더 열기) 확장(Extensions)에서 <b>Auto Import - ES6, TS, JSX, TSX</b>를 설치합니다.</p>
+<ul>
+  <li><code>useState</code>, <code>PostList</code>처럼 다른 파일에 있는 이름은 입력하다가 자동완성 목록에서 고르면 맨 위에 import가 붙습니다.</li>
+  <li>이미 빨간 줄이 생겼으면 그 위에 커서를 두고 <kbd>Cmd</kbd>+<kbd>.</kbd> (Windows <kbd>Ctrl</kbd>+<kbd>.</kbd>) → <b>Add import</b>를 고릅니다.</li>
+</ul>
+<p>실습 전에 파일을 준비합니다. 아래 순서대로 하면 됩니다.</p>
+<ol>
+  <li><code>public/posts.json</code> 파일을 만들고 아래 글 3개를 붙여 넣는다. (미리 저장해 둔 데이터)</li>
+  <li><code>src/types.ts</code> 파일을 만든다.</li>
+  <li><code>src</code> 안에 <code>components</code> 폴더를 만들고, 그 안에 <code>PostList.tsx</code> · <code>PostItem.tsx</code> · <code>PostFormModal.tsx</code> 파일을 만든다.</li>
+  <li><code>src/App.tsx</code>의 내용을 모두 지운다.</li>
+  <li>2~4의 파일 5개에 <a href="#s7">7. 기본 템플릿</a>의 코드를 [복사]해서 붙여 넣는다.</li>
+  <li><code>npm run dev</code> 화면에 "게시판" 제목과 "글 제목" 칸 2개가 보이면 준비 끝.</li>
+</ol>
+<div class="demo" data-code-only data-name="public/posts.json">
+<textarea class="src" data-lang="tsx" data-file="posts.json">[
+  {
+    "id": 1,
+    "title": "게시판에 오신 것을 환영합니다",
+    "author": "TA",
+    "content": "7주차에는 React로 게시판을 만듭니다."
+  },
+  {
+    "id": 2,
+    "title": "React 처음 써 봤어요",
+    "author": "민수",
+    "content": "useState로 값이 바뀌면 화면이 다시 그려지는 게 신기했어요."
+  },
+  {
+    "id": 3,
+    "title": "오늘 실습 질문 있어요",
+    "author": "지영",
+    "content": "map을 쓸 때 key는 왜 넣어야 하나요?"
+  }
+]</textarea>
+</div>
+<p>나머지 파일은 고치지 않습니다.</p>
+<div class="ref-wrap"><table class="ref"><thead>
+<tr><th>파일</th><th>어떻게</th></tr>
+</thead><tbody>
+<tr><td>src/main.tsx</td><td>그대로 둔다 (App을 화면에 그리는 파일)</td></tr>
+<tr><td>src/index.css</td><td>그대로 둔다. 6주차처럼 바꾸지 않아도 됩니다. 스타일은 각 컴포넌트 안 <code>styles</code>에 있습니다.</td></tr>
+<tr><td>src/App.css</td><td>쓰지 않음 (새 App.tsx가 불러오지 않음). 지워도 되고 둬도 됩니다.</td></tr>
+<tr><td>src/assets/</td><td>쓰지 않음 (Vite 첫 화면의 그림). 지워도 되고 둬도 됩니다.</td></tr>
+</tbody></table></div>
+
+<h3 id="s0-1">0-1. 프로젝트 구조</h3>
+<pre class="rule"><code>my-board/
+├─ public/
+│  └─ posts.json            ← 미리 저장해 둔 글
+└─ src/
+   ├─ main.tsx              ← 그대로 둠
+   ├─ index.css             ← 그대로 둠
+   ├─ types.ts              ← 게시글 모양 (interface Post)
+   ├─ App.tsx               ← 게시판 전체 · 글 목록 상태
+   └─ components/
+      ├─ PostList.tsx       ← 글 목록
+      ├─ PostItem.tsx       ← 글 하나
+      └─ PostFormModal.tsx  ← 글쓰기 모달</code></pre>
+<p>컴포넌트는 <b>파일 하나에 하나</b>씩 두고, 스타일(<code>styles</code>)도 그 파일 안에 둡니다. <code>index.css</code>는 Vite 기본 그대로 둡니다.</p>
+
+<p>화면에서는 컴포넌트가 이렇게 배치됩니다. 색이 다른 상자 하나가 파일 하나입니다.</p>
+<div class="cfig layout-fig" role="img" aria-label="게시판 화면의 컴포넌트 배치: App 안에 PostList, PostList 안에 PostItem 여러 개, 글쓰기를 누르면 PostFormModal이 화면 위에 뜬다">
+  <div class="cbox app"><span class="ctag">App.tsx</span>
+    <div class="row"><b>게시판</b><span class="fake-btn">글쓰기</span></div>
+    <div class="muted">전체 글 3개</div>
+    <div class="cbox list"><span class="ctag">PostList.tsx</span>
+      <div class="cbox item"><span class="ctag">PostItem.tsx</span><span>게시판에 오신 것을 환영합니다</span><span class="muted">TA</span></div>
+      <div class="cbox item"><span class="ctag">PostItem.tsx</span><span>React 처음 써 봤어요</span><span class="muted">민수</span></div>
+      <div class="cbox item"><span class="ctag">PostItem.tsx</span><span>오늘 실습 질문 있어요</span><span class="muted">지영</span></div>
+    </div>
+  </div>
+  <div class="cbox modal"><span class="ctag">PostFormModal.tsx</span>
+    <b>글쓰기</b>
+    <span class="fake-input">제목</span><span class="fake-input">작성자</span><span class="fake-input">내용</span>
+    <div class="row" style="justify-content:flex-end;gap:6px"><span class="fake-btn line">취소</span><span class="fake-btn">등록</span></div>
+    <span class="muted">글쓰기를 누르면 화면 위에 뜬다</span>
+  </div>
+</div>
+<p class="note">PostItem은 파일 하나(<code>PostItem.tsx</code>)를 글 개수만큼 여러 번 그린 것입니다.</p>
+
+<h3 id="s0-2">0-2. 컴포넌트 기본 구조</h3>
+<p><b>컴포넌트</b>는 화면 한 조각을 만드는 함수입니다. 실습의 컴포넌트 파일은 모두 아래와 같은 순서로 되어 있습니다. 좋아요 버튼 하나로 보겠습니다.</p>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=0-2" data-name="src/components/LikeButton.tsx" style="--h: 420px;">
+<textarea class="src" data-lang="tsx" data-file="c-LikeButton.tsx">// ① 가져오기: 필요한 기능을 다른 곳에서 가져온다
+import { useState } from "react";
+
+// ② 컴포넌트: 대문자로 시작하는 함수
+function LikeButton() {
+  // ③ 상태와 함수: 화면에 쓸 값과 동작을 준비한다
+  const [count, setCount] = useState&lt;number&gt;(0);
+
+  const handleClick = () =&gt; {
+    setCount(count + 1);
+  };
+
+  // ④ 화면: 그릴 내용을 JSX로 return 한다
+  return (
+    &lt;button style={styles.button} onClick={handleClick}&gt;
+      👍 좋아요 {count}
+    &lt;/button&gt;
+  );
+}
+
+// ⑤ 스타일: 이 컴포넌트에서 쓰는 스타일
+const styles: Record&lt;string, React.CSSProperties&gt; = {
+  button: {
+    padding: "8px 14px",
+    border: "1px solid #ccc",
+    borderRadius: "20px",
+    backgroundColor: "white",
+    fontSize: "15px",
+    cursor: "pointer",
+  },
+};
+
+// ⑥ 내보내기: 다른 파일에서 쓸 수 있게 내보낸다
+export default LikeButton;</textarea>
+</div>
+<div class="ref-wrap"><table class="ref"><thead>
+<tr><th>부분</th><th>하는 일</th></tr>
+</thead><tbody>
+<tr><td>① <code>import</code></td><td>useState 같은 기능, 다른 파일의 컴포넌트 · 타입을 가져온다</td></tr>
+<tr><td>② <code>function LikeButton()</code></td><td>컴포넌트 이름은 <b>대문자</b>로 시작 (파일 이름과 같게)</td></tr>
+<tr><td>③ 상태 · 함수</td><td><code>return</code> 위에서 useState, 버튼을 눌렀을 때 할 일 등을 준비</td></tr>
+<tr><td>④ <code>return ( ... )</code></td><td>화면에 그릴 내용 (JSX). 태그는 하나로 감싼다</td></tr>
+<tr><td>⑤ <code>styles</code></td><td>이 컴포넌트에서 쓰는 스타일</td></tr>
+<tr><td>⑥ <code>export default</code></td><td>다른 파일에서 쓸 수 있게 내보낸다</td></tr>
+</tbody></table></div>
+
+<h3 id="s0-3">0-3. import와 export</h3>
+<p>컴포넌트를 파일마다 나누면, 파일끼리 <b>export(내보내기)</b>와 <b>import(가져오기)</b>로 연결합니다.</p>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=0-3" data-name="src/App.tsx" style="--h: 300px;">
+<textarea class="src" data-lang="tsx" data-file="part0-3.tsx">import LikeButton from "./components/LikeButton";   // LikeButton.tsx 파일에서 가져오기
+
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;h2&gt;좋아요 연습&lt;/h2&gt;
+      &lt;LikeButton /&gt;
+      &lt;LikeButton /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;   // main.tsx가 App을 가져다 화면에 그린다</textarea>
+</div>
+<p>App에서 가져온 <code>LikeButton</code>을 태그처럼 <code>&lt;LikeButton /&gt;</code>로 씁니다. 두 번 쓰면 버튼이 두 개 생기고, 각자 자기 count를 가집니다.</p>
+<div class="ref-wrap"><table class="ref"><thead>
+<tr><th>내보내는 쪽</th><th>가져오는 쪽</th></tr>
+</thead><tbody>
+<tr><td><code>export default LikeButton;</code><br>(파일에 하나, 보통 컴포넌트)</td><td><code>import LikeButton from "./components/LikeButton";</code></td></tr>
+<tr><td><code>export interface Post { ... }</code><br>(타입 앞에 export)</td><td><code>import type { Post } from "./types";</code></td></tr>
+</tbody></table></div>
+<div class="demo" data-code-only data-name="src/types.ts">
+<textarea class="src" data-lang="tsx" data-file="ex0-3-types.ts">// src/types.ts: 게시글 모양을 내보낸다
+export interface Post {
+  id: number;
+  title: string;
+  author: string;
+  content: string;
+}</textarea>
+</div>
+<div class="demo" data-code-only data-name="src/components/PostItem.tsx (맨 위)">
+<textarea class="src" data-lang="tsx" data-file="ex0-3-use-type.tsx">// src/components/PostItem.tsx: 타입은 import type으로 가져온다
+import type { Post } from "../types";</textarea>
+</div>
+<ul>
+  <li>주소는 지금 파일 기준입니다. <code>./</code>는 같은 폴더, <code>../</code>는 한 칸 위 폴더입니다. (<code>components</code> 안의 파일에서 <code>types.ts</code>는 <code>../types</code>)</li>
+  <li>파일 끝의 <code>.tsx</code>, <code>.ts</code>는 쓰지 않습니다.</li>
+  <li>import를 직접 치기 어려우면 위의 <b>VS Code 자동 import</b>를 씁니다.</li>
+</ul>
+
+<h3 id="s0-4">0-4. 컴포넌트 연결과 props</h3>
+<p>컴포넌트 안에서 다른 컴포넌트를 가져다 쓰면 <b>부모와 자식</b>이 됩니다. 파일은 모두 따로 있고, 부모 파일이 자식 파일을 import 해서 태그로 씁니다.</p>
+<p>부모가 자식에게 값을 넘길 때 쓰는 것이 <b>props</b>입니다. 태그에 <code>이름={값}</code>으로 넘기고, 자식은 함수의 매개변수로 받습니다.</p>
+<div class="demo" data-code-only data-name="src/components/Hello.tsx (자식)">
+<textarea class="src" data-lang="tsx" data-file="c-Hello.tsx">// 자식 컴포넌트: 부모가 넘겨 준 name을 props로 받는다
+function Hello({ name }: { name: string }) {
+  return &lt;p&gt;안녕하세요, {name}님&lt;/p&gt;;
+}
+
+export default Hello;</textarea>
+</div>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=0-4" data-name="src/App.tsx (부모)" style="--h: 260px;">
+<textarea class="src" data-lang="tsx" data-file="part0-4.tsx">import Hello from "./components/Hello";
+
+// 부모 컴포넌트: Hello를 가져와 값만 바꿔 여러 번 쓴다
+function App() {
+  return (
+    &lt;div&gt;
+      &lt;Hello name="민수" /&gt;
+      &lt;Hello name="지영" /&gt;
+      &lt;Hello name="TA" /&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default App;</textarea>
+</div>
+<p class="note"><code>&lt;Hello name="민수" /&gt;</code>로 넘기면 Hello는 <code>{ name }</code>으로 받습니다. 받는 쪽에는 <code>{ name: string }</code>처럼 타입도 적습니다. 같은 컴포넌트를 값만 바꿔 여러 번 쓸 수 있습니다.</p>
+<p>게시판의 파일 4개는 이렇게 연결됩니다. 화살표 위 글자가 넘기는 props입니다.</p>
+<div class="cfig flow-wrap"><div class="flow" role="img" aria-label="App이 PostList에 posts를, PostList가 PostItem에 post를, App이 PostFormModal에 onAdd와 onClose를 넘긴다">
+  <div class="file app">App.tsx<small>posts (state)</small></div>
+  <div class="arrow"><code>posts</code></div>
+  <div class="file list">PostList.tsx</div>
+  <div class="arrow"><code>post</code></div>
+  <div class="file item">PostItem.tsx</div>
+  <div class="arrow"><code>onClose</code> · <code>onAdd</code></div>
+  <div class="file modal">PostFormModal.tsx</div>
+</div></div>
+<ul>
+  <li>App이 글 목록 <code>posts</code>를 state로 갖고 PostList에 넘깁니다.</li>
+  <li>PostList는 받은 posts를 map 하면서 글 하나(<code>post</code>)씩 PostItem에 넘깁니다.</li>
+  <li>PostFormModal에는 닫기 · 추가 함수를 넘깁니다. (Step 2 · 3)</li>
+</ul>
+<div class="ref-wrap"><table class="ref"><thead>
+<tr><th></th><th>state</th><th>props</th></tr>
+</thead><tbody>
+<tr><td>누가 갖나</td><td>컴포넌트 자신 (<code>useState</code>)</td><td>부모가 넘겨 줌</td></tr>
+<tr><td>바꿀 수 있나</td><td>set 함수로 바꿈 → 화면이 다시 그려짐</td><td>받은 쪽은 읽기만</td></tr>
+<tr><td>게시판에서</td><td>App의 <code>posts</code> (글 목록)</td><td>PostList의 <code>posts</code>, PostItem의 <code>post</code></td></tr>
+</tbody></table></div>
+<p class="note">자식이 목록을 바꾸고 싶으면(새 글 추가) 부모가 넘겨 준 <b>함수</b>를 부릅니다. 이건 1-8에서 봅니다.</p>
+
+<h2 id="s1">1. 사전 학습</h2>
+<p>실습에 필요한 내용을 짧은 예제로 먼저 봅니다. 오른쪽 화면은 직접 눌러 볼 수 있습니다. 코드 위의 파일 이름은 프로젝트 안의 위치입니다. 게시글 모양 <code>Post</code>는 <a href="#s0-3">0-3</a>의 <code>src/types.ts</code>에서 가져옵니다.</p>
+<div class="ref-wrap"><table class="ref"><thead>
+<tr><th>번호</th><th>내용</th><th>쓰는 곳</th></tr>
+</thead><tbody>
+<tr><td>1-1</td><td>게시글 하나를 상태로</td><td>Step 1</td></tr>
+<tr><td>1-2</td><td>게시글 리스트를 상태로 + map</td><td>Step 1</td></tr>
+<tr><td>1-3</td><td>파일에서 리스트 불러오기</td><td>Step 1</td></tr>
+<tr><td>1-4</td><td>컴포넌트로 나누기 + props</td><td>Step 1</td></tr>
+<tr><td>1-5</td><td>열고 닫기</td><td>Step 2 · 3</td></tr>
+<tr><td>1-6</td><td>입력 폼으로 새 글 만들기</td><td>Step 2</td></tr>
+<tr><td>1-7</td><td>리스트에 하나 추가하기</td><td>Step 3</td></tr>
+<tr><td>1-8</td><td>함수를 props로 넘기기 (자식 → 부모)</td><td>Step 3</td></tr>
+<tr><td>1-9</td><td>새로고침해도 남기기</td><td>Step 4</td></tr>
+</tbody></table></div>
+
+<h3 id="s1-1">1-1. 게시글 하나를 상태로</h3>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=1-1" data-name="src/PostExample.tsx" style="--h: 300px;">
+<textarea class="src" data-lang="tsx" data-file="part1-1.tsx">import { useState } from "react";
+import type { Post } from "./types";
+
+function PostExample() {
+  // 게시글 하나를 상태로
+  const [post, setPost] = useState&lt;Post&gt;({
+    id: 1,
+    title: "첫 번째 글",
+    author: "TA",
+    content: "게시판에 오신 것을 환영합니다.",
+  });
+
+  return (
+    &lt;div&gt;
+      &lt;h3&gt;{post.title}&lt;/h3&gt;
+      &lt;p&gt;작성자: {post.author}&lt;/p&gt;
+      &lt;p&gt;{post.content}&lt;/p&gt;
+      &lt;button onClick={() =&gt; setPost({ ...post, title: "제목이 바뀌었어요" })}&gt;
+        제목 바꾸기
+      &lt;/button&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default PostExample;</textarea>
+</div>
+<p class="note"><code>interface Post</code>는 <code>types.ts</code>에 한 번만 쓰고, 쓰는 파일에서 <code>import type { Post } from "./types";</code>로 가져옵니다.</p>
+
+<h3 id="s1-2">1-2. 게시글 리스트를 상태로 + map</h3>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=1-2" data-name="src/ListExample.tsx" style="--h: 300px;">
+<textarea class="src" data-lang="tsx" data-file="part1-2.tsx">import { useState } from "react";
+import type { Post } from "./types";
+
+function ListExample() {
+  // 게시글 리스트를 상태로 (바꾸는 함수는 1-7에서 씁니다)
+  const [posts] = useState&lt;Post[]&gt;([
+    { id: 1, title: "첫 번째 글", author: "TA", content: "환영합니다." },
+    { id: 2, title: "두 번째 글", author: "민수", content: "반가워요." },
+  ]);
+
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;li key={post.id}&gt;
+          {post.title} - {post.author}
+        &lt;/li&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+export default ListExample;</textarea>
+</div>
+<p class="note">map으로 그릴 때 <code>key</code>에는 글마다 다른 값(<code>id</code>)을 넣습니다. React가 어느 글이 바뀌었는지 구분하는 이름표입니다.</p>
+
+<h3 id="s1-3">1-3. 파일에서 리스트 불러오기 (useEffect + fetch)</h3>
+<p><code>fetch(주소)</code>는 파일이나 서버에 있는 데이터를 가져옵니다. 가져오는 데 시간이 걸리기 때문에, 다 가져온 뒤에 할 일을 <code>.then</code>으로 이어 씁니다.</p>
+<pre class="rule"><code>fetch("/posts.json")                  ① posts.json 파일을 요청
+  .then((res) =&gt; res.json())          ② 받은 응답(res)을 데이터(배열)로 바꾸기
+  .then((data) =&gt; setPosts(data));    ③ 바꾼 데이터를 state에 넣기 → 화면에 그려짐</code></pre>
+<ul>
+  <li><code>.then</code> 안의 함수는 앞 단계가 끝나면 실행되고, 앞 단계의 결과를 받습니다. ②의 결과가 ③의 <code>data</code>로 들어갑니다.</li>
+  <li>fetch는 <code>useEffect(..., [])</code> 안에 둡니다. 밖에 두면 화면을 그릴 때마다 다시 불러와서 끝없이 반복됩니다.</li>
+</ul>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=1-3" data-name="src/LoadExample.tsx" style="--h: 320px;">
+<textarea class="src" data-lang="tsx" data-file="part1-3.tsx">import { useEffect, useState } from "react";
+import type { Post } from "./types";
+
+function LoadExample() {
+  const [posts, setPosts] = useState&lt;Post[]&gt;([]);
+
+  // 화면이 처음 뜰 때 한 번 public/posts.json 불러오기
+  useEffect(() =&gt; {
+    fetch("/posts.json")
+      .then((res) =&gt; res.json())
+      .then((data: Post[]) =&gt; setPosts(data));
+  }, []);
+
+  return (
+    &lt;div&gt;
+      &lt;p&gt;불러온 글: {posts.length}개&lt;/p&gt;
+      &lt;ul&gt;
+        {posts.map((post) =&gt; (
+          &lt;li key={post.id}&gt;{post.title}&lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default LoadExample;</textarea>
+</div>
+<p class="note"><code>"/posts.json"</code>은 <code>public/posts.json</code>입니다. 의존성 <code>[]</code>라서 처음 한 번만 불러옵니다.</p>
+
+<h3 id="s1-4">1-4. 컴포넌트로 나누기 + props</h3>
+<p>글 하나를 그리는 <code>PostItem</code>을 <b>components 폴더의 다른 파일</b>로 만들고, 목록 쪽에서 import 해서 씁니다.</p>
+<div class="demo" data-code-only data-name="src/components/PostItem.tsx (자식)">
+<textarea class="src" data-lang="tsx" data-file="c-PostItem.tsx">import type { Post } from "../types";
+
+// 글 하나를 그리는 컴포넌트. 글은 props로 받는다
+function PostItem({ post }: { post: Post }) {
+  return (
+    &lt;li&gt;
+      &lt;b&gt;{post.title}&lt;/b&gt; - {post.author}
+    &lt;/li&gt;
+  );
+}
+
+export default PostItem;</textarea>
+</div>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=1-4" data-name="src/PostListExample.tsx (부모)" style="--h: 320px;">
+<textarea class="src" data-lang="tsx" data-file="part1-4.tsx">import type { Post } from "./types";
+import PostItem from "./components/PostItem";
+
+function PostListExample() {
+  const posts: Post[] = [
+    { id: 1, title: "첫 번째 글", author: "TA", content: "환영합니다." },
+    { id: 2, title: "두 번째 글", author: "민수", content: "반가워요." },
+  ];
+
+  return (
+    &lt;ul&gt;
+      {posts.map((post) =&gt; (
+        &lt;PostItem key={post.id} post={post} /&gt;
+      ))}
+    &lt;/ul&gt;
+  );
+}
+
+export default PostListExample;</textarea>
+</div>
+<p class="note">부모가 <code>&lt;PostItem post={post} /&gt;</code>로 넘기면, 자식은 <code>{ post }</code>로 받습니다. components 안의 파일에서 types는 한 칸 위라서 <code>"../types"</code>입니다. 실습의 PostList · PostItem도 이렇게 파일을 따로 만듭니다.</p>
+
+<h3 id="s1-5">1-5. 열고 닫기</h3>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=1-5" data-name="src/ToggleExample.tsx" style="--h: 240px;">
+<textarea class="src" data-lang="tsx" data-file="part1-5.tsx">import { useState } from "react";
+
+function ToggleExample() {
+  // true면 보이고, false면 숨김
+  const [isOpen, setIsOpen] = useState&lt;boolean&gt;(false);
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={() =&gt; setIsOpen(!isOpen)}&gt;
+        {isOpen ? "닫기" : "열기"}
+      &lt;/button&gt;
+      {isOpen &amp;&amp; &lt;p&gt;열렸을 때만 보이는 내용&lt;/p&gt;}
+    &lt;/div&gt;
+  );
+}
+
+export default ToggleExample;</textarea>
+</div>
+<p class="note">모달도 같은 원리입니다. <code>isModalOpen</code>이 true일 때만 모달을 그립니다.</p>
+
+<h3 id="s1-6">1-6. 입력 폼으로 새 글 만들기</h3>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=1-6" data-name="src/FormExample.tsx" style="--h: 320px;">
+<textarea class="src" data-lang="tsx" data-file="part1-6.tsx">import { useState } from "react";
+
+interface PostForm {
+  title: string;
+  author: string;
+}
+
+function FormExample() {
+  // 입력칸 여러 개를 객체 하나로 (6주차 1-7)
+  const [form, setForm] = useState&lt;PostForm&gt;({ title: "", author: "" });
+
+  const handleSubmit = (e: React.FormEvent&lt;HTMLFormElement&gt;) =&gt; {
+    e.preventDefault();
+    const newPost = { id: Date.now(), ...form };   // 입력값으로 새 글 만들기
+    alert(`새 글: ${newPost.title} (${newPost.author})`);
+    setForm({ title: "", author: "" });            // 입력칸 비우기
+  };
+
+  return (
+    &lt;form onSubmit={handleSubmit}&gt;
+      &lt;input
+        placeholder="제목"
+        value={form.title}
+        onChange={(e) =&gt; setForm({ ...form, title: e.target.value })}
+      /&gt;
+      &lt;input
+        placeholder="작성자"
+        value={form.author}
+        onChange={(e) =&gt; setForm({ ...form, author: e.target.value })}
+      /&gt;
+      &lt;button type="submit"&gt;등록&lt;/button&gt;
+    &lt;/form&gt;
+  );
+}
+
+export default FormExample;</textarea>
+</div>
+<p class="note"><code>{ id: Date.now(), ...form }</code>: 입력값 객체를 복사하고 id를 붙여 새 글을 만듭니다. <code>Date.now()</code>는 지금 시각(숫자)이라 글마다 다릅니다.</p>
+
+<h3 id="s1-7">1-7. 리스트에 하나 추가하기</h3>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=1-7" data-name="src/AddExample.tsx" style="--h: 320px;">
+<textarea class="src" data-lang="tsx" data-file="part1-7.tsx">import { useState } from "react";
+import type { Post } from "./types";
+
+function AddExample() {
+  const [posts, setPosts] = useState&lt;Post[]&gt;([
+    { id: 1, title: "첫 번째 글", author: "TA", content: "환영합니다." },
+  ]);
+
+  const handleAdd = () =&gt; {
+    const newPost: Post = { id: Date.now(), title: "새 글", author: "나", content: "" };
+    setPosts([newPost, ...posts]);   // 새 배열을 만들어 넣기 (새 글이 맨 앞)
+    // posts.push(newPost) 는 화면이 바뀌지 않음
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={handleAdd}&gt;글 추가&lt;/button&gt;
+      &lt;ul&gt;
+        {posts.map((post) =&gt; (
+          &lt;li key={post.id}&gt;{post.title}&lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default AddExample;</textarea>
+</div>
+<p class="note"><code>[newPost, ...posts]</code>: 새 글 + 기존 글을 펼쳐 넣은 <b>새 배열</b>입니다. state는 새 값으로 바꿔야 화면이 다시 그려집니다.</p>
+
+<h3 id="s1-8">1-8. 함수를 props로 넘기기 (자식 → 부모)</h3>
+<div class="demo" data-code-only data-name="src/components/AddButton.tsx (자식)">
+<textarea class="src" data-lang="tsx" data-file="c-AddButton.tsx">// 자식: 버튼을 누르면 부모가 준 함수(onAdd)를 부른다
+function AddButton({ onAdd }: { onAdd: (title: string) =&gt; void }) {
+  return &lt;button onClick={() =&gt; onAdd("자식이 보낸 글")}&gt;자식에서 글 추가&lt;/button&gt;;
+}
+
+export default AddButton;</textarea>
+</div>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=1-8" data-name="src/ParentExample.tsx (부모)" style="--h: 380px;">
+<textarea class="src" data-lang="tsx" data-file="part1-8.tsx">import { useState } from "react";
+import AddButton from "./components/AddButton";
+
+// 부모: 목록(state)을 가지고, 바꾸는 함수를 자식에게 넘긴다
+function ParentExample() {
+  const [titles, setTitles] = useState&lt;string[]&gt;(["첫 번째 글"]);
+
+  const handleAdd = (title: string) =&gt; {
+    setTitles([title, ...titles]);
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;AddButton onAdd={handleAdd} /&gt;
+      &lt;ul&gt;
+        {titles.map((title, index) =&gt; (
+          &lt;li key={index}&gt;{title}&lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default ParentExample;</textarea>
+</div>
+<p class="note">목록(state)은 부모가 갖고, 자식은 props로 받은 함수를 불러 "이 글을 추가해 줘"라고 알립니다. 실습에서는 글쓰기 모달(자식)이 App(부모)에게 <code>onAdd(newPost)</code>로 새 글을 보냅니다.</p>
+
+<h3 id="s1-9">1-9. 새로고침해도 남기기 (localStorage)</h3>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&part=1-9" data-name="src/SaveExample.tsx" style="--h: 320px;">
+<textarea class="src" data-lang="tsx" data-file="part1-9.tsx">import { useEffect, useState } from "react";
+
+function SaveExample() {
+  const [titles, setTitles] = useState&lt;string[]&gt;([]);
+
+  // 처음 한 번: 저장해 둔 목록이 있으면 불러오기
+  useEffect(() =&gt; {
+    const saved = localStorage.getItem("titles");
+    if (saved) setTitles(JSON.parse(saved));   // 글자 → 배열
+  }, []);
+
+  const handleAdd = () =&gt; {
+    const nextTitles = [`글 ${titles.length + 1}`, ...titles];
+    setTitles(nextTitles);
+    localStorage.setItem("titles", JSON.stringify(nextTitles));   // 배열 → 글자로 저장
+  };
+
+  const handleClear = () =&gt; {
+    localStorage.removeItem("titles");
+    setTitles([]);
+  };
+
+  return (
+    &lt;div&gt;
+      &lt;button onClick={handleAdd}&gt;글 추가&lt;/button&gt;
+      &lt;button onClick={handleClear}&gt;지우기&lt;/button&gt;
+      &lt;p&gt;추가한 뒤 새로고침해도 남아 있어요.&lt;/p&gt;
+      &lt;ul&gt;
+        {titles.map((title, index) =&gt; (
+          &lt;li key={index}&gt;{title}&lt;/li&gt;
+        ))}
+      &lt;/ul&gt;
+    &lt;/div&gt;
+  );
+}
+
+export default SaveExample;</textarea>
+</div>
+<p class="note">localStorage에는 글자만 저장됩니다. 배열 · 객체는 <code>JSON.stringify</code>로 글자로 바꿔 저장하고, 꺼낼 때 <code>JSON.parse</code>로 되돌립니다. [처음부터]가 새로고침입니다.</p>
+
+<h2 id="s2">2. 실습 단계 요약</h2>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=4" data-name="게시판 (Step 4)" style="--h: 560px;"></div>
+
+<div class="ref-wrap"><table class="ref"><thead>
+<tr><th>Step</th><th>기능</th><th>사전 학습</th><th>난이도</th></tr>
+</thead><tbody>
+<tr><td><b>Step 1</b></td><td>저장된 글 목록 보여주기</td><td>1-1 · 1-2 · 1-3 · 1-4</td><td>⭐</td></tr>
+<tr><td><b>Step 2</b></td><td>글쓰기 모달 열고 닫기 + 입력</td><td>1-5 · 1-6</td><td>⭐⭐</td></tr>
+<tr><td><b>Step 3</b></td><td>새 글을 목록에 추가 + 제목 누르면 내용 펼치기</td><td>1-5 · 1-7 · 1-8</td><td>⭐⭐</td></tr>
+<tr><td><b>Step 4 (도전)</b></td><td>새로고침해도 내가 쓴 글이 남게</td><td>1-9</td><td>⭐⭐⭐</td></tr>
+</tbody></table></div>
+
+<h3 id="s2-1">2-1. 컴포넌트 관계</h3>
+<div class="cfig flow-wrap"><div class="flow" role="img" aria-label="App(state posts, isModalOpen)이 PostList에 posts, PostList가 PostItem(state isOpen)에 post, App이 PostFormModal(state 입력값)에 onAdd와 onClose를 넘긴다">
+  <div class="file app">App.tsx<small>state: posts, isModalOpen</small></div>
+  <div class="arrow"><code>posts</code></div>
+  <div class="file list">PostList.tsx<small>받은 목록을 map</small></div>
+  <div class="arrow"><code>post</code></div>
+  <div class="file item">PostItem.tsx<small>state: isOpen</small></div>
+  <div class="arrow"><code>onClose</code> · <code>onAdd</code></div>
+  <div class="file modal">PostFormModal.tsx<small>state: 입력값 (form)</small></div>
+</div></div>
+<p class="note">화살표는 부모가 자식에게 넘기는 props입니다. 새 글은 모달이 <code>onAdd(newPost)</code>를 불러 App에게 알립니다. 글 목록(posts)은 App 한 곳에만 있습니다.</p>
+
+<h2 id="s3">3. Step1</h2>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=1" data-name="게시판 (Step 1)" style="--h: 460px;"></div>
+
+<h3 id="s3-1">🎯 Step 1에서 만들 것</h3>
+<p>저장된 글 목록 화면을 구성한다.<br>아직 글쓰기는 하지 않는다.</p>
+<p class="note"><a href="#s7">7. 기본 템플릿</a>에서 시작한다. 사전 학습: <a href="#s1-1">1-1</a> · <a href="#s1-2">1-2</a> · <a href="#s1-3">1-3</a> · <a href="#s1-4">1-4</a></p>
+<pre class="rule"><code>src/
+├─ types.ts
+├─ App.tsx               ✏️ posts 상태 · posts.json 불러오기 · PostList에 넘기기
+└─ components/
+   ├─ PostList.tsx       ✏️ posts를 props로 받아 map
+   ├─ PostItem.tsx       ✏️ post를 props로 받아 제목 · 작성자 · 내용 표시
+   └─ PostFormModal.tsx</code></pre>
+
+<h4>🧩 posts.json 불러오기</h4>
+<ul>
+  <li>App에 posts 상태 만들기 (<code>Post[]</code>)</li>
+  <li>useEffect + fetch로 <code>/posts.json</code>을 불러와 posts에 넣기</li>
+</ul>
+
+<h4>🧩 목록 표시</h4>
+<ul>
+  <li>App → PostList → PostItem으로 props 넘기기</li>
+  <li>글마다 제목 · 작성자 · 내용 표시</li>
+  <li>"전체 글 3개"처럼 글 개수 표시</li>
+</ul>
+
+<h2 id="s4">4. Step2</h2>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=2" data-name="게시판 (Step 2)" style="--h: 520px;"></div>
+
+<h3 id="s4-1">🎯 Step 2에서 추가되는 기능</h3>
+<p class="note">사전 학습: <a href="#s1-5">1-5</a> · <a href="#s1-6">1-6</a></p>
+<pre class="rule"><code>src/
+├─ types.ts
+├─ App.tsx               ✏️ isModalOpen 상태 · 글쓰기 버튼 · 모달 그리기
+└─ components/
+   ├─ PostList.tsx
+   ├─ PostItem.tsx
+   └─ PostFormModal.tsx  ✏️ 입력값 상태 · 취소(onClose) · 등록</code></pre>
+
+<h4>✔️ 1. 글쓰기 모달 열고 닫기</h4>
+<ul>
+  <li>"글쓰기" 버튼을 누르면 모달이 열린다</li>
+  <li>"취소"를 누르면 닫힌다 (App이 넘겨 준 <code>onClose</code> 부르기)</li>
+</ul>
+
+<h4>✔️ 2. 입력 폼</h4>
+<ul>
+  <li>제목 · 작성자 · 내용을 객체 하나로 관리</li>
+  <li>빈 칸이 있으면 alert</li>
+  <li>"등록"을 누르면 입력한 값이 alert로 출력되고 모달이 닫히면 성공 (목록에 넣는 건 Step 3)</li>
+</ul>
+
+<h2 id="s5">5. Step3</h2>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=3" data-name="게시판 (Step 3)" style="--h: 520px;"></div>
+
+<h3 id="s5-1">🎯 Step 3에서 추가되는 기능</h3>
+<p class="note">사전 학습: <a href="#s1-5">1-5</a> · <a href="#s1-7">1-7</a> · <a href="#s1-8">1-8</a></p>
+<pre class="rule"><code>src/
+├─ types.ts
+├─ App.tsx               ✏️ handleAdd 만들어 모달에 onAdd로 넘기기
+└─ components/
+   ├─ PostList.tsx
+   ├─ PostItem.tsx       ✏️ isOpen 상태 · 제목 누르면 내용 펼치기
+   └─ PostFormModal.tsx  ✏️ 새 글을 만들어 onAdd로 App에 보내기</code></pre>
+
+<h4>✔️ 1. 새 글을 목록에 추가</h4>
+<ul>
+  <li>"등록"을 누르면 새 글이 목록 <b>맨 위</b>에 추가된다 (id는 <code>Date.now()</code>)</li>
+  <li>전체 글 개수도 함께 늘어난다</li>
+</ul>
+
+<h4>✔️ 2. 제목 누르면 내용 펼치기</h4>
+<ul>
+  <li>처음에는 제목 · 작성자만 보이고, 제목을 누르면 내용이 보인다</li>
+  <li>글마다 따로 열리고 닫힌다 (PostItem 안의 useState)</li>
+</ul>
+
+<h2 id="s6">6. Step4</h2>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=4" data-name="게시판 (Step 4)" style="--h: 520px;"></div>
+
+<h3 id="s6-1">📝 Step 4 완성 체크 리스트</h3>
+<p class="note">사전 학습: <a href="#s1-9">1-9</a> · 고치는 파일: <code>App.tsx</code>만</p>
+<ul>
+  <li>글을 쓰고 새로고침해도 내가 쓴 글이 남아 있다</li>
+  <li>localStorage에 저장된 글이 없으면 posts.json을 불러온다</li>
+  <li>Step3까지의 글쓰기, 내용 펼치기 동작도 그대로 유지된다</li>
+</ul>
+<p>다른 브라우저에서 열면 내 글이 보이지 않는다. 모두가 같은 글을 보려면 서버가 필요하다 → 8주차</p>
+
+<h2 id="s7">7. 기본 템플릿</h2>
+<p>화면 모양과 스타일만 들어 있는 시작 코드입니다. 파일 5개를 만들고 붙여 넣으면 아래처럼 보입니다. 기능(state · props · 이벤트)은 Step 1부터 직접 붙입니다.</p>
+<div class="demo" data-app="examples/react-board/index.html?v=1794473543&step=0" data-name="기본 템플릿 화면" style="--h: 360px;"></div>
+
+<div class="demo" data-code-only data-name="src/types.ts">
+<textarea class="src" data-lang="tsx" data-file="tpl-types.ts">// 게시글 하나의 모양
+export interface Post {
+  id: number;
+  title: string;
+  author: string;
+  content: string;
+}</textarea>
+</div>
+<div class="demo" data-code-only data-name="src/App.tsx" style="--h: 520px;">
+<textarea class="src" data-lang="tsx" data-file="tpl-App.tsx">import PostList from "./components/PostList";
+// import PostFormModal from "./components/PostFormModal";
+
+function App() {
+  return (
+    &lt;div style={styles.container}&gt;
+      &lt;header style={styles.header}&gt;
+        &lt;h1 style={styles.title}&gt;게시판&lt;/h1&gt;
+        &lt;button style={styles.writeButton}&gt;글쓰기&lt;/button&gt;
+      &lt;/header&gt;
+
+      &lt;p style={styles.count}&gt;전체 글 0개&lt;/p&gt;
+      &lt;PostList /&gt;
+
+      {/* Step 2에서 모달 띄우기 */}
+      {/* &lt;PostFormModal /&gt; */}
+    &lt;/div&gt;
+  );
+}
+
+const styles: Record&lt;string, React.CSSProperties&gt; = {
+  container: {
+    width: "100%",
+    maxWidth: "640px",
+    boxSizing: "border-box",
+    margin: "0 auto",
+    padding: "40px 16px",
+    textAlign: "left",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  title: {
+    margin: 0,
+    fontSize: "28px",
+  },
+  writeButton: {
+    padding: "10px 16px",
+    border: "none",
+    borderRadius: "6px",
+    backgroundColor: "#4CAF50",
+    color: "white",
+    fontSize: "15px",
+    cursor: "pointer",
+  },
+  count: {
+    color: "#666",
+    fontSize: "14px",
+    margin: "16px 0 8px",
+  },
+};
+
+export default App;</textarea>
+</div>
+<div class="demo" data-code-only data-name="src/components/PostList.tsx">
+<textarea class="src" data-lang="tsx" data-file="tpl-PostList.tsx">import PostItem from "./PostItem";
+
+function PostList() {
+  return (
+    &lt;ul style={styles.list}&gt;
+      &lt;PostItem /&gt;
+      &lt;PostItem /&gt;
+    &lt;/ul&gt;
+  );
+}
+
+const styles: Record&lt;string, React.CSSProperties&gt; = {
+  list: {
+    listStyle: "none",
+    padding: 0,
+    margin: 0,
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+  },
+};
+
+export default PostList;</textarea>
+</div>
+<div class="demo" data-code-only data-name="src/components/PostItem.tsx" style="--h: 520px;">
+<textarea class="src" data-lang="tsx" data-file="tpl-PostItem.tsx">function PostItem() {
+  return (
+    &lt;li style={styles.item}&gt;
+      &lt;div style={styles.titleRow}&gt;
+        &lt;span style={styles.title}&gt;글 제목&lt;/span&gt;
+        &lt;span style={styles.author}&gt;작성자&lt;/span&gt;
+      &lt;/div&gt;
+      &lt;p style={styles.content}&gt;글 내용&lt;/p&gt;
+    &lt;/li&gt;
+  );
+}
+
+const styles: Record&lt;string, React.CSSProperties&gt; = {
+  item: {
+    border: "1px solid #ddd",
+    borderRadius: "8px",
+    padding: "14px 16px",
+    backgroundColor: "white",
+    color: "#213547",
+  },
+  titleRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "baseline",
+    gap: "12px",
+  },
+  title: {
+    fontWeight: 600,
+    fontSize: "17px",
+    cursor: "pointer",
+  },
+  author: {
+    color: "#888",
+    fontSize: "13px",
+  },
+  content: {
+    margin: "10px 0 0",
+    color: "#444",
+    lineHeight: 1.5,
+    whiteSpace: "pre-wrap",
+  },
+};
+
+export default PostItem;</textarea>
+</div>
+<div class="demo" data-code-only data-name="src/components/PostFormModal.tsx" style="--h: 560px;">
+<textarea class="src" data-lang="tsx" data-file="tpl-PostFormModal.tsx">function PostFormModal() {
+  return (
+    &lt;div style={styles.overlay}&gt;
+      &lt;form style={styles.modal}&gt;
+        &lt;h2 style={styles.heading}&gt;글쓰기&lt;/h2&gt;
+        &lt;input placeholder="제목을 입력하세요" style={styles.input} /&gt;
+        &lt;input placeholder="작성자를 입력하세요" style={styles.input} /&gt;
+        &lt;textarea placeholder="내용을 입력하세요" style={styles.textarea} /&gt;
+        &lt;div style={styles.buttons}&gt;
+          &lt;button type="button" style={styles.cancelButton}&gt;취소&lt;/button&gt;
+          &lt;button type="submit" style={styles.submitButton}&gt;등록&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+  );
+}
+
+const styles: Record&lt;string, React.CSSProperties&gt; = {
+  overlay: {
+    position: "fixed",
+    inset: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modal: {
+    width: "400px",
+    maxWidth: "calc(100% - 32px)",
+    backgroundColor: "white",
+    color: "#213547",
+    colorScheme: "light",
+    borderRadius: "10px",
+    padding: "24px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "8px",
+    boxSizing: "border-box",
+  },
+  heading: {
+    margin: "0 0 8px",
+    fontSize: "20px",
+    color: "#213547",
+  },
+  input: {
+    padding: "12px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+    fontSize: "15px",
+  },
+  textarea: {
+    padding: "12px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+    fontSize: "15px",
+    minHeight: "100px",
+    resize: "vertical",
+    fontFamily: "inherit",
+  },
+  buttons: {
+    display: "flex",
+    justifyContent: "flex-end",
+    gap: "8px",
+    marginTop: "8px",
+  },
+  cancelButton: {
+    padding: "10px 16px",
+    border: "1px solid #ccc",
+    borderRadius: "6px",
+    backgroundColor: "white",
+    fontSize: "15px",
+    cursor: "pointer",
+  },
+  submitButton: {
+    padding: "10px 16px",
+    border: "none",
+    borderRadius: "6px",
+    backgroundColor: "#4CAF50",
+    color: "white",
+    fontSize: "15px",
+    cursor: "pointer",
+  },
+};
+
+export default PostFormModal;</textarea>
+</div>
+
+<footer class="session-footer"><a href="6-React.html">← 이전 · 6. React</a><a href="index.html">전체 목차 →</a></footer>
+</main>
+</div>
+<noscript><p>코드와 완성 화면을 보려면 브라우저에서 JavaScript를 켜 주세요.</p></noscript>
+
+<script>
+(function () {
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // ---- 간단한 문법 강조 ----
+  function hlHtml(src) {
+    let out = "", i = 0;
+    const re = /<!-{2}[\s\S]*?-{2}>|<\/?[a-zA-Z][^>]*>|<!DOCTYPE[^>]*>/g;
+    let m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const tok = m[0];
+      if (tok.startsWith("<!-")) out += `<span class="c">${esc(tok)}</span>`;
+      else out += hlTag(tok);
+      i = m.index + tok.length;
+      // <style>, <script> 내부는 별도 처리
+      const low = tok.toLowerCase();
+      if (/^<(style|script)\b/.test(low)) {
+        const close = low.startsWith("<style") ? "</style>" : "<\/script>";
+        const end = src.toLowerCase().indexOf(close, i);
+        if (end !== -1) {
+          out += hlCode(src.slice(i, end), !low.startsWith("<style"));
+          i = end; re.lastIndex = end;
+        }
+      }
+    }
+    out += esc(src.slice(i));
+    return out;
+  }
+  function hlTag(tok) {
+    // <name attr="v" attr2 /> 를 한 번에 토큰화
+    const m = /^(<\/?)([A-Za-z!][\w-]*)([\s\S]*?)(\/?>)$/.exec(tok);
+    if (!m) return esc(tok);
+    const attrs = m[3].replace(/([\w:-]+)(\s*=\s*)("[^"]*"|'[^']*'|[^\s>]+)|([\w:-]+)/g, (a, n, eq, v, bare) =>
+      bare ? `<span class="a">${esc(bare)}</span>` : `<span class="a">${esc(n)}</span>${eq}<span class="s">${esc(v)}</span>`);
+    return `${esc(m[1])}<span class="t">${esc(m[2])}</span>${attrs}${esc(m[4])}`;
+  }
+  function hlCode(src, js = true, tsMode = false) {
+    // JS / CSS / JSX / TS 공용: 주석, 문자열, 키워드, 숫자(JS만). TS는 타입 키워드도 강조
+    const re = tsMode
+      ? /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b(const|let|var|function|return|if|else|for|of|in|while|break|continue|switch|case|async|await|class|this|try|catch|finally|throw|import|export|from|default|new|typeof|true|false|null|undefined|interface|type|extends|implements|public|private|protected|readonly|abstract|as|enum|constructor|super|number|string|boolean|any|unknown|void|never)\b|\b\d+(?:\.\d+)?\b/g
+      : /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b(const|let|var|function|return|if|else|for|of|in|while|break|continue|switch|case|async|await|class|this|try|catch|finally|throw|import|export|from|default|new|typeof|true|false|null|undefined)\b|\b\d+(?:\.\d+)?\b/g;
+    let out = "", i = 0, m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const t = m[0];
+      const before = src[m.index - 1] || "", after = src[m.index + t.length] || "";
+      if (t.startsWith("//") || t.startsWith("/*")) out += `<span class="c">${esc(t)}</span>`;
+      else if (/^["'`]/.test(t)) out += `<span class="s">${esc(t)}</span>`;
+      else if (/^\d/.test(t)) out += js && before !== "#" ? `<span class="n">${esc(t)}</span>` : esc(t); // CSS 안의 숫자는 그대로
+      else if (/[.#$-]/.test(before) || after === "-") out += esc(t); // promise.catch · ease-in · break-after 는 키워드가 아님
+      else out += `<span class="k">${esc(t)}</span>`;
+      i = m.index + t.length;
+    }
+    return out + esc(src.slice(i));
+  }
+
+  // TSX: 문자열 · 주석 · 키워드는 hlCode(TS), 그 밖의 글자 안에서 JSX 태그 이름만 강조
+  function hlTsx(src) {
+    return hlCode(src, true, true).split(/(<span[^>]*>[\s\S]*?<\/span>)/).map((part, i) =>
+      i % 2 ? part : part.replace(/(&lt;\/?)([A-Za-z][\w.]*)/g, '$1<span class="t">$2</span>')).join("");
+  }
+
+  // ---- 콘솔 패널: 실행용 문서에만 넣는 스크립트 (iframe 안에서 실행) ----
+  // 줄 번호가 원본 코드와 같도록 한 줄로 합쳐 <head> 바로 뒤에 넣는다. 그래서 이 함수 안에는 // 주석을 쓰지 않고 문장마다 ;를 붙인다.
+  function consoleBridge(run) {
+    const post = (level, text, line) => {
+      try { parent.postMessage({ jsDemoConsole: run, level: level, text: text, line: line || 0 }, "*"); } catch (e) { }
+    };
+    const voidTags = /^(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)$/;
+    const ctorName = (v) => { try { const p = Object.getPrototypeOf(v); return (p && p.constructor && p.constructor.name) || ""; } catch (e) { return ""; } };
+    const openTag = (el) => {
+      let s = "<" + el.tagName.toLowerCase();
+      for (let i = 0; i < el.attributes.length && i < 4; i++) {
+        const a = el.attributes[i];
+        const v = a.value.length > 40 ? a.value.slice(0, 40) + "…" : a.value;
+        s += " " + a.name + (a.value === "" ? "" : "=\"" + v + "\"");
+      }
+      return s + ">";
+    };
+    const fnText = (f) => {
+      let code = "";
+      try { code = Function.prototype.toString.call(f); } catch (e) { }
+      if (/^class[\s{]/.test(code)) return "class " + f.name;
+      const m = /^[^(=]*\(([^()]*)\)/.exec(code) || /^(?:async\s+)?([\w$]+)\s*=>/.exec(code);
+      return "ƒ " + f.name + "(" + (m ? m[1].replace(/\s+/g, " ").trim() : "") + ")";
+    };
+    const fmt = (v, d, seen) => {
+      const t = typeof v;
+      if (v === null) return "null";
+      if (t === "undefined") return "undefined";
+      if (t === "string") return d === 0 ? v : JSON.stringify(v);
+      if (t === "number") return Object.is(v, -0) ? "-0" : String(v);
+      if (t === "bigint") return v + "n";
+      if (t === "boolean" || t === "symbol") return String(v);
+      if (t === "function") return fnText(v);
+      try {
+        if (v === window) return "Window";
+        if (v instanceof Node) {
+          if (v.nodeType === 9) return "#document";
+          if (v.nodeType === 3) return JSON.stringify(v.nodeValue);
+          if (v.nodeType !== 1) return v.nodeName;
+          const tag = v.tagName.toLowerCase();
+          if (d > 0 || voidTags.test(tag)) return openTag(v);
+          const text = v.textContent.trim().replace(/\s+/g, " ");
+          return openTag(v) + (v.children.length || text.length > 40 ? "…" : text) + "</" + tag + ">";
+        }
+        if (v instanceof Error) return v.name + ": " + v.message;
+        if (v instanceof Date || v instanceof RegExp) return String(v);
+        if (v instanceof Promise) return "Promise {…}";
+        const name = ctorName(v);
+        const deep = d >= 3 || seen.indexOf(v) !== -1;
+        seen = seen.concat([v]);
+        if (Array.isArray(v) || v instanceof NodeList || v instanceof HTMLCollection) {
+          const head = Array.isArray(v) ? "" : name + "(" + v.length + ") ";
+          if (deep) return head + "[…]";
+          const items = [];
+          for (let i = 0; i < v.length && i < 100; i++) items.push(i in v ? fmt(v[i], d + 1, seen) : "empty");
+          if (v.length > 100) items.push("…");
+          return head + "[" + items.join(", ") + "]";
+        }
+        if (v instanceof Map || v instanceof Set) {
+          if (deep) return name + "(" + v.size + ") {…}";
+          const items = [];
+          v.forEach((val, key) => { if (items.length < 50) items.push(v instanceof Map ? fmt(key, d + 1, seen) + " => " + fmt(val, d + 1, seen) : fmt(val, d + 1, seen)); });
+          return name + "(" + v.size + ") {" + items.join(", ") + "}";
+        }
+        if (v instanceof Event) {
+          const items = ["type: " + JSON.stringify(v.type)];
+          if (v.target) items.push("target: " + fmt(v.target, 1, seen));
+          if ("key" in v) items.push("key: " + JSON.stringify(v.key));
+          return name + " {" + items.join(", ") + "}";
+        }
+        const head = name && name !== "Object" ? name + " " : "";
+        if (deep) return head + "{…}";
+        const keys = Object.keys(v);
+        const items = keys.slice(0, 30).map((k) => (/^[A-Za-z_$][\w$]*$/.test(k) ? k : JSON.stringify(k)) + ": " + fmt(v[k], d + 1, seen));
+        if (keys.length > 30) items.push("…");
+        return head + "{" + items.join(", ") + "}";
+      } catch (e) {
+        try { return String(v); } catch (e2) { return "?"; }
+      }
+    };
+    const join = (args) => {
+      args = Array.prototype.slice.call(args);
+      if (typeof args[0] === "string" && args.length > 1 && /%[sdifoOc]/.test(args[0])) {
+        const rest = args.slice(1);
+        const first = args[0].replace(/%([sdifoOc%])/g, (all, f) => {
+          if (f === "%") return "%";
+          if (!rest.length) return all;
+          const a = rest.shift();
+          if (f === "c") return "";
+          if (f === "s") return typeof a === "string" ? a : fmt(a, 1, []);
+          if (f === "d" || f === "i") return String(parseInt(a, 10));
+          if (f === "f") return String(parseFloat(a));
+          return fmt(a, 1, []);
+        });
+        args = [first].concat(rest);
+      }
+      return args.map((a) => fmt(a, 0, [])).join(" ");
+    };
+    const levels = { log: "log", info: "info", debug: "log", dir: "log", table: "log", warn: "warn", error: "error" };
+    Object.keys(levels).forEach((method) => {
+      const original = console[method];
+      console[method] = function () {
+        try { post(levels[method], join(arguments)); } catch (e) { }
+        if (original) return original.apply(console, arguments);
+      };
+    });
+    const originalClear = console.clear;
+    console.clear = function () {
+      post("clear", "");
+      if (originalClear) originalClear.apply(console, arguments);
+    };
+    window.addEventListener("error", (e) => {
+      const err = e.error;
+      post("error", err && err.name ? "Uncaught " + err.name + ": " + err.message : String(e.message || "Error"), e.lineno);
+    });
+    window.addEventListener("unhandledrejection", (e) => {
+      const r = e.reason;
+      post("error", "Uncaught (in promise) " + (r instanceof Error ? r.name + ": " + r.message : fmt(r, 1, [])));
+    });
+  }
+  const bridgeCode = consoleBridge.toString().replace(/\s*\n\s*/g, " ");
+
+  // 실행용 문서 = 원본 + <head> 바로 뒤에 한 줄짜리 콘솔 스크립트. 화면의 코드 · 복사 · 새 창 열기는 원본(src) 그대로.
+  function runDoc(src, run) {
+    const tag = `<script>(${bridgeCode})(${run});<\/script>`;
+    const m = /<head(?:\s[^>]*)?>/i.exec(src) || /<html(?:\s[^>]*)?>/i.exec(src) || /<!DOCTYPE[^>]*>/i.exec(src);
+    if (!m) return tag + src;
+    const at = m.index + m[0].length;
+    return src.slice(0, at) + tag + src.slice(at);
+  }
+
+  // iframe → 부모 메시지를 어느 데모가 보냈는지 event.source로 구분한다. 다시 실행 전의 늦은 메시지는 run 번호로 버린다.
+  let runSeq = 0;
+  const frames = [];
+  window.addEventListener("message", (event) => {
+    const data = event.data;
+    if (!data || typeof data !== "object" || typeof data.jsDemoConsole !== "number") return;
+    const entry = frames.find((f) => f.iframe.contentWindow === event.source);
+    if (entry && data.jsDemoConsole === entry.run) entry.write(data);
+  });
+
+  async function copySource(src) {
+    try {
+      await navigator.clipboard.writeText(src);
+    } catch (_) {
+      const field = document.createElement("textarea");
+      field.value = src;
+      field.style.cssText = "position:fixed;left:-10000px;top:0";
+      document.body.append(field);
+      field.select();
+      const copied = document.execCommand("copy");
+      field.remove();
+      if (!copied) throw new Error("Copy failed");
+    }
+  }
+
+  const firstRuns = [];
+  document.querySelectorAll(".demo").forEach((demo) => {
+    // ---- 6주차 React: 코드 블록(복사만) · 완성 화면(만들어 둔 앱을 iframe으로) ----
+    if (demo.hasAttribute("data-code-only") || demo.hasAttribute("data-app")) {
+      const name = demo.dataset.name;
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      const panes = document.createElement("div");
+      panes.className = "panes";
+      if (demo.hasAttribute("data-code-only")) {
+        const ta = demo.querySelector("textarea.src");
+        const src = ta.value;
+        bar.innerHTML = `<span class="name">${esc(name)}</span><button type="button" data-act="copy" aria-live="polite">복사</button>`;
+        const code = document.createElement("div");
+        code.className = "code";
+        code.innerHTML = `<pre>${hlTsx(src)}</pre>`;
+        panes.append(code);
+        demo.classList.add("code-only");
+        bar.querySelector("button").addEventListener("click", async (event) => {
+          const button = event.currentTarget;
+          try { await copySource(src); button.textContent = "복사됨 ✓"; }
+          catch (_) { button.textContent = "코드를 선택해 복사하세요"; }
+          setTimeout(() => (button.textContent = "복사"), 1600);
+        });
+      } else {
+        const url = demo.dataset.app;
+        // 코드(textarea.src)가 있으면 왼쪽 코드 · 오른쪽 실행 결과 (부품 예제용)
+        const ta = demo.querySelector("textarea.src");
+        bar.innerHTML = `<span class="name">${esc(name)}</span>${ta ? `<button type="button" data-act="copy" aria-live="polite">복사</button>` : ""}<button type="button" data-act="reload">처음부터</button><button type="button" data-act="open">새 창에서 열기</button>`;
+        if (ta) {
+          const code = document.createElement("div");
+          code.className = "code";
+          code.innerHTML = `<pre>${hlTsx(ta.value)}</pre>`;
+          panes.append(code);
+        }
+        const result = document.createElement("div");
+        result.className = "result";
+        result.innerHTML = `<div class="label">${esc(demo.dataset.label || (ta ? "실행 결과" : "완성 화면 (직접 입력해 보세요)"))}</div>`;
+        const iframe = document.createElement("iframe");
+        iframe.title = name;
+        iframe.loading = "lazy";
+        iframe.src = url;
+        result.append(iframe);
+        panes.append(result);
+        bar.addEventListener("click", async (event) => {
+          const button = event.target.closest("button");
+          if (!button) return;
+          if (button.dataset.act === "copy") {
+            try { await copySource(ta.value); button.textContent = "복사됨 ✓"; }
+            catch (_) { button.textContent = "코드를 선택해 복사하세요"; }
+            setTimeout(() => (button.textContent = "복사"), 1600);
+          } else if (button.dataset.act === "reload") iframe.src = url;
+          else window.open(url, "_blank", "noopener,noreferrer");
+        });
+      }
+      demo.append(bar, panes);
+      return;
+    }
+    const src = demo.querySelector("textarea.src").value;
+    // TS 데모: 화면 · 복사는 TS(src), 실행은 변환된 JS 문서(run), 타입 검사 결과는 빌드 때 tsc로 받은 것(tsc)
+    const isTs = !!demo.querySelector("textarea.run");
+    const runSrc = isTs ? demo.querySelector("textarea.run").value : src;
+    const tsc = isTs ? JSON.parse(demo.querySelector("textarea.tsc").value) : null;
+    const file = demo.querySelector("textarea.src").dataset.file;
+    if (isTs) demo.classList.add("ts");
+    const name = demo.dataset.name;
+    const previewOnly = demo.hasAttribute("data-preview-only");
+    const manual = demo.hasAttribute("data-manual");
+    const showConsole = demo.hasAttribute("data-console") || (!previewOnly && runSrc.includes("console."));
+    // data-console="only": 화면(iframe)은 숨기고 콘솔 칸만 보여 준다 (결과가 콘솔에만 나오는 기초 문법 예제용)
+    const consoleOnly = demo.dataset.console === "only";
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.innerHTML = `<span class="name">${esc(name)}</span>${isTs && file ? `<code class="file">${esc(file)}</code>` : ""}`;
+    if (!previewOnly) {
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="copy" aria-live="polite">복사</button>
+        <button type="button" data-act="reload">다시 실행</button>
+        ${isTs ? "" : `<button type="button" data-act="open">새 창에서 열기</button>`}`);
+    }
+    if (demo.hasAttribute("data-width-controls")) {
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="narrow" aria-pressed="false">좁게 (360px)</button>
+        <button type="button" data-act="mid" aria-pressed="false">중간 (760px)</button>
+        <button type="button" data-act="wide" aria-pressed="true">넓게 (전체)</button>`);
+    }
+    const panes = document.createElement("div");
+    panes.className = "panes";
+    const result = document.createElement("div");
+    result.className = "result";
+    const label = document.createElement("div");
+    label.className = "label";
+    label.textContent = previewOnly ? "화면 예시" : "실행 결과";
+    const iframe = document.createElement("iframe");
+    iframe.title = name + " 실행 결과";
+    // allow-same-origin은 넣지 않는다: 스크립트 + 같은 출처면 예제가 이 페이지를 건드리거나 sandbox를 풀 수 있다.
+    iframe.setAttribute("sandbox", "allow-scripts allow-modals allow-forms allow-popups allow-popups-to-escape-sandbox");
+    result.append(label, iframe);
+    if (consoleOnly) { demo.classList.add("console-only"); label.hidden = true; iframe.hidden = true; }
+    const srcLines = src.split("\n");
+    if (isTs) {
+      const box = document.createElement("div");
+      box.className = "console tsc";
+      box.innerHTML = `<div class="label">타입 검사: 실행 전에 TS가 찾은 오류</div><div class="lines" role="list"></div>`;
+      const tl = box.querySelector(".lines");
+      if (!tsc.diags.length) {
+        tl.innerHTML = `<div class="line ok">오류 없음 ✓</div>`;
+      } else {
+        tsc.diags.forEach((d) => {
+          const line = document.createElement("div");
+          line.className = "line error";
+          const code = document.createElement("code");
+          code.textContent = (srcLines[d.line - 1] || "").trim();
+          const msg = document.createElement("span");
+          msg.textContent = d.msg;
+          const en = document.createElement("span");
+          en.className = "en";
+          en.textContent = d.en || "";
+          const where = document.createElement("span");
+          where.className = "where";
+          where.textContent = `${d.line}번째 줄`;
+          const body = document.createElement("div");
+          body.className = "body";
+          body.append(code, msg);
+          if (d.en) body.append(en);
+          line.append(body, where);
+          tl.append(line);
+        });
+      }
+      result.append(box);
+    }
+
+    // 콘솔 패널: 코드에 console.이 있거나 data-console일 때 표시. 패널이 없던 예제도 에러가 나면 열린다.
+    const entry = { iframe, run: 0, write: null };
+    let lines = null;
+    const clearConsole = () => {
+      if (lines) lines.innerHTML = `<div class="empty">(아직 출력 없음)</div>`;
+    };
+    const openConsole = () => {
+      if (lines) return;
+      const box = document.createElement("div");
+      box.className = "console";
+      box.innerHTML = `<div class="label">콘솔</div><div class="lines" role="log" aria-label="${esc(name)} 콘솔 출력"></div>`;
+      lines = box.querySelector(".lines");
+      result.append(box);
+      clearConsole();
+    };
+    entry.write = (data) => {
+      if (data.level === "clear") return clearConsole();
+      if (!lines) {
+        if (data.level !== "error") return;
+        openConsole();
+      }
+      lines.querySelector(".empty")?.remove();
+      const line = document.createElement("div");
+      line.className = `line ${data.level}`;
+      line.textContent = String(data.text);
+      if (data.line && !isTs) {
+        const where = document.createElement("span");
+        where.className = "where";
+        where.textContent = `${data.line}번째 줄`;
+        line.append(where);
+      }
+      lines.append(line);
+      if (lines.childElementCount > 300) lines.firstElementChild.remove();
+      lines.scrollTop = lines.scrollHeight;
+    };
+    if (showConsole) openConsole();
+    frames.push(entry);
+
+    // data-manual: 처음에는 ▶ 실행 버튼만 보이고, 누를 때 실행 (alert · prompt가 페이지를 열자마자 뜨지 않게)
+    let gate = null;
+    const run = () => {
+      entry.run = ++runSeq;
+      clearConsole();
+      if (gate) gate.hidden = true;
+      iframe.hidden = consoleOnly;
+      iframe.srcdoc = runDoc(runSrc, entry.run);
+    };
+    if (manual) {
+      gate = document.createElement("div");
+      gate.className = "run-gate";
+      gate.innerHTML = `<button type="button">▶ 실행</button><span>${esc(demo.dataset.manual || "누르면 코드가 실행됩니다")}</span>`;
+      gate.querySelector("button").addEventListener("click", run);
+      iframe.hidden = true;
+      label.after(gate);
+    } else {
+      firstRuns.push(run);
+    }
+    if (previewOnly) {
+      panes.append(result);
+    } else {
+      const code = document.createElement("div");
+      code.className = "code";
+      if (isTs) {
+        const bad = new Set(tsc.diags.map((d) => d.line));
+        const html = hlCode(src, true, true).split("\n")
+          .map((l, i) => (bad.has(i + 1) ? `<span class="ts-bad">${l}</span>` : l)).join("\n");
+        code.innerHTML = `<pre>${html}</pre>`;
+      } else {
+        code.innerHTML = `<pre>${hlHtml(src)}</pre>`;
+      }
+      if (demo.classList.contains("stack")) {
+        const details = document.createElement("details");
+        details.innerHTML = "<summary>코드 보기 / 접기</summary>";
+        details.append(code);
+        panes.append(result, details);
+      } else {
+        panes.append(code, result);
+      }
+    }
+    demo.append(bar, panes);
+
+    bar.addEventListener("click", async (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      const act = button.dataset.act;
+      if (act === "copy") {
+        try {
+          await copySource(src);
+          button.textContent = "복사됨 ✓";
+        } catch (_) {
+          button.textContent = "코드를 선택해 복사하세요";
+        }
+        setTimeout(() => (button.textContent = "복사"), 1600);
+      } else if (act === "reload") {
+        run();
+      } else if (act === "open") {
+        // blob: 주소에서는 assets/ 같은 상대 경로가 깨지므로, 새 창용 문서에만 <base>를 넣는다 (복사는 원본 그대로)
+        const base = `<base href="${new URL(".", location.href).href}">`;
+        const opened = /<head[^>]*>/i.test(src) ? src.replace(/<head[^>]*>/i, (m) => m + base) : base + src;
+        const url = URL.createObjectURL(new Blob([opened], { type: "text/html;charset=utf-8" }));
+        window.open(url, "_blank", "noopener,noreferrer");
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      } else if (act === "narrow" || act === "mid" || act === "wide") {
+        iframe.style.width = act === "narrow" ? "360px" : act === "mid" ? "760px" : "100%";
+        bar.querySelectorAll("[aria-pressed]").forEach((control) => {
+          control.setAttribute("aria-pressed", String(control.dataset.act === act));
+        });
+      }
+    });
+  });
+  // 레이아웃을 한 번 계산한 뒤 실행해야 예제 안의 window.innerWidth가 처음부터 0이 아니다.
+  void document.body.offsetWidth;
+  firstRuns.forEach((run) => run());
+})();
+</script>
+</body>
+</html>
