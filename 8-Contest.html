@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="초급프로젝트 TA SESSION: 공모전 공고문을 읽고, 모두가 공감하는 문제를 찾아 하나로 좁히고, 기획 카드 한 장을 만듭니다.">
+<title>8. 공모전 기획하기 | 초급프로젝트 TA SESSION</title>
+<link rel="stylesheet" href="session.css">
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1f2328; --muted: #6b7280; --line: #e5e7eb;
+    --code-bg: #f6f6f4; --accent: #2563eb; --pane: #fafafa;
+    --tag: #b91c1c; --attr: #7c3aed; --str: #15803d; --cmt: #9ca3af; --kw: #1d4ed8;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+    font-size: 15px; line-height: 1.6;
+  }
+  .layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+  nav.toc {
+    position: sticky; top: 0; height: 100vh; overflow: auto;
+    border-right: 1px solid var(--line); padding: 20px 16px; font-size: 13px;
+  }
+  nav.toc h1 { font-size: 22px; margin: 0 0 12px; }
+  nav.toc ol { list-style: none; padding: 0; margin: 0; }
+  nav.toc li { margin: 2px 0; }
+  nav.toc li ol { padding-left: 14px; }
+  nav.toc a { color: var(--fg); text-decoration: none; display: block; padding: 3px 6px; border-radius: 4px; }
+  nav.toc a:hover { background: var(--code-bg); }
+  nav.toc a.sub { color: var(--muted); }
+  main { padding: 32px 48px 120px; max-width: 1400px; }
+  h1.title { font-size: 40px; margin: 0 0 8px; }
+  .subtitle { color: var(--muted); margin: 0 0 40px; }
+  h2 { font-size: 24px; margin: 56px 0 16px; padding-top: 8px; }
+  h3 { font-size: 18px; margin: 32px 0 10px; }
+  h4 { font-size: 15px; margin: 22px 0 8px; color: #374151; }
+  p.note { color: var(--muted); font-size: 14px; margin: 8px 0 16px; }
+
+  /* 정리 표 */
+  table.ref { border-collapse: collapse; font-size: 14px; margin: 6px 0 12px; }
+  table.ref td { border: 1px solid var(--line); padding: 5px 12px; vertical-align: top; }
+  table.ref td:first-child { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
+
+  /* 코드 + 실행 결과 */
+  .demo { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin: 16px 0 28px; background: var(--bg); }
+  .demo .bar { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); background: var(--pane); font-size: 13px; }
+  .demo .bar .name { font-weight: 600; margin-right: auto; }
+  .demo .bar .file { font-size: 12px; color: var(--muted); background: transparent; }
+  .demo .bar button { font: inherit; font-size: 12px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; cursor: pointer; }
+  .demo .bar button:hover { border-color: var(--accent); color: var(--accent); }
+  .demo .panes { display: grid; grid-template-columns: 1fr 1fr; }
+  .demo .panes > div { min-width: 0; }
+  .demo .code { background: var(--code-bg); border-right: 1px solid var(--line); }
+  .demo .code pre { margin: 0; padding: 14px 16px; overflow: auto; max-height: var(--h, 460px); font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; tab-size: 2; }
+  .demo .result { display: flex; flex-direction: column; }
+  .demo .result .label { font-size: 12px; color: var(--muted); padding: 6px 12px; border-bottom: 1px dashed var(--line); }
+  .demo iframe { border: 0; width: 100%; height: var(--frame-h, var(--h, 460px)); background: #fff; flex: 0 0 auto; }
+  .demo .panes:has(> .result:only-child) { grid-template-columns: 1fr; }
+  .demo.tall { --h: 640px; }
+  .demo.short { --h: 260px; }
+  .demo.stack .panes { grid-template-columns: 1fr; }
+  .demo.stack iframe { flex: 0 0 auto; height: max(760px, 85vh); }
+  .demo.stack .code { border-right: 0; border-top: 1px solid var(--line); }
+  .demo.stack .code pre { max-height: 520px; }
+  .demo.stack details > summary { cursor: pointer; padding: 10px 14px; font-size: 13px; color: var(--muted); background: var(--pane); user-select: none; }
+  .demo.stack details > summary:hover { color: var(--accent); }
+  @media (max-width: 1000px) {
+    .layout { grid-template-columns: 1fr; }
+    nav.toc { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+    main { padding: 24px 20px 80px; }
+    .demo .panes { grid-template-columns: 1fr; }
+    .demo .code { border-right: 0; border-bottom: 1px solid var(--line); }
+  }
+  /* 문법 색 */
+  .t { color: var(--tag); } .a { color: var(--attr); } .s { color: var(--str); } .c { color: var(--cmt); font-style: italic; } .k { color: var(--kw); } .n { color: var(--attr); }
+  textarea.src, textarea.run, textarea.tsc { display: none; }
+
+  /* 다이어그램 */
+  .diagram { margin: 12px 0 8px; max-width: 720px; }
+  .diagram svg { width: 100%; height: auto; }
+  .demo.code-only .code { border-right: 0; }
+  .demo.code-only .panes { grid-template-columns: 1fr; }
+</style>
+<style>
+  main { min-width: 0; }
+  .demo .bar { flex-wrap: wrap; }
+  .demo .bar button:hover { border-color: #333; color: #333; }
+  .demo .bar button[aria-pressed="true"] { background: #ececec; border-color: #888; }
+  .demo .bar .name { flex: 1 0 180px; }
+  .demo.resizable iframe { flex: 0 0 auto; width: 100%; max-width: 100%; height: var(--frame-h, var(--h, 360px)); align-self: flex-start; }
+  .demo.resizable .result { background: #f0f0f0; }
+  .demo.resizable .result .label { background: #fff; }
+  .ref-wrap { overflow-x: auto; }
+  table.ref.cols3 td:first-child { font-family: inherit; font-size: 14px; color: var(--muted); background: transparent; white-space: nowrap; }
+  table.ref.cols3 td:nth-child(2) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; white-space: nowrap; background: var(--code-bg); color: var(--tag); }
+  pre.rule { background: var(--code-bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; font-size: 14px; margin: 8px 0 12px; overflow-x: auto; }
+  figure.shot { margin: 12px 0 16px; }
+  figure.shot img { display: block; width: min(100%, 220px); height: auto; border-radius: 12px; border: 1px solid var(--line); }
+  figure.shot figcaption { margin-top: 6px; font-size: 13px; color: var(--muted); }
+  kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.9em; padding: 1px 5px; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; background: var(--code-bg); }
+  ul.plain { padding-left: 18px; margin: 6px 0 14px; }
+  ul.plain li { margin: 3px 0; }
+  ul.plain code, p code { background: var(--code-bg); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  main > p a, main > details a { color: inherit; }
+  details.extra { margin: 12px 0 24px; }
+  details.extra > summary { cursor: pointer; }
+  /* JS: 콘솔 패널 · ▶ 실행(data-manual) */
+  .demo .console { flex: 1 1 auto; border-top: 1px solid var(--line); background: #fff; }
+  .demo .console .lines { max-height: var(--console-h, 320px); overflow: auto; font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .demo .console .line { display: flex; gap: 12px; min-height: calc(1.55em + 6px); padding: 3px 12px; border-bottom: 1px solid #f0f0f0; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .demo .console .line .where { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .demo .console .line.warn { background: #fffbeb; color: #92400e; border-bottom-color: #fde68a; }
+  .demo .console .line.error { background: #fef2f2; color: #b91c1c; border-bottom-color: #fecaca; }
+  .demo .console .empty { padding: 6px 12px; font-size: 12px; color: var(--cmt); }
+  .demo.console-only .console { border-top: 0; }
+  .demo.console-only .console .lines { max-height: var(--console-h, var(--h, 460px)); }
+  .demo .run-gate { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: var(--frame-h, var(--h, 460px)); background: var(--pane); font-size: 13px; color: var(--muted); }
+  .demo.stack .run-gate { height: max(760px, 85vh); }
+  .demo.stack.resizable .run-gate { height: var(--frame-h, var(--h, 360px)); }
+  .demo .run-gate button { font: inherit; padding: 6px 16px; border: 1px solid var(--line); border-radius: 6px; background: #fff; color: var(--fg); cursor: pointer; }
+  .demo .run-gate button:hover { border-color: #333; color: #333; }
+  .demo .run-gate[hidden] { display: none; }
+  @media print {
+    .layout { display: block; }
+    nav.toc, .demo .bar button { display: none; }
+    main { padding: 0; max-width: none; }
+    .demo .code pre { max-height: none; white-space: pre-wrap; overflow-wrap: anywhere; }
+    h2, h3 { break-after: avoid; }
+    .demo .console .lines { max-height: none; overflow: visible; }
+    .demo .run-gate { height: auto; padding: 12px; }
+    .demo .run-gate button { display: none; }
+  }
+  /* TS 데모: 타입 검사 상자 · 오류 줄 빨간 물결 */
+  .demo .console.tsc { flex: 0 0 auto; border-top: 1px solid var(--line); }
+  .demo .console.tsc .label { font-size: 12px; color: var(--muted); padding: 6px 12px; border-bottom: 1px dashed var(--line); }
+  .demo .console.tsc .line.ok { background: #f0fdf4; color: #15803d; }
+  .demo .console.tsc .line .body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .demo .console.tsc .line .body code { color: #7f1d1d; background: transparent; padding: 0; font-weight: 600; }
+  .demo.console-only .console.tsc + .console { border-top: 1px solid var(--line); }
+  .demo .console.tsc .line .body .en { color: #9a6b6b; font-size: 11.5px; }
+  .demo .code .ts-bad { text-decoration: underline wavy #dc2626; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+</style>
+<style>
+  /* 8주차: 글 위주 표 · 예시 상자 · 빈칸 */
+  table.ref th { border: 1px solid var(--line); padding: 6px 12px; background: var(--pane); text-align: left; font-size: 13px; font-weight: 600; white-space: nowrap; }
+  table.ref.plain td:first-child { font-family: inherit; font-size: 14px; color: var(--fg); background: var(--pane); font-weight: 600; white-space: nowrap; }
+  table.ref.plain.wrap td:first-child { white-space: normal; min-width: 240px; max-width: 420px; }
+  table.ref.plain td.blank { min-width: 320px; height: 38px; }
+  table.ref.plain td.map { color: var(--muted); font-size: 13px; white-space: nowrap; }
+  table.ref.plain td.bad { color: #b91c1c; } table.ref.plain td.good { color: #15803d; }
+  table.ref.plain td.mark { text-align: center; font-weight: 700; }
+  .example { border-left: 3px solid var(--accent); background: #f8fafc; padding: 6px 18px 4px; margin: 14px 0 22px; border-radius: 0 8px 8px 0; max-width: 900px; }
+  .example > .tag { display: inline-block; font-size: 12px; color: var(--accent); font-weight: 600; margin: 6px 0 2px; }
+  ol.steps { padding-left: 22px; margin: 6px 0 18px; } ol.steps li { margin: 4px 0; }
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; max-width: 900px; margin: 10px 0 20px; }
+  .compare > div { border: 1px solid var(--line); border-radius: 10px; padding: 4px 16px 8px; }
+  .compare h4 { margin: 12px 0 6px; }
+  .compare pre.rule { margin: 6px 0 10px; white-space: pre-wrap; }
+  .compare p { font-size: 14px; margin: 6px 0; }
+  @media (max-width: 760px) { .compare { grid-template-columns: 1fr; } }
+</style>
+<style>
+  /* 8주차 그림 중심 */
+  .diagram { max-width: 780px; margin: 14px 0 10px; }
+  .diagram svg { display: block; }
+  p.cap { font-size: 15px; margin: 4px 0 18px; }
+  p.cap b { color: var(--accent); }
+  @media (max-width: 640px) { .diagram { overflow-x: auto; } .diagram svg { min-width: 600px; } }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" aria-label="자료 목차">
+  <a class="session-brand" href="index.html">초급프로젝트<br>TA SESSION</a>
+  <div class="session-nav">
+    <a href="0-web-flow.html">0. 웹 개발 흐름</a>
+    <a href="1-HTML.html">1. HTML</a>
+    <a href="2-CSS.html">2. CSS</a>
+    <a href="3-JS.html">3. JavaScript</a>
+    <a href="4-review.html">4. HTML · CSS · JS 복습</a>
+    <a href="5-TS.html">5. TypeScript</a>
+    <a href="6-React.html">6. React</a>
+    <a href="7-Board.html">7. React 게시판</a>
+    <a href="8-Contest.html" aria-current="page">8. 공모전 기획하기</a>
+  </div>
+  <h1>8. 공모전 기획하기</h1>
+  <ol>
+    <li><a href="#s0">0. 오늘 할 것</a></li>
+    <li><a href="#s1">1. 공고문 읽기</a><ol>
+      <li><a class="sub" href="#s1-1">공고문에서 찾을 7가지</a></li>
+      <li><a class="sub" href="#s1-2">연습: AI Agent 활용 문제해결 경진대회</a></li>
+      <li><a class="sub" href="#s1-3">배점을 보면 전략이 보인다</a></li>
+    </ol></li>
+    <li><a href="#s2">2. 문제 찾기</a><ol>
+      <li><a class="sub" href="#s2-1">예시: 제로타임의 출발점</a></li>
+      <li><a class="sub" href="#s2-2">실습</a></li>
+    </ol></li>
+    <li><a href="#s3">3. 하나의 작은 문제로 좁히기</a><ol>
+      <li><a class="sub" href="#s3-1">문제 나무</a></li>
+      <li><a class="sub" href="#s3-2">좁혔는지 확인</a></li>
+      <li><a class="sub" href="#s3-3">실습</a></li>
+    </ol></li>
+    <li><a href="#s4">4. 기획 카드 만들기</a><ol>
+      <li><a class="sub" href="#s4-1">AI Agent란</a></li>
+      <li><a class="sub" href="#s4-2">기획 카드: 장학금 · 대외활동 탐색 Agent</a></li>
+      <li><a class="sub" href="#s4-3">카드가 곧 첫 지시문</a></li>
+      <li><a class="sub" href="#s4-4">실습</a></li>
+    </ol></li>
+    <li><a href="#s5">5. 마무리: 대회에 맞추고 일정 세우기</a><ol>
+      <li><a class="sub" href="#s5-1">심사기준 ↔ 카드 칸</a></li>
+      <li><a class="sub" href="#s5-2">일정은 마감에서 거꾸로</a></li>
+    </ol></li>
+  </ol>
+</nav>
+<main>
+<h1 class="title">8. 공모전 기획하기</h1>
+<p class="subtitle">초급프로젝트 TA SESSION · 공고문을 읽고, 문제를 찾아 하나로 좁히고, 기획 카드 한 장을 만듭니다.</p>
+
+<h2 id="s0">0. 오늘 할 것</h2>
+<p>개발은 AI Agent에게 시킬 수 있지만, <b>무엇을 만들지</b>는 우리가 정해야 합니다.</p>
+<div class="diagram">
+<svg viewBox="0 0 760 112" role="img" aria-label="오늘 순서: 공고문 읽기, 문제 찾기, 좁히기, 기획 카드, 대회와 일정. 각각 정리표, 문제 문장, 해결책 한 문장, 카드 1장, 팀 일정표가 남는다." font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="14">
+  <defs><marker id="m0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+  <g fill="#fff" stroke="#d1d5db" stroke-width="1.5">
+    <rect x="10" y="10" width="124" height="50" rx="8"/><rect x="164" y="10" width="124" height="50" rx="8"/><rect x="318" y="10" width="124" height="50" rx="8"/>
+    <rect x="472" y="10" width="124" height="50" rx="8" stroke="#2563eb" fill="#eff6ff"/><rect x="626" y="10" width="124" height="50" rx="8"/>
+  </g>
+  <g stroke="#9ca3af" stroke-width="1.5" marker-end="url(#m0)">
+    <path d="M136 35 H160"/><path d="M290 35 H314"/><path d="M444 35 H468"/><path d="M598 35 H622"/>
+  </g>
+  <g text-anchor="middle" font-weight="700" fill="#1f2328">
+    <text x="72" y="40">1 공고문 읽기</text><text x="226" y="40">2 문제 찾기</text><text x="380" y="40">3 좁히기</text>
+    <text x="534" y="40" fill="#1d4ed8">4 기획 카드</text><text x="688" y="40">5 대회 · 일정</text>
+  </g>
+  <g text-anchor="middle" fill="#6b7280" font-size="13">
+    <text x="72" y="88">정리표</text><text x="226" y="88">문제 문장 1개</text><text x="380" y="88">해결책 한 문장</text>
+    <text x="534" y="88">카드 1장</text><text x="688" y="88">팀 일정표</text>
+  </g>
+</svg>
+</div>
+<p class="cap">팀원 한 명 = 아이디어 하나. 예시는 끝까지 <a href="https://zerotime.kr/" target="_blank" rel="noopener noreferrer">제로타임 ↗</a> 하나로 이어 갑니다.</p>
+
+<h2 id="s1">1. 공고문 읽기</h2>
+<p>공모전의 첫 단계는 공식 문서(공고문) 읽기입니다. 심사위원이 보는 것은 다 공고문에 있습니다.</p>
+
+<h3 id="s1-1">1-1. 공고문에서 찾을 7가지</h3>
+<div class="diagram">
+<svg viewBox="0 0 760 160" role="img" aria-label="공고문에서 찾을 7가지: 취지, 자격과 팀, 주제, 심사기준과 배점, 제출 양식, 일정, 유의사항" font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="14">
+  <g fill="#fff" stroke="#d1d5db" stroke-width="1.5">
+    <rect x="10" y="8" width="170" height="64" rx="8"/><rect x="195" y="8" width="170" height="64" rx="8"/><rect x="380" y="8" width="170" height="64" rx="8"/>
+    <rect x="565" y="8" width="170" height="64" rx="8" stroke="#2563eb" fill="#eff6ff"/>
+    <rect x="102" y="88" width="170" height="64" rx="8"/><rect x="287" y="88" width="170" height="64" rx="8"/><rect x="472" y="88" width="170" height="64" rx="8"/>
+  </g>
+  <g text-anchor="middle" font-weight="700" fill="#1f2328">
+    <text x="95" y="35">취지</text><text x="280" y="35">자격 · 팀</text><text x="465" y="35">주제</text><text x="650" y="35" fill="#1d4ed8">심사기준 · 배점</text>
+    <text x="187" y="115">제출 양식</text><text x="372" y="115">일정</text><text x="557" y="115">유의사항</text>
+  </g>
+  <g text-anchor="middle" fill="#6b7280" font-size="13">
+    <text x="95" y="57">심사위원이 보고 싶은 것</text><text x="280" y="57">내가 낼 수 있나</text><text x="465" y="57">벗어나면 감점</text><text x="650" y="57">시간을 쓸 곳</text>
+    <text x="187" y="137">심사위원이 읽는 순서</text><text x="372" y="137">마감에서 거꾸로</text><text x="557" y="137">저작권 · 불참 시 상금 X</text>
+  </g>
+</svg>
+</div>
+
+<h3 id="s1-2">1-2. 연습: AI Agent 활용 문제해결 경진대회</h3>
+<p>운영 안내 공고문을 읽고 오른쪽 칸을 채웁니다.</p>
+<div class="ref-wrap"><table class="ref plain"><thead>
+<tr><th>찾을 것</th><th>공고문에서 찾은 내용</th></tr>
+</thead><tbody>
+<tr><td>취지</td><td class="blank"></td></tr>
+<tr><td>자격 · 팀</td><td class="blank"></td></tr>
+<tr><td>주제</td><td class="blank"></td></tr>
+<tr><td>심사기준 · 배점</td><td class="blank"></td></tr>
+<tr><td>제출 양식</td><td class="blank"></td></tr>
+<tr><td>일정</td><td class="blank"></td></tr>
+<tr><td>유의사항</td><td class="blank"></td></tr>
+</tbody></table></div>
+<details class="extra"><summary>같이 맞춰 보기</summary>
+<div class="ref-wrap"><table class="ref plain"><tbody>
+<tr><td>취지</td><td>AI Agent 활용 역량, 실생활 · 학업 문제를 창의적으로 해결</td></tr>
+<tr><td>자격 · 팀</td><td>학부 재학생, 2인 이상 팀</td></tr>
+<tr><td>주제</td><td>일상의 문제를 AI Agent로 해결하라!</td></tr>
+<tr><td>심사기준 · 배점</td><td>문제 발굴 · 창의성 · AI Agent 활용 및 구현 · 실용성 (배점 비공개), 특강 1~4차 전부 들으면 +10점</td></tr>
+<tr><td>제출 양식</td><td>신청서, 기획서, 결과물 · 증빙(자유 형식)</td></tr>
+<tr><td>일정</td><td>특강 11/25 · 11/30 · 12/1 · 12/2, 접수 1/6(수)까지 LMS, 발표회 1/20</td></tr>
+<tr><td>유의사항</td><td>수상작 저작권은 주최 측, 입상자 발표회 불참 시 상금 미지급</td></tr>
+</tbody></table></div>
+</details>
+
+<h3 id="s1-3">1-3. 배점을 보면 전략이 보인다</h3>
+<div class="diagram">
+<svg viewBox="0 0 760 170" role="img" aria-label="AI Agent 경진대회는 심사 항목 4개 중 3개가 기획 쪽이고, 바이브 코딩 챌린지는 100점 중 60점이 구현과 개발 과정이다." font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="13">
+  <rect x="190" y="4" width="14" height="14" rx="3" fill="#dbeafe" stroke="#2563eb"/><text x="210" y="16" fill="#1f2328">기획 (문제 · 아이디어)</text>
+  <rect x="380" y="4" width="14" height="14" rx="3" fill="#ffedd5" stroke="#ea580c"/><text x="400" y="16" fill="#1f2328">구현 · 과정</text>
+  <text x="10" y="60" font-weight="700" font-size="14" fill="#1f2328">AI Agent 경진대회</text>
+  <text x="10" y="78" fill="#6b7280" font-size="12">배점 비공개, 항목 수</text>
+  <g stroke-width="1.5">
+    <rect x="190" y="40" width="135" height="44" fill="#dbeafe" stroke="#2563eb"/><rect x="325" y="40" width="135" height="44" fill="#dbeafe" stroke="#2563eb"/>
+    <rect x="460" y="40" width="135" height="44" fill="#dbeafe" stroke="#2563eb"/><rect x="595" y="40" width="135" height="44" fill="#ffedd5" stroke="#ea580c"/>
+  </g>
+  <g text-anchor="middle" fill="#1f2328"><text x="257" y="67">문제 발굴</text><text x="392" y="67">창의성</text><text x="527" y="67">실용성</text><text x="662" y="67">Agent 활용 · 구현</text></g>
+  <text x="10" y="132" font-weight="700" font-size="14" fill="#1f2328">바이브 코딩 챌린지</text>
+  <text x="10" y="150" fill="#6b7280" font-size="12">100점</text>
+  <g stroke-width="1.5">
+    <rect x="190" y="112" width="108" height="44" fill="#dbeafe" stroke="#2563eb"/><rect x="298" y="112" width="108" height="44" fill="#dbeafe" stroke="#2563eb"/>
+    <rect x="406" y="112" width="162" height="44" fill="#ffedd5" stroke="#ea580c"/><rect x="568" y="112" width="162" height="44" fill="#ffedd5" stroke="#ea580c"/>
+  </g>
+  <g text-anchor="middle" fill="#1f2328"><text x="244" y="139">창의성 20</text><text x="352" y="139">실용성 20</text><text x="487" y="139">구현 · 완성도 30</text><text x="649" y="139">AI 활용 과정 30</text></g>
+</svg>
+</div>
+<p class="cap">AI Agent 대회는 <b>기획</b>에, 바이브 코딩 챌린지는 동작하는 웹과 과정 기록에 시간을 더 씁니다.</p>
+<p class="note">바이브 코딩 챌린지는 개인 참가, 11월 코딩 특강 참여자만 12/6까지 낼 수 있습니다.</p>
+
+<h2 id="s2">2. 문제 찾기</h2>
+<p>내 불편에서 시작해도 됩니다. 다만 <b>모두가 "나도!"</b> 하는 불편이어야 합니다.</p>
+<pre class="rule">[누가]는 [언제] [무엇] 때문에 [어떤 손해]를 본다.</pre>
+
+<h3 id="s2-1">2-1. 예시: 제로타임의 출발점</h3>
+<div class="diagram">
+<svg viewBox="0 0 760 220" role="img" aria-label="나는 학교 홈페이지, 학과 홈페이지, 단과대 공지, 취업·큰사람 사이트를 오가며 공지를 확인한다. 공감 체크: 매일 겪고, 전북대 학생 전체가 겪고, 마감과 특강을 놓치는 손해가 있다." font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="14">
+  <defs><marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker></defs>
+  <g stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="5 4" fill="none">
+    <path d="M178 96 L110 46"/><path d="M222 96 L290 46"/><path d="M178 124 L110 174"/><path d="M222 124 L290 174"/>
+  </g>
+  <g fill="#fff" stroke="#d1d5db" stroke-width="1.5">
+    <rect x="30" y="14" width="150" height="36" rx="8"/><rect x="220" y="14" width="150" height="36" rx="8"/>
+    <rect x="30" y="170" width="150" height="36" rx="8"/><rect x="220" y="170" width="150" height="36" rx="8"/>
+  </g>
+  <circle cx="200" cy="110" r="28" fill="#f6f6f4" stroke="#6b7280" stroke-width="1.5"/>
+  <g text-anchor="middle" fill="#1f2328">
+    <text x="105" y="37">학교 홈페이지</text><text x="295" y="37">학과 홈페이지</text>
+    <text x="105" y="193">단과대 공지</text><text x="295" y="193">취업 · 큰사람</text>
+    <text x="200" y="115" font-weight="700">나</text>
+  </g>
+  <path d="M392 110 H440" stroke="#9ca3af" stroke-width="2" marker-end="url(#m2)"/>
+  <text x="416" y="98" text-anchor="middle" fill="#6b7280" font-size="13">나만?</text>
+  <g fill="#f0fdf4" stroke="#15803d" stroke-width="1.5">
+    <rect x="456" y="24" width="294" height="46" rx="8"/><rect x="456" y="87" width="294" height="46" rx="8"/><rect x="456" y="150" width="294" height="46" rx="8"/>
+  </g>
+  <g fill="#15803d" font-weight="700"><text x="472" y="52">✓ 자주</text><text x="472" y="115">✓ 많이</text><text x="472" y="178">✓ 손해</text></g>
+  <g fill="#1f2328"><text x="548" y="52">매일</text><text x="548" y="115">전북대 학생 전체</text><text x="548" y="178">마감 · 특강을 놓침</text></g>
+</svg>
+</div>
+<p class="cap">→ 전북대 학생은 공지가 여러 사이트에 흩어져 있어서, 옮겨 다니며 확인하다가 <b>장학금 · 신청 마감을 놓친다.</b></p>
+
+<h3 id="s2-2">2-2. 실습</h3>
+<ol class="steps">
+  <li>불편했던 일 3개를 문장 틀로 쓴다.</li>
+  <li>팀원에게 읽어 주고 "나도" 수를 센다.</li>
+  <li>자주 · 많이 · 손해를 통과한 1개를 내 아이디어로 정한다.</li>
+</ol>
+
+<h2 id="s3">3. 하나의 작은 문제로 좁히기</h2>
+<p>모든 문제를 풀려고 하면 아무것도 풀 수 없습니다. 쪼갠 뒤 <b>하나만</b> 고릅니다.</p>
+
+<h3 id="s3-1">3-1. 문제 나무</h3>
+<div class="diagram">
+<svg viewBox="0 0 720 290" role="img" aria-label="큰 문제 '학교 정보를 제때 못 받는다'를 네 가지 작은 문제로 쪼갠 나무. 1번 '공지가 여러 사이트에 흩어져 있다'에서 제로타임(해결책: 모아서 한 화면에, 하지 않을 것: 요약·추천·자격 분석)이, 4번 '나한테 해당되는지 하나씩 열어 봐야 안다'에서 장학금·대외활동 탐색 Agent가 나온다." font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="13">
+  <g fill="none" stroke="#9ca3af" stroke-width="1.5">
+    <path d="M360 52 V80 M96 80 H624 M96 80 V106 M272 80 V106 M448 80 V106 M624 80 V106"/>
+  </g>
+  <g fill="none" stroke-width="1.5">
+    <path d="M96 166 V206" stroke="#2563eb"/><path d="M624 166 V206" stroke="#15803d"/>
+    <path d="M90 198 L96 206 L102 198" stroke="#2563eb"/><path d="M618 198 L624 206 L630 198" stroke="#15803d"/>
+  </g>
+  <rect x="210" y="8" width="300" height="44" rx="8" fill="#f6f6f4" stroke="#6b7280"/>
+  <text x="360" y="35" text-anchor="middle" font-weight="700" font-size="14" fill="#1f2328">큰 문제: 학교 정보를 제때 못 받는다</text>
+  <g fill="#fff" stroke-width="1.5">
+    <rect x="15" y="106" width="162" height="60" rx="8" stroke="#2563eb"/>
+    <rect x="191" y="106" width="162" height="60" rx="8" stroke="#d1d5db"/>
+    <rect x="367" y="106" width="162" height="60" rx="8" stroke="#d1d5db"/>
+    <rect x="543" y="106" width="162" height="60" rx="8" stroke="#15803d"/>
+  </g>
+  <g text-anchor="middle" fill="#1f2328">
+    <text x="96" y="131">① 공지가 여러 사이트에</text><text x="96" y="150">흩어져 있다</text>
+    <text x="272" y="131" fill="#6b7280">② 하루 20개가 넘어서</text><text x="272" y="150" fill="#6b7280">중요한 걸 못 고른다</text>
+    <text x="448" y="131" fill="#6b7280">③ 마감일을</text><text x="448" y="150" fill="#6b7280">까먹는다</text>
+    <text x="624" y="131">④ 나한테 해당되는지</text><text x="624" y="150">하나씩 열어 봐야 안다</text>
+  </g>
+  <rect x="15" y="208" width="162" height="60" rx="8" fill="#eff6ff" stroke="#2563eb"/>
+  <rect x="543" y="208" width="162" height="60" rx="8" fill="#f0fdf4" stroke="#15803d"/>
+  <g text-anchor="middle">
+    <text x="96" y="233" font-weight="700" fill="#1d4ed8">제로타임 (웹)</text><text x="96" y="252" fill="#1f2328">모아서 한 화면에</text>
+    <text x="624" y="233" font-weight="700" fill="#15803d">장학금 · 대외활동</text><text x="624" y="252" fill="#1f2328">탐색 Agent (4부)</text>
+  </g>
+  <g fill="#6b7280" font-size="12.5">
+    <text x="192" y="233">하지 않을 것:</text><text x="192" y="252">요약 · 추천 · 자격 분석</text>
+  </g>
+</svg>
+</div>
+<p class="cap">같은 큰 문제라도 <b>고른 가지</b>에 따라 결과물이 달라집니다.</p>
+
+<h3 id="s3-2">3-2. 좁혔는지 확인</h3>
+<ul class="plain">
+  <li>해결책이 한 문장인가?</li>
+  <li>3분 시연에 다 보여 줄 수 있나?</li>
+  <li>하지 않을 것을 3개 적을 수 있나?</li>
+</ul>
+
+<h3 id="s3-3">3-3. 실습</h3>
+<ol class="steps">
+  <li>내 문제를 장면 3~4개로 쪼갠다.</li>
+  <li>가장 자주 겪는 하나를 골라 해결책을 한 문장으로 쓴다.</li>
+  <li>하지 않을 것 3개를 쓴다.</li>
+</ol>
+
+<h2 id="s4">4. 기획 카드 만들기</h2>
+<p>개발은 AI Agent에게 시키면 되지만, 기획 없이 시키면 방향을 잃습니다.</p>
+
+<h3 id="s4-1">4-1. AI Agent란</h3>
+<div class="diagram">
+<svg viewBox="0 0 760 200" role="img" aria-label="챗봇은 질문을 받아 대답한다. AI Agent는 목표를 받아 읽기, 비교, 만들기, 확인을 스스로 반복한 뒤 결과를 낸다." font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="14">
+  <defs>
+    <marker id="m41" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+    <marker id="m42" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#2563eb"/></marker>
+  </defs>
+  <text x="10" y="47" font-weight="700" fill="#1f2328">챗봇</text>
+  <g fill="#fff" stroke="#d1d5db" stroke-width="1.5"><rect x="100" y="22" width="100" height="40" rx="8"/><rect x="240" y="22" width="100" height="40" rx="8"/></g>
+  <path d="M202 42 H236" stroke="#9ca3af" stroke-width="1.5" marker-end="url(#m41)"/>
+  <g text-anchor="middle" fill="#1f2328"><text x="150" y="47">질문</text><text x="290" y="47">대답</text></g>
+
+  <text x="10" y="127" font-weight="700" fill="#1d4ed8">AI Agent</text>
+  <rect x="100" y="102" width="100" height="40" rx="8" fill="#fff" stroke="#d1d5db" stroke-width="1.5"/>
+  <g fill="#eff6ff" stroke="#2563eb" stroke-width="1.5">
+    <rect x="236" y="102" width="80" height="40" rx="8"/><rect x="336" y="102" width="80" height="40" rx="8"/><rect x="436" y="102" width="80" height="40" rx="8"/><rect x="536" y="102" width="80" height="40" rx="8"/>
+  </g>
+  <rect x="652" y="102" width="98" height="40" rx="8" fill="#fff" stroke="#d1d5db" stroke-width="1.5"/>
+  <g stroke="#2563eb" stroke-width="1.5" marker-end="url(#m42)" fill="none">
+    <path d="M202 122 H232"/><path d="M318 122 H332"/><path d="M418 122 H432"/><path d="M518 122 H532"/><path d="M618 122 H648"/>
+    <path d="M576 144 V166 H276 V146"/>
+  </g>
+  <g text-anchor="middle" fill="#1f2328"><text x="150" y="127">목표</text><text x="276" y="127">읽기</text><text x="376" y="127">비교</text><text x="476" y="127">만들기</text><text x="576" y="127">확인</text><text x="701" y="127">결과</text></g>
+  <text x="426" y="188" text-anchor="middle" fill="#2563eb" font-size="13">스스로 여러 단계를 반복</text>
+</svg>
+</div>
+<p class="cap">결과물은 둘 중 하나: <b>워크플로형</b>(문서 · 표) 또는 <b>웹앱형</b>(배포된 웹)</p>
+
+<h3 id="s4-2">4-2. 기획 카드: 장학금 · 대외활동 탐색 Agent</h3>
+<p>문제 나무의 ④를 골랐습니다. <b>핵심 문제 → 핵심 해결책</b>이 카드의 중심입니다.</p>
+<div class="diagram">
+<svg viewBox="0 0 760 350" role="img" aria-label="기획 카드 예시. 핵심 문제: 공지가 하루 20개 넘게 와서 내 자격에 맞는 장학금을 찾으려면 하나씩 열어 봐야 한다. 핵심 해결책: 내 조건을 주면 지원 가능한 장학금과 대외활동만 표 한 장으로 정리한다. 에이전트가 하는 일: 내 조건과 공지를 받아 장학·대외활동 고르기, 자격과 마감 뽑기, 내 조건과 비교, 마감 순 정렬 후 지원 가능 표를 낸다. 하지 않을 것: 신청서 대신 쓰기, 알림 앱, 다른 대학. 시연: 공지 20개를 하나씩 열던 화면에서 표 3줄로. 성공 기준: 공지 20여 개가 표 한 장으로, 놓친 마감 0개." font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="14">
+  <defs>
+    <marker id="m43" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#6b7280"/></marker>
+    <marker id="m44" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+  </defs>
+  <rect x="10" y="8" width="340" height="104" rx="10" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+  <rect x="410" y="8" width="340" height="104" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <path d="M354 60 H404" stroke="#6b7280" stroke-width="2" marker-end="url(#m43)"/>
+  <text x="26" y="32" font-weight="700" fill="#b91c1c" font-size="13">핵심 문제</text>
+  <text x="426" y="32" font-weight="700" fill="#1d4ed8" font-size="13">핵심 해결책</text>
+  <g fill="#1f2328"><text x="26" y="58">공지가 하루 20개 넘게 와서</text><text x="26" y="80">내 자격에 맞는 장학금을 찾으려면</text><text x="26" y="102">하나씩 열어 봐야 한다</text></g>
+  <g fill="#1f2328"><text x="426" y="58">내 조건을 주면 지원 가능한</text><text x="426" y="80">장학금 · 대외활동만 표 한 장으로</text><text x="426" y="102" fill="#6b7280" font-size="12.5">제로타임과 다른 점: 자격까지 판단</text></g>
+
+  <text x="10" y="146" font-weight="700" fill="#1f2328" font-size="13">에이전트가 하는 일</text>
+  <g fill="#fff" stroke="#d1d5db" stroke-width="1.5">
+    <rect x="10" y="156" width="110" height="52" rx="8"/><rect x="640" y="156" width="110" height="52" rx="8"/>
+  </g>
+  <g fill="#eff6ff" stroke="#2563eb" stroke-width="1.2">
+    <rect x="136" y="156" width="110" height="52" rx="8"/><rect x="262" y="156" width="110" height="52" rx="8"/><rect x="388" y="156" width="110" height="52" rx="8"/><rect x="514" y="156" width="110" height="52" rx="8"/>
+  </g>
+  <g stroke="#9ca3af" stroke-width="1.5" marker-end="url(#m44)"><path d="M121 182 H133"/><path d="M247 182 H259"/><path d="M373 182 H385"/><path d="M499 182 H511"/><path d="M625 182 H637"/></g>
+  <g text-anchor="middle" font-size="12.5" fill="#1f2328">
+    <text x="65" y="178">입력</text><text x="65" y="197" fill="#6b7280">내 조건 + 공지</text>
+    <text x="191" y="178">① 장학 · 대외활동</text><text x="191" y="197">공지만 고르기</text>
+    <text x="317" y="178">② 자격 · 마감</text><text x="317" y="197">뽑기</text>
+    <text x="443" y="178">③ 내 조건과</text><text x="443" y="197">비교</text>
+    <text x="569" y="178">④ 마감 순</text><text x="569" y="197">정렬</text>
+    <text x="695" y="178">출력</text><text x="695" y="197" fill="#6b7280">지원 가능 표</text>
+  </g>
+
+  <g fill="#fff" stroke="#d1d5db" stroke-width="1.5">
+    <rect x="10" y="236" width="236" height="104" rx="10"/><rect x="262" y="236" width="236" height="104" rx="10"/><rect x="514" y="236" width="236" height="104" rx="10"/>
+  </g>
+  <g font-weight="700" font-size="13" fill="#1f2328"><text x="26" y="260">하지 않을 것</text><text x="278" y="260">시연 장면</text><text x="530" y="260">성공 기준</text></g>
+  <g font-size="13" fill="#1f2328">
+    <text x="26" y="286">✗ 신청서 대신 쓰기</text><text x="26" y="307">✗ 알림 앱</text><text x="26" y="328">✗ 다른 대학 공지</text>
+    <text x="278" y="286" fill="#6b7280">Before</text><text x="330" y="286">공지 20개 하나씩 열기</text>
+    <text x="278" y="312" fill="#6b7280">After</text><text x="330" y="312">조건 넣고 표 3줄</text>
+    <text x="530" y="286">공지 20여 개 → 표 1장</text><text x="530" y="312">놓친 마감 0개</text>
+  </g>
+</svg>
+</div>
+<details class="extra"><summary>빈 카드 양식 (기획서 항목과 연결)</summary>
+<div class="ref-wrap"><table class="ref plain"><thead>
+<tr><th>카드 칸</th><th>기획서 항목</th></tr>
+</thead><tbody>
+<tr><td>핵심 문제 (+ 공감 근거)</td><td>해결하고자 하는 문제, 주제 선정 이유</td></tr>
+<tr><td>핵심 해결책 (+ 기존 서비스와 다른 점)</td><td>주제 선정 이유</td></tr>
+<tr><td>에이전트가 하는 일</td><td>AI Agent 활용 계획</td></tr>
+<tr><td>하지 않을 것</td><td></td></tr>
+<tr><td>시연 장면, 성공 기준</td><td>문제 해결 과정 및 결과</td></tr>
+</tbody></table></div>
+</details>
+
+<h3 id="s4-3">4-3. 카드가 곧 첫 지시문</h3>
+<div class="diagram">
+<svg viewBox="0 0 760 210" role="img" aria-label="기획 없이 '장학금 찾아 주는 에이전트 만들어 줘'라고 하면 로그인, 알림, 추천 등 에이전트가 마음대로 정한 방향으로 흩어진다. 기획 카드를 붙여 넣으면 카드대로 만든 표 하나로 곧장 간다." font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="14">
+  <defs>
+    <marker id="m45" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#9ca3af"/></marker>
+    <marker id="m46" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#15803d"/></marker>
+  </defs>
+  <g font-weight="700" font-size="13"><text x="10" y="16" fill="#6b7280">기획 없이</text><text x="400" y="16" fill="#15803d">카드를 붙여 넣으면</text></g>
+  <rect x="10" y="26" width="350" height="44" rx="8" fill="#f6f6f4" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="185" y="53" text-anchor="middle" fill="#1f2328">"장학금 찾아 주는 에이전트 만들어 줘"</text>
+  <g stroke="#9ca3af" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#m45)" fill="none">
+    <path d="M150 72 L70 128"/><path d="M185 72 L185 140"/><path d="M220 72 L300 128"/>
+  </g>
+  <g fill="#fff" stroke="#d1d5db" stroke-width="1.5"><rect x="20" y="130" width="100" height="36" rx="8"/><rect x="135" y="142" width="100" height="36" rx="8"/><rect x="250" y="130" width="100" height="36" rx="8"/></g>
+  <g text-anchor="middle" fill="#6b7280"><text x="70" y="153">로그인?</text><text x="185" y="165">알림?</text><text x="300" y="153">추천?</text></g>
+  <text x="185" y="202" text-anchor="middle" fill="#6b7280" font-size="13">에이전트가 마음대로 정함</text>
+
+  <rect x="400" y="26" width="350" height="44" rx="8" fill="#f0fdf4" stroke="#15803d" stroke-width="1.5"/>
+  <text x="575" y="53" text-anchor="middle" fill="#1f2328">기획 카드 + "하지 않을 것은 만들지 마"</text>
+  <path d="M575 72 V128" stroke="#15803d" stroke-width="2" marker-end="url(#m46)"/>
+  <rect x="495" y="132" width="160" height="40" rx="8" fill="#f0fdf4" stroke="#15803d" stroke-width="1.5"/>
+  <text x="575" y="157" text-anchor="middle" fill="#1f2328">카드대로 만든 표</text>
+  <text x="575" y="202" text-anchor="middle" fill="#6b7280" font-size="13">성공 기준으로 확인</text>
+</svg>
+</div>
+
+<h3 id="s4-4">4-4. 실습</h3>
+<ol class="steps">
+  <li>내 아이디어로 카드를 채운다. 비슷한 서비스를 1개 이상 찾아보고 "다른 점"을 쓴다.</li>
+  <li>팀원이 묻는다: 누가 써? 지금은 어떻게 해? 시연에서 뭘 보여 줘?</li>
+  <li>대답 못 한 칸을 고친다.</li>
+</ol>
+
+<h2 id="s5">5. 마무리: 대회에 맞추고 일정 세우기</h2>
+
+<h3 id="s5-1">5-1. 심사기준 ↔ 카드 칸</h3>
+<div class="diagram">
+<svg viewBox="0 0 760 222" role="img" aria-label="심사기준과 카드 칸 연결: 문제 발굴과 주제 적절성은 핵심 문제와 공감 근거, 창의성과 독창성은 기존 서비스와 다른 점, AI Agent 활용과 구현은 에이전트가 하는 일과 시연, 실용성과 문제 해결 효과는 성공 기준." font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="14">
+  <g font-weight="700" font-size="13" fill="#6b7280"><text x="10" y="16">심사기준 (AI Agent 경진대회)</text><text x="430" y="16">대답하는 카드 칸</text></g>
+  <g stroke="#9ca3af" stroke-width="1.5"><path d="M330 45 H430"/><path d="M330 93 H430"/><path d="M330 141 H430"/><path d="M330 189 H430"/></g>
+  <g fill="#fff" stroke="#d1d5db" stroke-width="1.5">
+    <rect x="10" y="26" width="320" height="38" rx="8"/><rect x="10" y="74" width="320" height="38" rx="8"/><rect x="10" y="122" width="320" height="38" rx="8"/><rect x="10" y="170" width="320" height="38" rx="8"/>
+  </g>
+  <g fill="#eff6ff" stroke="#2563eb" stroke-width="1.5">
+    <rect x="430" y="26" width="320" height="38" rx="8"/><rect x="430" y="74" width="320" height="38" rx="8"/><rect x="430" y="122" width="320" height="38" rx="8"/><rect x="430" y="170" width="320" height="38" rx="8"/>
+  </g>
+  <g fill="#1f2328"><text x="26" y="50">문제 발굴 · 주제 적절성</text><text x="26" y="98">창의성 · 독창성</text><text x="26" y="146">AI Agent 활용 · 구현 수준</text><text x="26" y="194">실용성 · 문제 해결 효과</text></g>
+  <g fill="#1f2328"><text x="446" y="50">핵심 문제 · 공감 근거</text><text x="446" y="98">기존 서비스와 다른 점</text><text x="446" y="146">에이전트가 하는 일 · 시연 장면</text><text x="446" y="194">성공 기준</text></g>
+</svg>
+</div>
+<p class="cap">비어 있거나 약한 칸이 보완할 곳입니다. 카드가 여러 장이면 카드마다 잘 맞는 대회를 고르고, <b>같은 아이디어를 두 대회에 내지 않습니다.</b></p>
+
+<h3 id="s5-2">5-2. 일정은 마감에서 거꾸로</h3>
+<div class="diagram">
+<svg viewBox="0 0 760 130" role="img" aria-label="일정: 11/30~12/2 특강 2~4차, 12월 초 기획 확정과 첫 버전, 기말고사 기간은 쉬기, 12월 말 완성과 시연 영상, 1/3 최종 점검, 1/6 접수 마감." font-family="system-ui, -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif" font-size="13">
+  <rect x="300" y="44" width="130" height="32" rx="6" fill="#f3f4f6"/>
+  <path d="M20 60 H740" stroke="#9ca3af" stroke-width="2"/>
+  <g fill="#fff" stroke="#2563eb" stroke-width="2"><circle cx="60" cy="60" r="6"/><circle cx="200" cy="60" r="6"/><circle cx="520" cy="60" r="6"/><circle cx="630" cy="60" r="6"/></g>
+  <circle cx="725" cy="60" r="7" fill="#dc2626"/>
+  <g text-anchor="middle" font-weight="700" fill="#1f2328">
+    <text x="60" y="34">11/30~12/2</text><text x="200" y="34">12월 초</text><text x="365" y="34" fill="#6b7280">기말고사</text><text x="520" y="34">12월 말</text><text x="630" y="34">1/3</text><text x="725" y="34" fill="#dc2626">1/6</text>
+  </g>
+  <g text-anchor="middle" fill="#1f2328">
+    <text x="60" y="96">특강 2~4차</text>
+    <text x="200" y="96">기획 확정</text><text x="200" y="114">첫 버전 만들기</text>
+    <text x="365" y="96" fill="#6b7280">쉬기</text>
+    <text x="520" y="96">완성</text><text x="520" y="114">시연 영상</text>
+    <text x="630" y="96">최종 점검</text>
+    <text x="725" y="96" fill="#dc2626">접수 마감</text>
+  </g>
+</svg>
+</div>
+<p class="note">프롬프트, 고친 내용, 오류 화면은 오늘부터 캡처해 둡니다. 나중에 다시 만들 수 없습니다.</p>
+
+<footer class="session-footer"><a href="7-Board.html">← 이전 · 7. React 게시판</a><a href="index.html">전체 목차 →</a></footer>
+</main>
+</div>
+
+
+<script>
+(function () {
+  const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+  // ---- 간단한 문법 강조 ----
+  function hlHtml(src) {
+    let out = "", i = 0;
+    const re = /<!-{2}[\s\S]*?-{2}>|<\/?[a-zA-Z][^>]*>|<!DOCTYPE[^>]*>/g;
+    let m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const tok = m[0];
+      if (tok.startsWith("<!-")) out += `<span class="c">${esc(tok)}</span>`;
+      else out += hlTag(tok);
+      i = m.index + tok.length;
+      // <style>, <script> 내부는 별도 처리
+      const low = tok.toLowerCase();
+      if (/^<(style|script)\b/.test(low)) {
+        const close = low.startsWith("<style") ? "</style>" : "<\/script>";
+        const end = src.toLowerCase().indexOf(close, i);
+        if (end !== -1) {
+          out += hlCode(src.slice(i, end), !low.startsWith("<style"));
+          i = end; re.lastIndex = end;
+        }
+      }
+    }
+    out += esc(src.slice(i));
+    return out;
+  }
+  function hlTag(tok) {
+    // <name attr="v" attr2 /> 를 한 번에 토큰화
+    const m = /^(<\/?)([A-Za-z!][\w-]*)([\s\S]*?)(\/?>)$/.exec(tok);
+    if (!m) return esc(tok);
+    const attrs = m[3].replace(/([\w:-]+)(\s*=\s*)("[^"]*"|'[^']*'|[^\s>]+)|([\w:-]+)/g, (a, n, eq, v, bare) =>
+      bare ? `<span class="a">${esc(bare)}</span>` : `<span class="a">${esc(n)}</span>${eq}<span class="s">${esc(v)}</span>`);
+    return `${esc(m[1])}<span class="t">${esc(m[2])}</span>${attrs}${esc(m[4])}`;
+  }
+  function hlCode(src, js = true, tsMode = false) {
+    // JS / CSS / JSX / TS 공용: 주석, 문자열, 키워드, 숫자(JS만). TS는 타입 키워드도 강조
+    const re = tsMode
+      ? /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b(const|let|var|function|return|if|else|for|of|in|while|break|continue|switch|case|async|await|class|this|try|catch|finally|throw|import|export|from|default|new|typeof|true|false|null|undefined|interface|type|extends|implements|public|private|protected|readonly|abstract|as|enum|constructor|super|number|string|boolean|any|unknown|void|never)\b|\b\d+(?:\.\d+)?\b/g
+      : /\/\/[^\n]*|\/\*[\s\S]*?\*\/|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b(const|let|var|function|return|if|else|for|of|in|while|break|continue|switch|case|async|await|class|this|try|catch|finally|throw|import|export|from|default|new|typeof|true|false|null|undefined)\b|\b\d+(?:\.\d+)?\b/g;
+    let out = "", i = 0, m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(i, m.index));
+      const t = m[0];
+      const before = src[m.index - 1] || "", after = src[m.index + t.length] || "";
+      if (t.startsWith("//") || t.startsWith("/*")) out += `<span class="c">${esc(t)}</span>`;
+      else if (/^["'`]/.test(t)) out += `<span class="s">${esc(t)}</span>`;
+      else if (/^\d/.test(t)) out += js && before !== "#" ? `<span class="n">${esc(t)}</span>` : esc(t); // CSS 안의 숫자는 그대로
+      else if (/[.#$-]/.test(before) || after === "-") out += esc(t); // promise.catch · ease-in · break-after 는 키워드가 아님
+      else out += `<span class="k">${esc(t)}</span>`;
+      i = m.index + t.length;
+    }
+    return out + esc(src.slice(i));
+  }
+
+  // TSX: 문자열 · 주석 · 키워드는 hlCode(TS), 그 밖의 글자 안에서 JSX 태그 이름만 강조
+  function hlTsx(src) {
+    return hlCode(src, true, true).split(/(<span[^>]*>[\s\S]*?<\/span>)/).map((part, i) =>
+      i % 2 ? part : part.replace(/(&lt;\/?)([A-Za-z][\w.]*)/g, '$1<span class="t">$2</span>')).join("");
+  }
+
+  // ---- 콘솔 패널: 실행용 문서에만 넣는 스크립트 (iframe 안에서 실행) ----
+  // 줄 번호가 원본 코드와 같도록 한 줄로 합쳐 <head> 바로 뒤에 넣는다. 그래서 이 함수 안에는 // 주석을 쓰지 않고 문장마다 ;를 붙인다.
+  function consoleBridge(run) {
+    const post = (level, text, line) => {
+      try { parent.postMessage({ jsDemoConsole: run, level: level, text: text, line: line || 0 }, "*"); } catch (e) { }
+    };
+    const voidTags = /^(area|base|br|col|embed|hr|img|input|link|meta|source|track|wbr)$/;
+    const ctorName = (v) => { try { const p = Object.getPrototypeOf(v); return (p && p.constructor && p.constructor.name) || ""; } catch (e) { return ""; } };
+    const openTag = (el) => {
+      let s = "<" + el.tagName.toLowerCase();
+      for (let i = 0; i < el.attributes.length && i < 4; i++) {
+        const a = el.attributes[i];
+        const v = a.value.length > 40 ? a.value.slice(0, 40) + "…" : a.value;
+        s += " " + a.name + (a.value === "" ? "" : "=\"" + v + "\"");
+      }
+      return s + ">";
+    };
+    const fnText = (f) => {
+      let code = "";
+      try { code = Function.prototype.toString.call(f); } catch (e) { }
+      if (/^class[\s{]/.test(code)) return "class " + f.name;
+      const m = /^[^(=]*\(([^()]*)\)/.exec(code) || /^(?:async\s+)?([\w$]+)\s*=>/.exec(code);
+      return "ƒ " + f.name + "(" + (m ? m[1].replace(/\s+/g, " ").trim() : "") + ")";
+    };
+    const fmt = (v, d, seen) => {
+      const t = typeof v;
+      if (v === null) return "null";
+      if (t === "undefined") return "undefined";
+      if (t === "string") return d === 0 ? v : JSON.stringify(v);
+      if (t === "number") return Object.is(v, -0) ? "-0" : String(v);
+      if (t === "bigint") return v + "n";
+      if (t === "boolean" || t === "symbol") return String(v);
+      if (t === "function") return fnText(v);
+      try {
+        if (v === window) return "Window";
+        if (v instanceof Node) {
+          if (v.nodeType === 9) return "#document";
+          if (v.nodeType === 3) return JSON.stringify(v.nodeValue);
+          if (v.nodeType !== 1) return v.nodeName;
+          const tag = v.tagName.toLowerCase();
+          if (d > 0 || voidTags.test(tag)) return openTag(v);
+          const text = v.textContent.trim().replace(/\s+/g, " ");
+          return openTag(v) + (v.children.length || text.length > 40 ? "…" : text) + "</" + tag + ">";
+        }
+        if (v instanceof Error) return v.name + ": " + v.message;
+        if (v instanceof Date || v instanceof RegExp) return String(v);
+        if (v instanceof Promise) return "Promise {…}";
+        const name = ctorName(v);
+        const deep = d >= 3 || seen.indexOf(v) !== -1;
+        seen = seen.concat([v]);
+        if (Array.isArray(v) || v instanceof NodeList || v instanceof HTMLCollection) {
+          const head = Array.isArray(v) ? "" : name + "(" + v.length + ") ";
+          if (deep) return head + "[…]";
+          const items = [];
+          for (let i = 0; i < v.length && i < 100; i++) items.push(i in v ? fmt(v[i], d + 1, seen) : "empty");
+          if (v.length > 100) items.push("…");
+          return head + "[" + items.join(", ") + "]";
+        }
+        if (v instanceof Map || v instanceof Set) {
+          if (deep) return name + "(" + v.size + ") {…}";
+          const items = [];
+          v.forEach((val, key) => { if (items.length < 50) items.push(v instanceof Map ? fmt(key, d + 1, seen) + " => " + fmt(val, d + 1, seen) : fmt(val, d + 1, seen)); });
+          return name + "(" + v.size + ") {" + items.join(", ") + "}";
+        }
+        if (v instanceof Event) {
+          const items = ["type: " + JSON.stringify(v.type)];
+          if (v.target) items.push("target: " + fmt(v.target, 1, seen));
+          if ("key" in v) items.push("key: " + JSON.stringify(v.key));
+          return name + " {" + items.join(", ") + "}";
+        }
+        const head = name && name !== "Object" ? name + " " : "";
+        if (deep) return head + "{…}";
+        const keys = Object.keys(v);
+        const items = keys.slice(0, 30).map((k) => (/^[A-Za-z_$][\w$]*$/.test(k) ? k : JSON.stringify(k)) + ": " + fmt(v[k], d + 1, seen));
+        if (keys.length > 30) items.push("…");
+        return head + "{" + items.join(", ") + "}";
+      } catch (e) {
+        try { return String(v); } catch (e2) { return "?"; }
+      }
+    };
+    const join = (args) => {
+      args = Array.prototype.slice.call(args);
+      if (typeof args[0] === "string" && args.length > 1 && /%[sdifoOc]/.test(args[0])) {
+        const rest = args.slice(1);
+        const first = args[0].replace(/%([sdifoOc%])/g, (all, f) => {
+          if (f === "%") return "%";
+          if (!rest.length) return all;
+          const a = rest.shift();
+          if (f === "c") return "";
+          if (f === "s") return typeof a === "string" ? a : fmt(a, 1, []);
+          if (f === "d" || f === "i") return String(parseInt(a, 10));
+          if (f === "f") return String(parseFloat(a));
+          return fmt(a, 1, []);
+        });
+        args = [first].concat(rest);
+      }
+      return args.map((a) => fmt(a, 0, [])).join(" ");
+    };
+    const levels = { log: "log", info: "info", debug: "log", dir: "log", table: "log", warn: "warn", error: "error" };
+    Object.keys(levels).forEach((method) => {
+      const original = console[method];
+      console[method] = function () {
+        try { post(levels[method], join(arguments)); } catch (e) { }
+        if (original) return original.apply(console, arguments);
+      };
+    });
+    const originalClear = console.clear;
+    console.clear = function () {
+      post("clear", "");
+      if (originalClear) originalClear.apply(console, arguments);
+    };
+    window.addEventListener("error", (e) => {
+      const err = e.error;
+      post("error", err && err.name ? "Uncaught " + err.name + ": " + err.message : String(e.message || "Error"), e.lineno);
+    });
+    window.addEventListener("unhandledrejection", (e) => {
+      const r = e.reason;
+      post("error", "Uncaught (in promise) " + (r instanceof Error ? r.name + ": " + r.message : fmt(r, 1, [])));
+    });
+  }
+  const bridgeCode = consoleBridge.toString().replace(/\s*\n\s*/g, " ");
+
+  // 실행용 문서 = 원본 + <head> 바로 뒤에 한 줄짜리 콘솔 스크립트. 화면의 코드 · 복사 · 새 창 열기는 원본(src) 그대로.
+  function runDoc(src, run) {
+    const tag = `<script>(${bridgeCode})(${run});<\/script>`;
+    const m = /<head(?:\s[^>]*)?>/i.exec(src) || /<html(?:\s[^>]*)?>/i.exec(src) || /<!DOCTYPE[^>]*>/i.exec(src);
+    if (!m) return tag + src;
+    const at = m.index + m[0].length;
+    return src.slice(0, at) + tag + src.slice(at);
+  }
+
+  // iframe → 부모 메시지를 어느 데모가 보냈는지 event.source로 구분한다. 다시 실행 전의 늦은 메시지는 run 번호로 버린다.
+  let runSeq = 0;
+  const frames = [];
+  window.addEventListener("message", (event) => {
+    const data = event.data;
+    if (!data || typeof data !== "object" || typeof data.jsDemoConsole !== "number") return;
+    const entry = frames.find((f) => f.iframe.contentWindow === event.source);
+    if (entry && data.jsDemoConsole === entry.run) entry.write(data);
+  });
+
+  async function copySource(src) {
+    try {
+      await navigator.clipboard.writeText(src);
+    } catch (_) {
+      const field = document.createElement("textarea");
+      field.value = src;
+      field.style.cssText = "position:fixed;left:-10000px;top:0";
+      document.body.append(field);
+      field.select();
+      const copied = document.execCommand("copy");
+      field.remove();
+      if (!copied) throw new Error("Copy failed");
+    }
+  }
+
+  const firstRuns = [];
+  document.querySelectorAll(".demo").forEach((demo) => {
+    // ---- 6주차 React: 코드 블록(복사만) · 완성 화면(만들어 둔 앱을 iframe으로) ----
+    if (demo.hasAttribute("data-code-only") || demo.hasAttribute("data-app")) {
+      const name = demo.dataset.name;
+      const bar = document.createElement("div");
+      bar.className = "bar";
+      const panes = document.createElement("div");
+      panes.className = "panes";
+      if (demo.hasAttribute("data-code-only")) {
+        const ta = demo.querySelector("textarea.src");
+        const src = ta.value;
+        bar.innerHTML = `<span class="name">${esc(name)}</span><button type="button" data-act="copy" aria-live="polite">복사</button>`;
+        const code = document.createElement("div");
+        code.className = "code";
+        code.innerHTML = `<pre>${hlTsx(src)}</pre>`;
+        panes.append(code);
+        demo.classList.add("code-only");
+        bar.querySelector("button").addEventListener("click", async (event) => {
+          const button = event.currentTarget;
+          try { await copySource(src); button.textContent = "복사됨 ✓"; }
+          catch (_) { button.textContent = "코드를 선택해 복사하세요"; }
+          setTimeout(() => (button.textContent = "복사"), 1600);
+        });
+      } else {
+        const url = demo.dataset.app;
+        bar.innerHTML = `<span class="name">${esc(name)}</span><button type="button" data-act="reload">처음부터</button><button type="button" data-act="open">새 창에서 열기</button>`;
+        const result = document.createElement("div");
+        result.className = "result";
+        result.innerHTML = `<div class="label">완성 화면 — 직접 입력해 보세요</div>`;
+        const iframe = document.createElement("iframe");
+        iframe.title = name;
+        iframe.loading = "lazy";
+        iframe.src = url;
+        result.append(iframe);
+        panes.append(result);
+        bar.addEventListener("click", (event) => {
+          const button = event.target.closest("button");
+          if (!button) return;
+          if (button.dataset.act === "reload") iframe.src = url;
+          else window.open(url, "_blank", "noopener,noreferrer");
+        });
+      }
+      demo.append(bar, panes);
+      return;
+    }
+    const src = demo.querySelector("textarea.src").value;
+    // TS 데모: 화면 · 복사는 TS(src), 실행은 변환된 JS 문서(run), 타입 검사 결과는 빌드 때 tsc로 받은 것(tsc)
+    const isTs = !!demo.querySelector("textarea.run");
+    const runSrc = isTs ? demo.querySelector("textarea.run").value : src;
+    const tsc = isTs ? JSON.parse(demo.querySelector("textarea.tsc").value) : null;
+    const file = demo.querySelector("textarea.src").dataset.file;
+    if (isTs) demo.classList.add("ts");
+    const name = demo.dataset.name;
+    const previewOnly = demo.hasAttribute("data-preview-only");
+    const manual = demo.hasAttribute("data-manual");
+    const showConsole = demo.hasAttribute("data-console") || (!previewOnly && runSrc.includes("console."));
+    // data-console="only": 화면(iframe)은 숨기고 콘솔 칸만 보여 준다 (결과가 콘솔에만 나오는 기초 문법 예제용)
+    const consoleOnly = demo.dataset.console === "only";
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.innerHTML = `<span class="name">${esc(name)}</span>${isTs && file ? `<code class="file">${esc(file)}</code>` : ""}`;
+    if (!previewOnly) {
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="copy" aria-live="polite">복사</button>
+        <button type="button" data-act="reload">다시 실행</button>
+        ${isTs ? "" : `<button type="button" data-act="open">새 창에서 열기</button>`}`);
+    }
+    if (demo.hasAttribute("data-width-controls")) {
+      bar.insertAdjacentHTML("beforeend", `<button type="button" data-act="narrow" aria-pressed="false">좁게 (360px)</button>
+        <button type="button" data-act="mid" aria-pressed="false">중간 (760px)</button>
+        <button type="button" data-act="wide" aria-pressed="true">넓게 (전체)</button>`);
+    }
+    const panes = document.createElement("div");
+    panes.className = "panes";
+    const result = document.createElement("div");
+    result.className = "result";
+    const label = document.createElement("div");
+    label.className = "label";
+    label.textContent = previewOnly ? "화면 예시" : "실행 결과";
+    const iframe = document.createElement("iframe");
+    iframe.title = name + " 실행 결과";
+    // allow-same-origin은 넣지 않는다: 스크립트 + 같은 출처면 예제가 이 페이지를 건드리거나 sandbox를 풀 수 있다.
+    iframe.setAttribute("sandbox", "allow-scripts allow-modals allow-forms allow-popups allow-popups-to-escape-sandbox");
+    result.append(label, iframe);
+    if (consoleOnly) { demo.classList.add("console-only"); label.hidden = true; iframe.hidden = true; }
+    const srcLines = src.split("\n");
+    if (isTs) {
+      const box = document.createElement("div");
+      box.className = "console tsc";
+      box.innerHTML = `<div class="label">타입 검사 — 실행 전에 TS가 찾은 오류</div><div class="lines" role="list"></div>`;
+      const tl = box.querySelector(".lines");
+      if (!tsc.diags.length) {
+        tl.innerHTML = `<div class="line ok">오류 없음 ✓</div>`;
+      } else {
+        tsc.diags.forEach((d) => {
+          const line = document.createElement("div");
+          line.className = "line error";
+          const code = document.createElement("code");
+          code.textContent = (srcLines[d.line - 1] || "").trim();
+          const msg = document.createElement("span");
+          msg.textContent = d.msg;
+          const en = document.createElement("span");
+          en.className = "en";
+          en.textContent = d.en || "";
+          const where = document.createElement("span");
+          where.className = "where";
+          where.textContent = `${d.line}번째 줄`;
+          const body = document.createElement("div");
+          body.className = "body";
+          body.append(code, msg);
+          if (d.en) body.append(en);
+          line.append(body, where);
+          tl.append(line);
+        });
+      }
+      result.append(box);
+    }
+
+    // 콘솔 패널: 코드에 console.이 있거나 data-console일 때 표시. 패널이 없던 예제도 에러가 나면 열린다.
+    const entry = { iframe, run: 0, write: null };
+    let lines = null;
+    const clearConsole = () => {
+      if (lines) lines.innerHTML = `<div class="empty">(아직 출력 없음)</div>`;
+    };
+    const openConsole = () => {
+      if (lines) return;
+      const box = document.createElement("div");
+      box.className = "console";
+      box.innerHTML = `<div class="label">콘솔</div><div class="lines" role="log" aria-label="${esc(name)} 콘솔 출력"></div>`;
+      lines = box.querySelector(".lines");
+      result.append(box);
+      clearConsole();
+    };
+    entry.write = (data) => {
+      if (data.level === "clear") return clearConsole();
+      if (!lines) {
+        if (data.level !== "error") return;
+        openConsole();
+      }
+      lines.querySelector(".empty")?.remove();
+      const line = document.createElement("div");
+      line.className = `line ${data.level}`;
+      line.textContent = String(data.text);
+      if (data.line && !isTs) {
+        const where = document.createElement("span");
+        where.className = "where";
+        where.textContent = `${data.line}번째 줄`;
+        line.append(where);
+      }
+      lines.append(line);
+      if (lines.childElementCount > 300) lines.firstElementChild.remove();
+      lines.scrollTop = lines.scrollHeight;
+    };
+    if (showConsole) openConsole();
+    frames.push(entry);
+
+    // data-manual: 처음에는 ▶ 실행 버튼만 보이고, 누를 때 실행 (alert · prompt가 페이지를 열자마자 뜨지 않게)
+    let gate = null;
+    const run = () => {
+      entry.run = ++runSeq;
+      clearConsole();
+      if (gate) gate.hidden = true;
+      iframe.hidden = consoleOnly;
+      iframe.srcdoc = runDoc(runSrc, entry.run);
+    };
+    if (manual) {
+      gate = document.createElement("div");
+      gate.className = "run-gate";
+      gate.innerHTML = `<button type="button">▶ 실행</button><span>${esc(demo.dataset.manual || "누르면 코드가 실행됩니다")}</span>`;
+      gate.querySelector("button").addEventListener("click", run);
+      iframe.hidden = true;
+      label.after(gate);
+    } else {
+      firstRuns.push(run);
+    }
+    if (previewOnly) {
+      panes.append(result);
+    } else {
+      const code = document.createElement("div");
+      code.className = "code";
+      if (isTs) {
+        const bad = new Set(tsc.diags.map((d) => d.line));
+        const html = hlCode(src, true, true).split("\n")
+          .map((l, i) => (bad.has(i + 1) ? `<span class="ts-bad">${l}</span>` : l)).join("\n");
+        code.innerHTML = `<pre>${html}</pre>`;
+      } else {
+        code.innerHTML = `<pre>${hlHtml(src)}</pre>`;
+      }
+      if (demo.classList.contains("stack")) {
+        const details = document.createElement("details");
+        details.innerHTML = "<summary>코드 보기 / 접기</summary>";
+        details.append(code);
+        panes.append(result, details);
+      } else {
+        panes.append(code, result);
+      }
+    }
+    demo.append(bar, panes);
+
+    bar.addEventListener("click", async (event) => {
+      const button = event.target.closest("button");
+      if (!button) return;
+      const act = button.dataset.act;
+      if (act === "copy") {
+        try {
+          await copySource(src);
+          button.textContent = "복사됨 ✓";
+        } catch (_) {
+          button.textContent = "코드를 선택해 복사하세요";
+        }
+        setTimeout(() => (button.textContent = "복사"), 1600);
+      } else if (act === "reload") {
+        run();
+      } else if (act === "open") {
+        // blob: 주소에서는 assets/ 같은 상대 경로가 깨지므로, 새 창용 문서에만 <base>를 넣는다 (복사는 원본 그대로)
+        const base = `<base href="${new URL(".", location.href).href}">`;
+        const opened = /<head[^>]*>/i.test(src) ? src.replace(/<head[^>]*>/i, (m) => m + base) : base + src;
+        const url = URL.createObjectURL(new Blob([opened], { type: "text/html;charset=utf-8" }));
+        window.open(url, "_blank", "noopener,noreferrer");
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+      } else if (act === "narrow" || act === "mid" || act === "wide") {
+        iframe.style.width = act === "narrow" ? "360px" : act === "mid" ? "760px" : "100%";
+        bar.querySelectorAll("[aria-pressed]").forEach((control) => {
+          control.setAttribute("aria-pressed", String(control.dataset.act === act));
+        });
+      }
+    });
+  });
+  // 레이아웃을 한 번 계산한 뒤 실행해야 예제 안의 window.innerWidth가 처음부터 0이 아니다.
+  void document.body.offsetWidth;
+  firstRuns.forEach((run) => run());
+})();
+</script>
+</body>
+</html>
